@@ -602,7 +602,7 @@
       <div class="status-text" id="status-text">
         Tap empty slots to add items and heal! 🧼
       </div>
-      <div class="level-badge" id="level-badge">Procedural Skill Level 1</div>
+      <div class="level-badge" id="level-badge">Procedural Skill Level 100</div>
     </section>
 
     <!-- Workspace Card -->
@@ -990,34 +990,29 @@
 
       if (activeSubject === 'math') {
         if (activeLevel === 'age4') {
-          // Dynamic Single-Frame Counting (Procedural 1 to 9)
           num1 = 0;
           num2 = Math.floor(Math.random() * 9) + 1;
           currentSpeechPrompt = `Tap ${num2} slots to count ${num2} ${theme.tokenExtraLabel}!`;
         } else if (activeLevel === 'age6') {
-          // Dynamic Ten-Frame $10 + N$ Addition (Procedural N in 1..8)
           num1 = 10;
           num2 = Math.floor(Math.random() * 8) + 1;
           currentSpeechPrompt = `Tap ${num2} slots to add ${num2} ${theme.tokenExtraLabel}!`;
         } else {
-          // Dynamic Regrouping Addition (Procedural Base 7..9 + Addend 3..8)
           num1 = Math.floor(Math.random() * 3) + 7;
           num2 = Math.floor(Math.random() * 6) + 3;
           currentSpeechPrompt = `Add ${num2} items to complete ${num1} plus ${num2}!`;
         }
       } else {
-        // Procedural Phonics & Theme Word Synthesizer
         const CVC_CONSONANTS = ['B', 'C', 'D', 'F', 'G', 'H', 'J', 'M', 'N', 'P', 'R', 'S', 'T', 'V', 'W'];
         const CVC_VOWELS = ['A', 'E', 'I', 'O', 'U'];
 
         if (activeLevel === 'age4') {
-          // Synthesize procedural CVC word
           const c1 = CVC_CONSONANTS[Math.floor(Math.random() * CVC_CONSONANTS.length)];
           const v = CVC_VOWELS[Math.floor(Math.random() * CVC_VOWELS.length)];
           const c2 = CVC_CONSONANTS[Math.floor(Math.random() * CVC_CONSONANTS.length)];
           targetWord = `${c1}${v}${c2}`;
         } else if (activeLevel === 'age6') {
-          const themeWords: Record<string, string[]> = {
+          const themeWords = {
             dino: ['DINO', 'ROAR', 'BONE', 'EGG', 'PARK', 'REXY'],
             sports: ['GOAL', 'BALL', 'TEAM', 'STAR', 'RACE', 'FAST'],
             legos: ['BRICK', 'BUILD', 'STUD', 'CITY', 'TOWER', 'PLAY'],
@@ -1047,8 +1042,8 @@
 
       if (correct) {
         stars += 1;
-        skillElo += 25; // Increase procedural skill Elo rating
-        saveProgressData(); // Persist progress to LocalStorage!
+        skillElo += 25;
+        saveProgressData();
 
         document.getElementById('star-count').innerText = stars;
         document.getElementById('level-badge').innerText = `Procedural Elo: ${skillElo}`;
@@ -1080,7 +1075,7 @@
           triggerConfetti();
           document.getElementById('modal-icon').innerText = p.icon;
           document.getElementById('modal-text').innerText = `You completed ${p.name}! Progress saved!`;
-          document.getElementById('modal-backdrop')?.classList.add('active');
+          document.getElementById('modal-victory').classList.add('active'); // FIXED MODAL ID
         } else {
           setTimeout(() => newQuestion(), 1200);
         }
@@ -1139,7 +1134,7 @@
 
     document.getElementById('btn-next').addEventListener('click', () => {
       audio.initCtx();
-      document.getElementById('modal-backdrop')?.classList.remove('active');
+      document.getElementById('modal-victory').classList.remove('active'); // FIXED MODAL ID
       const theme = THEMES[activeThemeKey] || THEMES.dino;
       currentPatientIdx = (currentPatientIdx + 1) % theme.patients.length;
       patientHealth = 25;
