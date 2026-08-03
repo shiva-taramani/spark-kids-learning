@@ -3,45 +3,39 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dino Rescue Clinic - Multi-Subject Learning Platform</title>
-  <meta name="description" content="An adaptive, extensible multi-subject educational game for kids featuring Ten-Frame Math, Phonics & Sight Words, Dino Spelling, and a Dino Rescue Clinic." />
+  <title>Dino Rescue Clinic - Apple-Simple Learning Game</title>
+  <meta name="description" content="An Apple-simple, minimalist visual math and phonics game for young kids." />
   
-  <!-- Google Fonts for Friendly Kid-Centric Typography -->
+  <!-- Apple San Francisco-inspired & friendly rounded fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Quicksand:wght@600;700&display=swap" rel="stylesheet">
 
   <style>
     /* ==========================================================================
-       DESIGN SYSTEM & CSS CUSTOM PROPERTIES
+       APPLE-INSPIRED MINIMALIST DESIGN SYSTEM
        ========================================================================== */
     :root {
-      --bg-gradient: linear-gradient(135deg, #1b2838 0%, #0d1b2a 100%);
-      --card-bg: rgba(255, 255, 255, 0.07);
-      --card-border: rgba(255, 255, 255, 0.15);
+      --bg-gradient: radial-gradient(circle at 50% 20%, #1e293b 0%, #0f172a 100%);
+      --card-bg: rgba(255, 255, 255, 0.06);
+      --card-border: rgba(255, 255, 255, 0.12);
+      --card-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
       
-      --accent-amber: #ffb703;
-      --accent-orange: #fb8500;
-      --accent-green: #2a9d8f;
-      --accent-emerald: #52b788;
-      --accent-purple: #9d4edd;
-      --accent-pink: #ff4d6d;
-      --accent-blue: #48cae4;
+      --accent-gold: #ffb703;
+      --accent-green: #38bdf8;
+      --accent-emerald: #34d399;
+      --accent-coral: #fb7185;
       
-      --text-main: #ffffff;
-      --text-muted: #b0c4de;
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
       
-      --tenframe-bg: rgba(0, 0, 0, 0.35);
-      --tenframe-border: #ffb703;
-      --counter-ten-fill: linear-gradient(135deg, #ffb703, #fb8500);
-      --counter-extra-fill: linear-gradient(135deg, #48cae4, #0077b6);
+      --font-main: 'Fredoka', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-body: 'Quicksand', -apple-system, BlinkMacSystemFont, sans-serif;
       
-      --font-heading: 'Fredoka', cursive, sans-serif;
-      --font-body: 'Quicksand', sans-serif;
-      
+      --radius-xl: 32px;
       --radius-lg: 24px;
       --radius-md: 16px;
-      --radius-sm: 10px;
+      --radius-sm: 12px;
     }
 
     * {
@@ -55,222 +49,201 @@
     body {
       font-family: var(--font-body);
       background: var(--bg-gradient);
-      color: var(--text-main);
+      color: var(--text-primary);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 16px;
+      padding: 24px 16px;
       overflow-x: hidden;
     }
 
-    /* Header & Navigation Bar */
+    /* Minimalist Floating Top Navigation Bar */
     header {
       width: 100%;
-      max-width: 1080px;
+      max-width: 960px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: var(--card-bg);
-      backdrop-filter: blur(12px);
+      background: rgba(255, 255, 255, 0.04);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
       border: 1px solid var(--card-border);
-      padding: 14px 24px;
-      border-radius: var(--radius-lg);
-      margin-bottom: 16px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-      flex-wrap: wrap;
-      gap: 12px;
+      padding: 12px 24px;
+      border-radius: var(--radius-xl);
+      margin-bottom: 24px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
     }
 
     .brand {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
+      font-family: var(--font-main);
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: 0.3px;
     }
 
     .brand-icon {
-      font-size: 2.2rem;
-      filter: drop-shadow(0 2px 8px rgba(255, 183, 3, 0.5));
-      animation: gentle-bounce 3s infinite ease-in-out;
+      font-size: 1.8rem;
     }
 
-    .brand-title h1 {
-      font-family: var(--font-heading);
-      font-size: 1.6rem;
-      font-weight: 700;
-      background: linear-gradient(90deg, #ffb703, #52b788, #48cae4);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      letter-spacing: 0.5px;
-    }
-
-    .brand-title p {
-      font-size: 0.82rem;
-      color: var(--text-muted);
-    }
-
-    .controls-group {
+    .pill-group {
       display: flex;
       align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
+      gap: 8px;
     }
 
-    .select-input, .btn-icon {
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid var(--card-border);
-      color: white;
-      font-family: var(--font-heading);
-      padding: 8px 14px;
-      border-radius: var(--radius-md);
-      cursor: pointer;
-      outline: none;
-      transition: all 0.2s ease;
-      font-size: 0.9rem;
-    }
-
-    .select-input:hover, .btn-icon:hover {
-      background: rgba(255, 255, 255, 0.2);
-      transform: translateY(-2px);
-    }
-
-    .select-input option {
-      background: #1b2838;
-      color: white;
-    }
-
-    .badge-journal {
-      background: linear-gradient(135deg, var(--accent-purple), #7209b7);
-      padding: 8px 16px;
+    /* Apple-Style Segmented Pill Switcher */
+    .segmented-control {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 4px;
       border-radius: 20px;
-      font-family: var(--font-heading);
+      display: flex;
+      gap: 4px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .segment-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-secondary);
+      font-family: var(--font-main);
+      font-size: 0.88rem;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 16px;
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .segment-btn.active {
+      background: rgba(255, 255, 255, 0.15);
+      color: #ffffff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+
+    .select-pill {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--card-border);
+      color: var(--text-primary);
+      font-family: var(--font-main);
+      font-size: 0.88rem;
+      padding: 6px 14px;
+      border-radius: 20px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .select-pill option {
+      background: #0f172a;
+      color: white;
+    }
+
+    .star-badge {
+      background: rgba(255, 183, 3, 0.15);
+      border: 1px solid rgba(255, 183, 3, 0.3);
+      color: var(--accent-gold);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-family: var(--font-main);
       font-size: 0.9rem;
+      font-weight: 700;
       display: flex;
       align-items: center;
       gap: 6px;
-      box-shadow: 0 4px 12px rgba(157, 78, 221, 0.4);
     }
 
-    /* Main Content Layout Grid */
+    /* Main App Layout */
     main {
       width: 100%;
-      max-width: 1080px;
+      max-width: 960px;
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
+      grid-template-columns: 360px 1fr;
+      gap: 24px;
       align-items: start;
     }
 
-    @media (max-width: 880px) {
+    @media (max-width: 820px) {
       main {
         grid-template-columns: 1fr;
       }
     }
 
-    .glass-card {
+    .card {
       background: var(--card-bg);
-      backdrop-filter: blur(12px);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
       border: 1px solid var(--card-border);
-      border-radius: var(--radius-lg);
-      padding: 24px;
-      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
-      position: relative;
-      overflow: hidden;
+      border-radius: var(--radius-xl);
+      padding: 28px;
+      box-shadow: var(--card-shadow);
     }
 
     /* ==========================================================================
-       DINO CLINIC STAGE & PATIENT VISUALS
+       DINO PATIENT HERO STAGE
        ========================================================================== */
-    .clinic-stage {
+    .patient-card {
       display: flex;
       flex-direction: column;
       align-items: center;
       text-align: center;
     }
 
-    .patient-header {
-      width: 100%;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 16px;
-    }
-
-    .patient-name-tag {
-      font-family: var(--font-heading);
-      font-size: 1.3rem;
-      color: var(--accent-amber);
+    .patient-title {
+      font-family: var(--font-main);
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 12px;
       display: flex;
       align-items: center;
       gap: 8px;
     }
 
-    .patient-species {
-      font-size: 0.8rem;
-      background: rgba(255, 183, 3, 0.2);
-      padding: 3px 10px;
-      border-radius: 12px;
-      color: #ffe066;
-    }
-
-    /* Health Meter Bar */
-    .health-bar-container {
+    /* Clean Progress Pill */
+    .progress-pill-track {
       width: 100%;
-      height: 22px;
-      background: rgba(0, 0, 0, 0.4);
-      border-radius: 12px;
-      padding: 3px;
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      margin-bottom: 16px;
-      position: relative;
+      height: 14px;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 20px;
+      padding: 2px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      margin-bottom: 20px;
     }
 
-    .health-bar-fill {
+    .progress-pill-fill {
       height: 100%;
-      width: 25%;
-      background: linear-gradient(90deg, #ff4d6d, #52b788);
-      border-radius: 8px;
-      transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-    }
-
-    .health-bar-label {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 0.75rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+      width: 30%;
+      background: linear-gradient(90deg, var(--accent-emerald), var(--accent-green));
+      border-radius: 20px;
+      transition: width 0.5s ease;
     }
 
     /* Dino Avatar Container */
-    .dino-display-stage {
+    .dino-stage-box {
       width: 100%;
-      height: 260px;
-      background: radial-gradient(circle, rgba(42, 157, 143, 0.2) 0%, rgba(0,0,0,0.3) 70%);
-      border-radius: var(--radius-md);
-      position: relative;
+      height: 240px;
+      background: radial-gradient(circle, rgba(56, 189, 248, 0.1) 0%, rgba(0,0,0,0.2) 70%);
+      border-radius: var(--radius-lg);
       display: flex;
       justify-content: center;
       align-items: center;
-      border: 1px dashed rgba(255, 255, 255, 0.15);
+      position: relative;
     }
 
-    .dino-svg-container {
-      width: 200px;
-      height: 200px;
-      position: relative;
+    .dino-avatar {
+      width: 180px;
+      height: 180px;
       transition: transform 0.4s ease;
     }
 
-    .dino-svg-container.happy {
-      animation: happy-dance 0.8s ease infinite alternate;
+    .dino-avatar.happy {
+      animation: gentle-bounce 0.8s ease infinite alternate;
     }
 
-    /* Dirt & Soap Bubbles Overlay */
-    .mud-overlay {
+    .dirt-overlay {
       position: absolute;
       top: 0;
       left: 0;
@@ -279,151 +252,75 @@
       pointer-events: none;
     }
 
-    .dirt-spot {
+    .dirt-dot {
       position: absolute;
-      background: #5c3d2e;
+      background: #4a3324;
       border-radius: 50%;
-      opacity: 0.85;
-      transition: all 0.5s ease;
-      box-shadow: inset 2px 2px 4px rgba(0,0,0,0.5);
+      opacity: 0.8;
+      transition: all 0.4s ease;
     }
 
-    .bandage-spot {
-      position: absolute;
-      width: 32px;
-      height: 16px;
-      background: #f4acb7;
-      border: 2px solid #ffcad4;
-      border-radius: 4px;
-      transform: rotate(-15deg);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-      transition: all 0.5s ease;
-    }
-
-    .bandage-spot::after {
-      content: '❤️';
-      font-size: 10px;
-    }
-
-    .cleaned-sparkle {
-      position: absolute;
-      font-size: 1.5rem;
-      pointer-events: none;
-      animation: sparkle-pop 0.6s ease forwards;
-    }
-
-    /* Clinical Tool Prompt Banner */
-    .status-banner {
+    .status-text {
       margin-top: 16px;
-      background: rgba(255, 255, 255, 0.08);
-      border-radius: var(--radius-md);
-      padding: 12px 18px;
-      width: 100%;
       font-size: 0.95rem;
-      color: #e0e1dd;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-    }
-
-    .status-banner .tool-icon {
-      font-size: 1.4rem;
+      color: var(--text-secondary);
+      font-family: var(--font-main);
     }
 
     /* ==========================================================================
-       TEN-FRAME VISUAL MATH & PHONICS WORKSPACE
+       WORKSPACE CARD
        ========================================================================== */
     .workspace-card {
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 20px;
     }
 
-    .question-card {
-      background: linear-gradient(135deg, rgba(255, 183, 3, 0.15), rgba(251, 133, 0, 0.05));
-      border: 1px solid var(--accent-amber);
-      border-radius: var(--radius-md);
-      padding: 14px 20px;
+    .question-banner {
       text-align: center;
+      padding: 16px;
+      background: rgba(255, 255, 255, 0.04);
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(255, 255, 255, 0.08);
     }
 
-    .question-prompt {
-      font-family: var(--font-heading);
-      font-size: 1.6rem;
-      letter-spacing: 1px;
-      color: #fff;
-    }
-
-    .question-prompt span.highlight {
-      color: var(--accent-amber);
-      text-decoration: underline;
-      text-decoration-color: var(--accent-emerald);
-    }
-
-    .question-subtext {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      margin-top: 4px;
-    }
-
-    /* Ten-Frame Grid Container */
-    .tenframes-container {
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
-
-    .tenframe-wrapper {
-      background: var(--tenframe-bg);
-      border: 2px solid var(--tenframe-border);
-      border-radius: var(--radius-md);
-      padding: 10px;
-      position: relative;
-    }
-
-    .tenframe-label {
-      position: absolute;
-      top: -12px;
-      left: 16px;
-      background: var(--accent-amber);
-      color: #000;
-      font-family: var(--font-heading);
+    .question-title {
+      font-family: var(--font-main);
+      font-size: 1.8rem;
       font-weight: 700;
-      font-size: 0.75rem;
-      padding: 2px 10px;
-      border-radius: 10px;
-      text-transform: uppercase;
+      color: var(--text-primary);
     }
 
+    .question-title .highlight {
+      color: var(--accent-gold);
+    }
+
+    /* Minimalist Ten-Frame Grid */
     .tenframe-grid {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
-      grid-template-rows: repeat(2, 1fr);
-      gap: 8px;
-      margin-top: 6px;
+      gap: 12px;
+      background: rgba(0, 0, 0, 0.25);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
     }
 
     .tenframe-slot {
       aspect-ratio: 1;
       background: rgba(255, 255, 255, 0.05);
       border: 2px dashed rgba(255, 255, 255, 0.2);
-      border-radius: var(--radius-sm);
+      border-radius: var(--radius-md);
       display: flex;
       justify-content: center;
       align-items: center;
       cursor: pointer;
       transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-      position: relative;
     }
 
     .tenframe-slot:hover {
-      background: rgba(255, 255, 255, 0.12);
-      border-color: rgba(255, 183, 3, 0.6);
-      transform: scale(1.04);
+      background: rgba(255, 255, 255, 0.1);
+      transform: scale(1.05);
     }
 
     .tenframe-slot.filled {
@@ -431,273 +328,185 @@
       border-color: rgba(255, 255, 255, 0.4);
     }
 
-    /* Counter Token (Egg / Fossil / Dino Marker) */
-    .counter-token {
-      width: 82%;
-      height: 82%;
+    .egg-token {
+      width: 78%;
+      height: 78%;
       border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent-gold), #fb8500);
       display: flex;
       justify-content: center;
       align-items: center;
       font-size: 1.3rem;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4), inset 0 2px 4px rgba(255, 255, 255, 0.4);
-      animation: pop-in 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-    }
-
-    .counter-token.base-ten {
-      background: var(--counter-ten-fill);
-    }
-
-    .counter-token.extra-addend {
-      background: var(--counter-extra-fill);
-    }
-
-    .counter-token .count-number {
-      font-family: var(--font-heading);
-      font-weight: 700;
-      font-size: 0.85rem;
-      color: #000;
-      background: rgba(255, 255, 255, 0.85);
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: absolute;
-      bottom: 2px;
-      right: 2px;
-    }
-
-    /* ==========================================================================
-       PHONICS & SIGHT WORDS WORKSPACE STYLING
-       ========================================================================== */
-    .phonics-word-display {
-      display: flex;
-      justify-content: center;
-      gap: 12px;
-      margin: 16px 0;
-    }
-
-    .letter-slot {
-      width: 60px;
-      height: 70px;
-      background: rgba(0, 0, 0, 0.35);
-      border: 3px dashed var(--accent-amber);
-      border-radius: var(--radius-md);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-family: var(--font-heading);
-      font-size: 2.2rem;
-      font-weight: 700;
-      color: var(--accent-amber);
-      box-shadow: inset 0 2px 6px rgba(0,0,0,0.4);
-      transition: all 0.2s ease;
-    }
-
-    .letter-slot.filled {
-      border-style: solid;
-      background: linear-gradient(135deg, rgba(82, 183, 136, 0.3), rgba(42, 157, 143, 0.5));
-      color: #ffffff;
-      animation: pop-in 0.3s ease;
-    }
-
-    .letter-bank {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 10px;
-    }
-
-    .letter-btn {
-      width: 54px;
-      height: 58px;
-      background: linear-gradient(135deg, var(--card-bg), rgba(255,255,255,0.15));
-      border: 2px solid var(--card-border);
-      border-radius: var(--radius-md);
-      font-family: var(--font-heading);
-      font-size: 1.8rem;
-      font-weight: 700;
-      color: white;
-      cursor: pointer;
-      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
       box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      animation: pop-in 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
 
-    .letter-btn:hover {
-      background: var(--accent-amber);
-      color: #000;
-      transform: translateY(-3px) scale(1.08);
-      border-color: #ffffff;
+    .egg-token.secondary {
+      background: linear-gradient(135deg, var(--accent-green), #0284c7);
     }
 
-    .letter-btn:active {
-      transform: translateY(1px);
-    }
-
-    /* Number Pad & Controls */
-    .answer-controls {
+    /* Minimalist Keypad & Action */
+    .controls-area {
       display: flex;
       flex-direction: column;
-      gap: 12px;
-      margin-top: 8px;
+      gap: 14px;
     }
 
-    .number-keypad {
+    .keypad-grid {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
-      gap: 8px;
+      gap: 10px;
     }
 
-    .key-btn {
-      background: rgba(255, 255, 255, 0.08);
+    .key-button {
+      background: rgba(255, 255, 255, 0.07);
       border: 1px solid var(--card-border);
+      border-radius: var(--radius-md);
       color: white;
-      font-family: var(--font-heading);
-      font-size: 1.3rem;
+      font-family: var(--font-main);
+      font-size: 1.4rem;
       font-weight: 700;
-      padding: 12px 0;
-      border-radius: var(--radius-sm);
+      padding: 14px 0;
       cursor: pointer;
       transition: all 0.15s ease;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
     }
 
-    .key-btn:hover {
-      background: var(--accent-amber);
+    .key-button:hover {
+      background: var(--accent-gold);
       color: #000;
       transform: translateY(-2px);
     }
 
-    .action-row {
-      display: flex;
-      gap: 10px;
-    }
-
-    .btn-action {
-      flex: 1;
-      font-family: var(--font-heading);
-      font-size: 1.1rem;
-      font-weight: 700;
-      padding: 14px;
-      border-radius: var(--radius-md);
+    .primary-check-btn {
+      background: linear-gradient(135deg, var(--accent-emerald), #059669);
       border: none;
+      color: white;
+      font-family: var(--font-main);
+      font-size: 1.25rem;
+      font-weight: 700;
+      padding: 16px;
+      border-radius: var(--radius-lg);
       cursor: pointer;
+      box-shadow: 0 10px 25px rgba(52, 211, 153, 0.3);
       transition: all 0.2s ease;
       display: flex;
       justify-content: center;
       align-items: center;
-      gap: 8px;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+      gap: 10px;
     }
 
-    .btn-submit {
-      background: linear-gradient(135deg, var(--accent-emerald), #2a9d8f);
+    .primary-check-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px rgba(52, 211, 153, 0.4);
+    }
+
+    /* Word Building Minimalist Slots */
+    .word-slots-container {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin: 20px 0;
+    }
+
+    .word-tile-slot {
+      width: 64px;
+      height: 72px;
+      background: rgba(0, 0, 0, 0.3);
+      border: 2px dashed var(--accent-gold);
+      border-radius: var(--radius-md);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: var(--font-main);
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: var(--accent-gold);
+    }
+
+    .word-tile-slot.filled {
+      border-style: solid;
+      background: rgba(56, 189, 248, 0.2);
       color: white;
     }
 
-    .btn-submit:hover {
-      background: linear-gradient(135deg, #74c69d, #40916c);
-      transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(82, 183, 136, 0.4);
+    .letter-tiles-bank {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
     }
 
-    .btn-clear {
+    .letter-tile-btn {
+      width: 56px;
+      height: 60px;
       background: rgba(255, 255, 255, 0.1);
-      color: var(--text-muted);
-      flex: 0.4;
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-md);
+      color: white;
+      font-family: var(--font-main);
+      font-size: 1.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
     }
 
-    .btn-clear:hover {
-      background: rgba(255, 77, 109, 0.2);
-      color: #ff4d6d;
+    .letter-tile-btn:hover {
+      background: var(--accent-gold);
+      color: #000;
+      transform: translateY(-2px);
     }
 
-    /* Modal / Celebration Dialog */
-    .modal-overlay {
+    /* Victory Celebration Sheet */
+    .modal-backdrop {
       position: fixed;
       top: 0;
       left: 0;
       width: 100vw;
       height: 100vh;
-      background: rgba(0, 0, 0, 0.75);
-      backdrop-filter: blur(8px);
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(12px);
       display: flex;
       justify-content: center;
       align-items: center;
-      z-index: 100;
       opacity: 0;
       pointer-events: none;
-      transition: opacity 0.4s ease;
+      transition: opacity 0.3s ease;
+      z-index: 100;
     }
 
-    .modal-overlay.active {
+    .modal-backdrop.active {
       opacity: 1;
       pointer-events: auto;
     }
 
-    .modal-card {
-      background: #1b2838;
-      border: 2px solid var(--accent-amber);
-      border-radius: var(--radius-lg);
-      padding: 32px;
-      max-width: 440px;
-      width: 90%;
+    .modal-sheet {
+      background: #0f172a;
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-xl);
+      padding: 36px;
       text-align: center;
-      transform: scale(0.8);
-      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-      box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+      max-width: 400px;
+      width: 90%;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.5);
     }
 
-    .modal-overlay.active .modal-card {
-      transform: scale(1);
-    }
-
-    .modal-title {
-      font-family: var(--font-heading);
+    .modal-sheet h2 {
+      font-family: var(--font-main);
       font-size: 2rem;
-      color: var(--accent-amber);
-      margin-bottom: 8px;
+      color: var(--accent-gold);
+      margin-bottom: 12px;
     }
 
-    .modal-badge-icon {
-      font-size: 4rem;
-      margin: 16px 0;
-      animation: gentle-bounce 2s infinite ease-in-out;
-    }
-
-    .modal-text {
-      font-size: 1rem;
-      color: var(--text-muted);
-      margin-bottom: 24px;
-      line-height: 1.5;
-    }
-
-    /* Animations */
     @keyframes gentle-bounce {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-8px); }
-    }
-
-    @keyframes happy-dance {
-      0% { transform: translateY(0) rotate(0deg); }
-      50% { transform: translateY(-14px) rotate(-4deg); }
-      100% { transform: translateY(0) rotate(4deg); }
+      0% { transform: translateY(0); }
+      100% { transform: translateY(-10px); }
     }
 
     @keyframes pop-in {
-      0% { transform: scale(0); opacity: 0; }
-      100% { transform: scale(1); opacity: 1; }
+      0% { transform: scale(0); }
+      100% { transform: scale(1); }
     }
 
-    @keyframes sparkle-pop {
-      0% { transform: scale(0) rotate(0deg); opacity: 1; }
-      100% { transform: scale(1.8) rotate(45deg); opacity: 0; }
-    }
-
-    /* Canvas Confetti Layer */
     #confetti-canvas {
       position: fixed;
       top: 0;
@@ -711,903 +520,424 @@
 </head>
 <body>
 
-  <!-- Confetti Canvas overlay -->
   <canvas id="confetti-canvas"></canvas>
 
-  <!-- Application Header -->
+  <!-- Minimalist Top Navigation -->
   <header>
     <div class="brand">
-      <div class="brand-icon" id="brand-icon">🦕</div>
-      <div class="brand-title">
-        <h1>Dino Rescue Clinic</h1>
-        <p>Multi-Subject Platform: Math, Phonics & Spelling</p>
-      </div>
+      <span class="brand-icon">🦕</span>
+      <span>Dino Rescue</span>
     </div>
 
-    <div class="controls-group">
-      <!-- Subject Selection (Multi-Subject Feature) -->
-      <select id="subject-selector" class="select-input" title="Switch Learning Subject">
-        <option value="math">🧮 Ten-Frame Math</option>
-        <option value="phonics">🔤 Phonics & Sight Words</option>
-        <option value="spelling">🦕 Dino Spelling</option>
+    <div class="pill-group">
+      <!-- Apple-Style Subject Switcher -->
+      <div class="segmented-control">
+        <button class="segment-btn active" id="btn-sub-math">🧮 Math</button>
+        <button class="segment-btn" id="btn-sub-words">🔤 Words</button>
+      </div>
+
+      <!-- Quiet Level Pill -->
+      <select id="age-selector" class="select-pill">
+        <option value="age4">Age 4-5</option>
+        <option value="age6" selected>Age 6</option>
+        <option value="age8">Age 7-8</option>
       </select>
 
-      <!-- Theme Selection -->
-      <select id="theme-selector" class="select-input" title="Switch Theme Domain">
-        <option value="dino">🦕 Dino Rescue</option>
-        <option value="space">🚀 Space Clinic</option>
-        <option value="ocean">🐢 Ocean Sanctuary</option>
-      </select>
-
-      <!-- Difficulty / Target Age Selector -->
-      <select id="age-selector" class="select-input" title="Select Learning Level">
-        <option value="age4">Junior (Age 4-5)</option>
-        <option value="age6" selected>Medic (Age 6)</option>
-        <option value="age8">Chief Vet (Age 7-8)</option>
-      </select>
-
-      <!-- Audio Mute Button -->
-      <button id="sound-toggle" class="btn-icon" title="Toggle Sound Feedback">🔊</button>
-
-      <!-- Rescued Patient Badge Counter -->
-      <div class="badge-journal">
-        <span>🏆</span>
-        <span id="rescue-count">0 Rescued</span>
+      <div class="star-badge">
+        <span>⭐</span>
+        <span id="star-count">0</span>
       </div>
     </div>
   </header>
 
-  <!-- Main Game Container -->
+  <!-- Main 2-Column Clean Layout -->
   <main>
-    <!-- LEFT PANEL: Dino Rescue Clinic Patient Stage -->
-    <section class="glass-card clinic-stage">
-      <div class="patient-header">
-        <div class="patient-name-tag">
-          <span id="patient-icon">🦖</span>
-          <span id="patient-name">Rexy</span>
-        </div>
-        <span class="patient-species" id="patient-species">Baby T-Rex</span>
+    <!-- Dino Patient Stage Card -->
+    <section class="card patient-card">
+      <div class="patient-title">
+        <span id="patient-icon">🦖</span>
+        <span id="patient-name">Rexy</span>
       </div>
 
-      <!-- Treatment Health Bar -->
-      <div class="health-bar-container">
-        <div class="health-bar-fill" id="health-fill"></div>
-        <span class="health-bar-label" id="health-label">Treatment Progress 25%</span>
+      <div class="progress-pill-track">
+        <div class="progress-pill-fill" id="progress-fill"></div>
       </div>
 
-      <!-- Dinosaur Visual Stage -->
-      <div class="dino-display-stage" id="dino-stage">
-        <div class="dino-svg-container" id="dino-avatar-container">
-          <!-- Dynamic SVG Dino Patient Rendered by JS -->
-        </div>
-        <div class="mud-overlay" id="dirt-overlay"></div>
+      <div class="dino-stage-box">
+        <div class="dino-avatar" id="dino-avatar"></div>
+        <div class="dirt-overlay" id="dirt-overlay"></div>
       </div>
 
-      <!-- Clinical Tool Prompt Banner -->
-      <div class="status-banner" id="status-banner">
-        <span class="tool-icon" id="tool-icon">🧼</span>
-        <span id="status-text">Solve the question to wash off mud and heal Rexy!</span>
+      <div class="status-text" id="status-text">
+        Clean mud to heal Rexy! 🧼
       </div>
     </section>
 
-    <!-- RIGHT PANEL: Multi-Subject Workspace (Math / Phonics / Spelling) -->
-    <section class="glass-card workspace-card">
-      <div class="question-card">
-        <div class="question-prompt" id="question-prompt">
-          Fill the Ten-Frame: <span class="highlight">10 + 2 = ?</span>
-        </div>
-        <div class="question-subtext" id="question-subtext">
-          Tap slots or letter tiles to complete the answer!
+    <!-- Workspace Card -->
+    <section class="card workspace-card">
+      <div class="question-banner">
+        <div class="question-title" id="question-title">
+          10 + 2 = <span class="highlight">?</span>
         </div>
       </div>
 
-      <!-- Dynamic Workspace Area (Ten-Frame OR Phonics Display) -->
-      <div id="dynamic-workspace">
-        <!-- Rendered dynamically by active subject component -->
-      </div>
+      <!-- Dynamic Area: Ten-Frame OR Phonics Tiles -->
+      <div id="workspace-dynamic"></div>
 
-      <!-- Interactive Digit Keypad / Phonics Letter Bank & Actions -->
-      <div class="answer-controls" id="answer-controls">
-        <div class="number-keypad" id="number-keypad">
-          <button class="key-btn" data-val="1">1</button>
-          <button class="key-btn" data-val="2">2</button>
-          <button class="key-btn" data-val="3">3</button>
-          <button class="key-btn" data-val="4">4</button>
-          <button class="key-btn" data-val="5">5</button>
-          <button class="key-btn" data-val="6">6</button>
-          <button class="key-btn" data-val="7">7</button>
-          <button class="key-btn" data-val="8">8</button>
-          <button class="key-btn" data-val="9">9</button>
-          <button class="key-btn" data-val="0">0</button>
+      <!-- Controls Area -->
+      <div class="controls-area">
+        <div class="keypad-grid" id="keypad-grid">
+          <button class="key-button" data-val="1">1</button>
+          <button class="key-button" data-val="2">2</button>
+          <button class="key-button" data-val="3">3</button>
+          <button class="key-button" data-val="4">4</button>
+          <button class="key-button" data-val="5">5</button>
+          <button class="key-button" data-val="6">6</button>
+          <button class="key-button" data-val="7">7</button>
+          <button class="key-button" data-val="8">8</button>
+          <button class="key-button" data-val="9">9</button>
+          <button class="key-button" data-val="0">0</button>
         </div>
 
-        <div class="action-row">
-          <button class="btn-action btn-clear" id="btn-clear">Clear</button>
-          <button class="btn-action btn-submit" id="btn-submit">
-            <span>Check Answer</span> 🩺
-          </button>
-        </div>
+        <button class="primary-check-btn" id="btn-check">
+          <span>Check Answer</span> ✨
+        </button>
       </div>
     </section>
   </main>
 
-  <!-- Patient Saved Celebration Modal -->
-  <div class="modal-overlay" id="victory-modal">
-    <div class="modal-card">
-      <div class="modal-title">Dino Rescued! 🎉</div>
-      <div class="modal-badge-icon" id="modal-dino-icon">🦖</div>
-      <div class="modal-text" id="modal-text">
-        Awesome job! You completely cleaned and healed Rexy!
-      </div>
-      <button class="btn-action btn-submit" id="btn-next-patient" style="width: 100%;">
-        Treat Next Patient 🩺
+  <!-- Victory Celebration Sheet -->
+  <div class="modal-backdrop" id="modal-victory">
+    <div class="modal-sheet">
+      <h2>Patient Rescued! 🎉</h2>
+      <div style="font-size: 4rem; margin: 16px 0;" id="modal-icon">🦖</div>
+      <p style="color: var(--text-secondary); margin-bottom: 24px;">You healed Rexy!</p>
+      <button class="primary-check-btn" id="btn-next" style="width: 100%;">
+        Next Patient 🩺
       </button>
     </div>
   </div>
 
-  <!-- ==========================================================================
-     APPLICATION JAVASCRIPT LOGIC & MODULES
-     ========================================================================== -->
   <script>
     /* ==========================================================================
-       1. SYNTHESIZED WEB AUDIO & SPEECH ENGINE
+       AUDIO SYNTHESIZER
        ========================================================================== */
     class AudioEngine {
       constructor() {
         this.ctx = null;
-        this.enabled = true;
-        this.scale = [261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88, 523.25, 587.33, 659.25, 698.46, 783.99, 880.00, 987.77, 1046.50];
+        this.scale = [261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88, 523.25, 587.33, 659.25];
       }
 
-      initContext() {
+      initCtx() {
         if (!this.ctx) {
           const AudioCtx = window.AudioContext || window.webkitAudioContext;
           this.ctx = new AudioCtx();
         }
-        if (this.ctx && this.ctx.state === 'suspended') {
-          this.ctx.resume();
-        }
+        if (this.ctx.state === 'suspended') this.ctx.resume();
       }
 
-      playTapCount(index) {
-        if (!this.enabled) return;
-        this.initContext();
-        
+      playTap(idx) {
+        this.initCtx();
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
-        
-        const freq = this.scale[index % this.scale.length];
         osc.type = 'triangle';
-        osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
-        
-        gain.gain.setValueAtTime(0.3, this.ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.25);
-        
+        osc.frequency.setValueAtTime(this.scale[idx % this.scale.length], this.ctx.currentTime);
+        gain.gain.setValueAtTime(0.25, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.2);
         osc.connect(gain);
         gain.connect(this.ctx.destination);
-        
         osc.start();
-        osc.stop(this.ctx.currentTime + 0.25);
+        osc.stop(this.ctx.currentTime + 0.2);
       }
 
-      playBubbleWash() {
-        if (!this.enabled) return;
-        this.initContext();
-
+      playBubble() {
+        this.initCtx();
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
-
         osc.type = 'sine';
-        osc.frequency.setValueAtTime(400, this.ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(800, this.ctx.currentTime + 0.15);
-
+        osc.frequency.setValueAtTime(350, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(700, this.ctx.currentTime + 0.15);
         gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
         gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.15);
-
         osc.connect(gain);
         gain.connect(this.ctx.destination);
-
         osc.start();
         osc.stop(this.ctx.currentTime + 0.15);
       }
 
-      playFanfare() {
-        if (!this.enabled) return;
-        this.initContext();
-
-        const notes = [523.25, 659.25, 783.99, 1046.50];
-        notes.forEach((freq, idx) => {
-          setTimeout(() => {
-            const osc = this.ctx.createOscillator();
-            const gain = this.ctx.createGain();
-
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
-
-            gain.gain.setValueAtTime(0.25, this.ctx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.5);
-
-            osc.connect(gain);
-            gain.connect(this.ctx.destination);
-
-            osc.start();
-            osc.stop(this.ctx.currentTime + 0.5);
-          }, idx * 120);
-        });
-      }
-
-      playDinoRoar() {
-        if (!this.enabled) return;
-        this.initContext();
-
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-
-        osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(140, this.ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(260, this.ctx.currentTime + 0.3);
-        osc.frequency.exponentialRampToValueAtTime(100, this.ctx.currentTime + 0.7);
-
-        gain.gain.setValueAtTime(0.35, this.ctx.currentTime);
-        gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.7);
-
-        osc.connect(gain);
-        gain.connect(this.ctx.destination);
-
-        osc.start();
-        osc.stop(this.ctx.currentTime + 0.7);
-      }
-
-      speakText(text) {
-        if (!this.enabled || !('speechSynthesis' in window)) return;
+      speak(text) {
+        if (!('speechSynthesis' in window)) return;
         window.speechSynthesis.cancel();
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.pitch = 1.2;
-        utterance.rate = 0.95;
-        window.speechSynthesis.speak(utterance);
+        const u = new SpeechSynthesisUtterance(text);
+        u.pitch = 1.2;
+        window.speechSynthesis.speak(u);
       }
     }
 
     const audio = new AudioEngine();
 
+    /* ==========================================================================
+       PATIENTS REGISTRY
+       ========================================================================== */
+    const patients = [
+      { name: 'Rexy', species: 'Baby T-Rex', icon: '🦖', color: '#34d399' },
+      { name: 'Trike', species: 'Triceratops', icon: '🦕', color: '#ffb703' },
+      { name: 'Steggy', species: 'Stegosaurus', icon: '🐊', color: '#fb7185' }
+    ];
+
+    let currentPatientIdx = 0;
+    let patientHealth = 25;
+    let stars = 0;
+    let activeSubject = 'math'; // 'math' | 'words'
+    let activeLevel = 'age6';
+    let typedAnswer = '';
+    let currentTarget = 12;
+    let targetWord = 'DINO';
+    let userWord = [];
 
     /* ==========================================================================
-       2. EXTENSIBLE THEME REGISTRY
+       DINO STAGE COMPONENT
        ========================================================================== */
-    const ThemeRegistry = {
-      dino: {
-        id: 'dino',
-        name: 'Dino Rescue Clinic',
-        brandIcon: '🦕',
-        tokenIcon: '🥚',
-        patients: [
-          { id: 'rexy', name: 'Rexy', species: 'Baby T-Rex', icon: '🦖', color: '#52b788', tool: '🧼 Sponge Wash' },
-          { id: 'trike', name: 'Trike', species: 'Triceratops', icon: '🦕', color: '#ffb703', tool: '🩺 Bandage Treat' },
-          { id: 'steggy', name: 'Steggy', species: 'Stegosaurus', icon: '🐊', color: '#9d4edd', tool: '🪮 Spine Brush' },
-          { id: 'ptery', name: 'Ptery', species: 'Pterodactyl', icon: '🦅', color: '#48cae4', tool: '🩹 Wing Heal' }
-        ]
-      },
-      space: {
-        id: 'space',
-        name: 'Space Rescue Clinic',
-        brandIcon: '🚀',
-        tokenIcon: '⭐',
-        patients: [
-          { id: 'zog', name: 'Zog', species: 'Cosmic Alien', icon: '👾', color: '#9d4edd', tool: '✨ Dust Off' },
-          { id: 'orion', name: 'Orion', species: 'Space Pup', icon: '🐶', color: '#48cae4', tool: '🛰️ Battery Charge' }
-        ]
-      },
-      ocean: {
-        id: 'ocean',
-        name: 'Ocean Sanctuary',
-        brandIcon: '🐢',
-        tokenIcon: '🐚',
-        patients: [
-          { id: 'shelly', name: 'Shelly', species: 'Sea Turtle', icon: '🐢', color: '#2a9d8f', tool: '🫧 Algae Wipe' },
-          { id: 'finny', name: 'Finny', species: 'Playful Dolphin', icon: '🐬', color: '#0077b6', tool: '🩹 Shell Patch' }
-        ]
-      }
-    };
+    function renderDino() {
+      const p = patients[currentPatientIdx];
+      document.getElementById('patient-name').innerText = p.name;
+      document.getElementById('patient-icon').innerText = p.icon;
+      document.getElementById('progress-fill').style.width = `${patientHealth}%`;
 
+      const avatar = document.getElementById('dino-avatar');
+      avatar.innerHTML = `
+        <svg viewBox="0 0 200 200" width="100%" height="100%">
+          <path d="M 40 130 Q 10 120 20 90 Q 40 100 60 120 Z" fill="${p.color}" />
+          <ellipse cx="100" cy="130" rx="50" ry="40" fill="${p.color}" />
+          <rect x="70" y="155" width="18" height="30" rx="8" fill="${p.color}" />
+          <rect x="110" y="155" width="18" height="30" rx="8" fill="${p.color}" />
+          <path d="M 120 110 Q 140 80 150 60 Q 175 60 180 85 Q 160 110 130 120 Z" fill="${p.color}" />
+          <circle cx="158" cy="72" r="7" fill="#ffffff" />
+          <circle cx="160" cy="72" r="3.5" fill="#000000" />
+          <circle cx="162" cy="70" r="1.2" fill="#ffffff" />
+          <path d="M 165 85 Q 155 92 145 86" fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="round" />
+        </svg>
+      `;
 
-    /* ==========================================================================
-       3. ADAPTIVE DIFFICULTY & MULTI-SUBJECT ENGINE
-       ========================================================================== */
-    class AdaptiveEngine {
-      constructor() {
-        this.level = 'age6';
-        this.subject = 'math';
-        this.streak = 0;
-      }
-
-      setLevel(level) {
-        this.level = level;
-        this.streak = 0;
-      }
-
-      setSubject(subject) {
-        this.subject = subject;
-        this.streak = 0;
-      }
-
-      generateQuestion() {
-        if (this.subject === 'math') {
-          return this.generateMathQuestion();
-        } else if (this.subject === 'phonics') {
-          return this.generatePhonicsQuestion();
-        } else {
-          return this.generateSpellingQuestion();
-        }
-      }
-
-      generateMathQuestion() {
-        let num1 = 10;
-        let num2 = Math.floor(Math.random() * 8) + 1;
-
-        if (this.level === 'age4') {
-          const total = Math.floor(Math.random() * 9) + 1;
-          return {
-            domain: 'math',
-            type: 'count',
-            num1: 0,
-            num2: total,
-            targetAnswer: total,
-            promptText: `Count ${total} ${activeTheme.tokenIcon} tokens on the Ten-Frame!`,
-            speechText: `Count ${total} tokens on the ten frame`
-          };
-        } else if (this.level === 'age6') {
-          const total = num1 + num2;
-          return {
-            domain: 'math',
-            type: 'addition10',
-            num1: 10,
-            num2: num2,
-            targetAnswer: total,
-            promptText: `10 + ${num2} = ?`,
-            speechText: `What is 10 plus ${num2}?`
-          };
-        } else {
-          const isMissing = Math.random() > 0.5;
-          const total = 10 + num2;
-          return {
-            domain: 'math',
-            type: isMissing ? 'missingAddend' : 'addition10',
-            num1: 10,
-            num2: num2,
-            targetAnswer: isMissing ? num2 : total,
-            promptText: isMissing ? `10 + ? = ${total}` : `10 + ${num2} = ?`,
-            speechText: isMissing ? `10 plus what equals ${total}?` : `What is 10 plus ${num2}?`
-          };
-        }
-      }
-
-      generatePhonicsQuestion() {
-        const wordPools = {
-          age4: ['CAT', 'DOG', 'SUN', 'EGG', 'RED', 'BIG', 'HAT'],
-          age6: ['DINO', 'BONE', 'ROAR', 'CLAW', 'PARK', 'NEST'],
-          age8: ['FOSSIL', 'JUNGLE', 'TRACKS', 'REPTILE', 'HUNTER']
-        };
-
-        const list = wordPools[this.level] || wordPools.age6;
-        const targetWord = list[Math.floor(Math.random() * list.length)];
-
-        return {
-          domain: 'phonics',
-          targetAnswer: targetWord,
-          promptText: `Spell the word: <span class="highlight">${targetWord}</span>`,
-          speechText: `Spell the word ${targetWord}`
-        };
-      }
-
-      generateSpellingQuestion() {
-        const dinoWords = ['REX', 'TRIKE', 'STEGGO', 'EGG', 'FOSSIL', 'BONE'];
-        const targetWord = dinoWords[Math.floor(Math.random() * dinoWords.length)];
-
-        return {
-          domain: 'spelling',
-          targetAnswer: targetWord,
-          promptText: `Dino Vocabulary: <span class="highlight">${targetWord}</span>`,
-          speechText: `Dinosaur spelling word: ${targetWord}`
-        };
-      }
-
-      recordResult(isCorrect) {
-        if (isCorrect) this.streak++;
-        else this.streak = 0;
-      }
+      renderDirt();
     }
 
-    const adaptiveEngine = new AdaptiveEngine();
-
-
-    /* ==========================================================================
-       4. DINO PATIENT STAGE
-       ========================================================================== */
-    class DinoStageComponent {
-      constructor(containerId, dirtOverlayId) {
-        this.container = document.getElementById(containerId);
-        this.dirtOverlay = document.getElementById(dirtOverlayId);
-        this.healthFill = document.getElementById('health-fill');
-        this.healthLabel = document.getElementById('health-label');
-        this.patientName = document.getElementById('patient-name');
-        this.patientSpecies = document.getElementById('patient-species');
-        this.patientIcon = document.getElementById('patient-icon');
-        
-        this.health = 25;
-      }
-
-      loadPatient(patient) {
-        this.currentPatient = patient;
-        this.health = 25;
-        
-        this.patientName.innerText = patient.name;
-        this.patientSpecies.innerText = patient.species;
-        this.patientIcon.innerText = patient.icon;
-        
-        this.renderSVG();
-        this.renderDirtSpots();
-        this.updateHealthBar();
-      }
-
-      renderSVG() {
-        const color = this.currentPatient.color;
-        this.container.innerHTML = `
-          <svg viewBox="0 0 200 200" width="100%" height="100%">
-            <path d="M 40 130 Q 10 120 20 90 Q 40 100 60 120 Z" fill="${color}" />
-            <ellipse cx="100" cy="130" rx="50" ry="40" fill="${color}" />
-            <ellipse cx="100" cy="135" rx="35" ry="25" fill="rgba(255,255,255,0.25)" />
-            <rect x="70" y="155" width="18" height="30" rx="8" fill="${color}" />
-            <rect x="110" y="155" width="18" height="30" rx="8" fill="${color}" />
-            <path d="M 120 110 Q 140 80 150 60 Q 175 60 180 85 Q 160 110 130 120 Z" fill="${color}" />
-            <circle cx="158" cy="72" r="7" fill="#ffffff" />
-            <circle cx="160" cy="72" r="3.5" fill="#000000" />
-            <circle cx="162" cy="70" r="1.2" fill="#ffffff" />
-            <path d="M 165 85 Q 155 92 145 86" fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="round" />
-            <circle cx="148" cy="82" r="5" fill="#ff4d6d" opacity="0.5" />
-          </svg>
-        `;
-      }
-
-      renderDirtSpots() {
-        this.dirtOverlay.innerHTML = '';
-        const coords = [
-          { top: '30%', left: '35%', size: '28px' },
-          { top: '45%', left: '55%', size: '36px' },
-          { top: '55%', left: '25%', size: '30px' },
-          { top: '65%', left: '48%', size: '40px' },
-          { top: '25%', left: '70%', size: '24px' }
-        ];
-
-        coords.forEach((c, i) => {
-          const spot = document.createElement('div');
-          spot.className = 'dirt-spot';
-          spot.id = `dirt-${i}`;
-          spot.style.top = c.top;
-          spot.style.left = c.left;
-          spot.style.width = c.size;
-          spot.style.height = c.size;
-          this.dirtOverlay.appendChild(spot);
-        });
-
-        const bandage = document.createElement('div');
-        bandage.className = 'bandage-spot';
-        bandage.id = 'bandage-0';
-        bandage.style.top = '40%';
-        bandage.style.left = '42%';
-        this.dirtOverlay.appendChild(bandage);
-      }
-
-      applyHealStep() {
-        audio.playBubbleWash();
-        this.health = Math.min(100, this.health + 25);
-        this.updateHealthBar();
-
-        const remainingSpots = this.dirtOverlay.querySelectorAll('.dirt-spot:not([style*="opacity: 0"])');
-        if (remainingSpots.length > 0) {
-          const spotToClean = remainingSpots[0];
-          spotToClean.style.opacity = '0';
-          spotToClean.style.transform = 'scale(1.5)';
-          
-          const sparkle = document.createElement('div');
-          sparkle.className = 'cleaned-sparkle';
-          sparkle.innerText = '✨';
-          sparkle.style.top = spotToClean.style.top;
-          sparkle.style.left = spotToClean.style.left;
-          this.dirtOverlay.appendChild(sparkle);
-          setTimeout(() => sparkle.remove(), 600);
-        } else {
-          const bandage = document.getElementById('bandage-0');
-          if (bandage) {
-            bandage.style.opacity = '0';
-            bandage.style.transform = 'scale(1.5) rotate(20deg)';
-          }
-        }
-
-        return this.health >= 100;
-      }
-
-      updateHealthBar() {
-        this.healthFill.style.width = `${this.health}%`;
-        this.healthLabel.innerText = `Treatment Progress ${this.health}%`;
-      }
-
-      triggerVictoryAnimation() {
-        const container = document.getElementById('dino-avatar-container');
-        container.classList.add('happy');
-        audio.playDinoRoar();
-        audio.playFanfare();
-        triggerConfetti();
-      }
-
-      resetAnimation() {
-        const container = document.getElementById('dino-avatar-container');
-        container.classList.remove('happy');
-      }
+    function renderDirt() {
+      const overlay = document.getElementById('dirt-overlay');
+      overlay.innerHTML = '';
+      const coords = [
+        { top: '35%', left: '35%', size: '28px' },
+        { top: '50%', left: '50%', size: '34px' },
+        { top: '60%', left: '28%', size: '30px' }
+      ];
+      coords.forEach((c, i) => {
+        const d = document.createElement('div');
+        d.className = 'dirt-dot';
+        d.id = `dirt-${i}`;
+        d.style.top = c.top;
+        d.style.left = c.left;
+        d.style.width = c.size;
+        d.style.height = c.size;
+        overlay.appendChild(d);
+      });
     }
 
+    function healDino() {
+      audio.playBubble();
+      patientHealth = Math.min(100, patientHealth + 34);
+      document.getElementById('progress-fill').style.width = `${patientHealth}%`;
+
+      const dots = document.querySelectorAll('.dirt-dot:not([style*="opacity: 0"])');
+      if (dots.length > 0) {
+        dots[0].style.opacity = '0';
+        dots[0].style.transform = 'scale(1.4)';
+      }
+
+      return patientHealth >= 100;
+    }
 
     /* ==========================================================================
-       5. WORKSPACE COMPONENTS (MATH & PHONICS)
+       WORKSPACE RENDERER (TEN-FRAME OR PHONICS)
        ========================================================================== */
-    class TenFrameComponent {
-      constructor(container) {
-        this.container = container;
-        this.currentCount = 0;
-        this.targetCount = 12;
-        this.baseTen = 10;
-      }
+    let tenFrameCount = 10;
 
-      setupQuestion(question) {
-        this.baseTen = question.num1;
-        this.targetCount = question.targetAnswer;
-        this.currentCount = 0;
-        this.render();
-      }
+    function renderWorkspace() {
+      const area = document.getElementById('workspace-dynamic');
+      const title = document.getElementById('question-title');
+      const keypad = document.getElementById('keypad-grid');
 
-      render() {
-        this.container.innerHTML = '';
-        const tenframeContainer = document.createElement('div');
-        tenframeContainer.className = 'tenframes-container';
-
-        const frame1 = this.createFrameElement('Ten-Frame 1 (Base 10)', 0, 10, true);
-        tenframeContainer.appendChild(frame1);
-
-        if (this.targetCount > 10 || adaptiveEngine.level === 'age8') {
-          const frame2 = this.createFrameElement('Ten-Frame 2 (Addend)', 10, 20, false);
-          tenframeContainer.appendChild(frame2);
-        }
-
-        this.container.appendChild(tenframeContainer);
-      }
-
-      createFrameElement(label, startIndex, endIndex, isBaseFrame) {
-        const wrapper = document.createElement('div');
-        wrapper.className = 'tenframe-wrapper';
-
-        const labelEl = document.createElement('div');
-        labelEl.className = 'tenframe-label';
-        labelEl.innerText = label;
-        wrapper.appendChild(labelEl);
-
+      if (activeSubject === 'math') {
+        keypad.style.display = 'grid';
+        title.innerHTML = `10 + ${currentTarget - 10} = <span class="highlight">?</span>`;
+        
+        area.innerHTML = '';
         const grid = document.createElement('div');
         grid.className = 'tenframe-grid';
 
-        for (let i = startIndex; i < endIndex; i++) {
+        for (let i = 0; i < 10; i++) {
           const slot = document.createElement('div');
-          slot.className = 'tenframe-slot';
-          slot.dataset.index = i;
-
-          const shouldBeFilled = (isBaseFrame && i < this.baseTen) || (i < this.currentCount);
-          if (shouldBeFilled) {
-            slot.classList.add('filled');
-            const token = document.createElement('div');
-            token.className = `counter-token ${i < 10 ? 'base-ten' : 'extra-addend'}`;
-            token.innerHTML = `${activeTheme.tokenIcon}<span class="count-number">${i + 1}</span>`;
-            slot.appendChild(token);
+          slot.className = `tenframe-slot ${i < tenFrameCount ? 'filled' : ''}`;
+          if (i < tenFrameCount) {
+            slot.innerHTML = `<div class="egg-token ${i >= 10 ? 'secondary' : ''}">🥚</div>`;
           }
-
-          slot.addEventListener('click', () => this.handleSlotClick(i));
+          slot.addEventListener('click', () => {
+            tenFrameCount = (i < tenFrameCount) ? i : i + 1;
+            audio.playTap(i);
+            renderWorkspace();
+          });
           grid.appendChild(slot);
         }
-
-        wrapper.appendChild(grid);
-        return wrapper;
-      }
-
-      handleSlotClick(index) {
-        this.currentCount = (index < this.currentCount) ? index : index + 1;
-        audio.playTapCount(index);
-        this.render();
-      }
-
-      populateAuto() {
-        if (this.baseTen === 10) {
-          this.currentCount = 10;
-          this.render();
-        }
-      }
-    }
-
-    class PhonicsComponent {
-      constructor(container) {
-        this.container = container;
-        this.targetWord = 'DINO';
-        this.userLetters = [];
-      }
-
-      setupQuestion(question) {
-        this.targetWord = question.targetAnswer.toUpperCase();
-        this.userLetters = [];
-        this.render();
-      }
-
-      render() {
-        this.container.innerHTML = '';
-
-        // Display Word Slots
-        const slotsContainer = document.createElement('div');
-        slotsContainer.className = 'phonics-word-display';
-
-        for (let i = 0; i < this.targetWord.length; i++) {
-          const slot = document.createElement('div');
-          slot.className = `letter-slot ${this.userLetters[i] ? 'filled' : ''}`;
-          slot.innerText = this.userLetters[i] || '_';
-          slotsContainer.appendChild(slot);
-        }
-        this.container.appendChild(slotsContainer);
-
-        // Letter Bank Buttons
-        const bankContainer = document.createElement('div');
-        bankContainer.className = 'letter-bank';
-
-        // Shuffle target letters with extra random distractor letters
-        const pool = (this.targetWord + 'AEIOURST').split('').slice(0, Math.max(8, this.targetWord.length + 3));
-        pool.sort(() => Math.random() - 0.5);
-
-        pool.forEach(letter => {
-          const btn = document.createElement('button');
-          btn.className = 'letter-btn';
-          btn.innerText = letter;
-          btn.addEventListener('click', () => this.handleLetterClick(letter));
-          bankContainer.appendChild(btn);
-        });
-
-        this.container.appendChild(bankContainer);
-      }
-
-      handleLetterClick(letter) {
-        if (this.userLetters.length < this.targetWord.length) {
-          this.userLetters.push(letter);
-          audio.speakText(letter.toLowerCase());
-          this.render();
-        }
-      }
-
-      clear() {
-        this.userLetters = [];
-        this.render();
-      }
-
-      getUserString() {
-        return this.userLetters.join('');
-      }
-    }
-
-
-    /* ==========================================================================
-       6. GAME CONTROLLER & STATE MANAGEMENT
-       ========================================================================== */
-    let activeTheme = ThemeRegistry.dino;
-    let rescueCount = 0;
-    let userTypedAnswer = '';
-    let currentQuestion = null;
-
-    const workspaceArea = document.getElementById('dynamic-workspace');
-    const dinoStage = new DinoStageComponent('dino-avatar-container', 'dirt-overlay');
-    const tenFrame = new TenFrameComponent(workspaceArea);
-    const phonicsComp = new PhonicsComponent(workspaceArea);
-
-    function initGame() {
-      setupEventListeners();
-      loadTheme('dino');
-      nextQuestion();
-    }
-
-    function loadTheme(themeId) {
-      activeTheme = ThemeRegistry[themeId] || ThemeRegistry.dino;
-      document.getElementById('brand-icon').innerText = activeTheme.brandIcon;
-      document.getElementById('theme-selector').value = activeTheme.id;
-      
-      const firstPatient = activeTheme.patients[0];
-      dinoStage.loadPatient(firstPatient);
-      document.getElementById('tool-icon').innerText = firstPatient.tool.split(' ')[0];
-    }
-
-    function nextQuestion() {
-      currentQuestion = adaptiveEngine.generateQuestion();
-      userTypedAnswer = '';
-      
-      const promptEl = document.getElementById('question-prompt');
-      promptEl.innerHTML = currentQuestion.promptText;
-      
-      const keypad = document.getElementById('number-keypad');
-
-      if (currentQuestion.domain === 'math') {
-        keypad.style.display = 'grid';
-        tenFrame.setupQuestion(currentQuestion);
-        tenFrame.populateAuto();
+        area.appendChild(grid);
       } else {
-        keypad.style.display = 'none'; // Phonics uses letter bank buttons
-        phonicsComp.setupQuestion(currentQuestion);
-      }
+        keypad.style.display = 'none';
+        title.innerHTML = `Spell: <span class="highlight">${targetWord}</span>`;
+        
+        area.innerHTML = '';
+        const slotsDiv = document.createElement('div');
+        slotsDiv.className = 'word-slots-container';
 
-      audio.speakText(currentQuestion.speechText);
+        for (let i = 0; i < targetWord.length; i++) {
+          const slot = document.createElement('div');
+          slot.className = `word-tile-slot ${userWord[i] ? 'filled' : ''}`;
+          slot.innerText = userWord[i] || '_';
+          slotsDiv.appendChild(slot);
+        }
+        area.appendChild(slotsDiv);
+
+        const bankDiv = document.createElement('div');
+        bankDiv.className = 'letter-tiles-bank';
+        const letters = (targetWord + 'REST').split('').sort(() => Math.random() - 0.5);
+        letters.forEach(letter => {
+          const btn = document.createElement('button');
+          btn.className = 'letter-tile-btn';
+          btn.innerText = letter;
+          btn.addEventListener('click', () => {
+            if (userWord.length < targetWord.length) {
+              userWord.push(letter);
+              audio.speak(letter.toLowerCase());
+              renderWorkspace();
+            }
+          });
+          bankDiv.appendChild(btn);
+        });
+        area.appendChild(bankDiv);
+      }
+    }
+
+    function newQuestion() {
+      typedAnswer = '';
+      userWord = [];
+      if (activeSubject === 'math') {
+        const addend = Math.floor(Math.random() * 8) + 1;
+        currentTarget = 10 + addend;
+        tenFrameCount = 10;
+        audio.speak(`What is 10 plus ${addend}?`);
+      } else {
+        const words = ['DINO', 'ROAR', 'BONE', 'EGG', 'PARK', 'REXY'];
+        targetWord = words[Math.floor(Math.random() * words.length)];
+        audio.speak(`Spell ${targetWord}`);
+      }
+      renderWorkspace();
     }
 
     function checkAnswer() {
-      let isCorrect = false;
-
-      if (currentQuestion.domain === 'math') {
-        const answerVal = userTypedAnswer !== '' ? parseInt(userTypedAnswer, 10) : tenFrame.currentCount;
-        isCorrect = (answerVal === currentQuestion.targetAnswer);
+      let correct = false;
+      if (activeSubject === 'math') {
+        const val = typedAnswer !== '' ? parseInt(typedAnswer, 10) : tenFrameCount;
+        correct = (val === currentTarget);
       } else {
-        const userWord = phonicsComp.getUserString();
-        isCorrect = (userWord === currentQuestion.targetAnswer);
+        correct = (userWord.join('') === targetWord);
       }
 
-      adaptiveEngine.recordResult(isCorrect);
+      if (correct) {
+        stars += 1;
+        document.getElementById('star-count').innerText = stars;
 
-      if (isCorrect) {
-        if (currentQuestion.domain !== 'math') {
-          audio.speakText(`${currentQuestion.targetAnswer}! Great job!`);
-        }
-
-        const isFullyHealed = dinoStage.applyHealStep();
-
-        if (isFullyHealed) {
-          rescueCount++;
-          document.getElementById('rescue-count').innerText = `${rescueCount} Rescued`;
-          dinoStage.triggerVictoryAnimation();
-          showVictoryModal();
+        const fullyHealed = healDino();
+        if (fullyHealed) {
+          document.getElementById('dino-avatar').classList.add('happy');
+          audio.speak('Awesome! Patient healed!');
+          triggerConfetti();
+          document.getElementById('modal-victory').classList.add('active');
         } else {
-          audio.playTapCount(10);
-          setTimeout(() => nextQuestion(), 900);
+          audio.playTap(9);
+          setTimeout(() => newQuestion(), 700);
         }
       } else {
-        audio.playBubbleWash();
-        const promptEl = document.getElementById('question-prompt');
-        promptEl.innerHTML = `Try again! <span class="highlight">${currentQuestion.promptText}</span>`;
+        audio.playBubble();
+        document.getElementById('question-title').style.color = '#fb7185';
+        setTimeout(() => document.getElementById('question-title').style.color = 'var(--text-primary)', 600);
       }
     }
 
-    function showVictoryModal() {
-      const modal = document.getElementById('victory-modal');
-      document.getElementById('modal-dino-icon').innerText = dinoStage.currentPatient.icon;
-      document.getElementById('modal-text').innerText = `Hooray! You fully cleaned and treated ${dinoStage.currentPatient.name} the ${dinoStage.currentPatient.species}!`;
-      modal.classList.add('active');
-    }
+    /* Event Handlers */
+    document.getElementById('btn-sub-math').addEventListener('click', (e) => {
+      activeSubject = 'math';
+      document.getElementById('btn-sub-math').classList.add('active');
+      document.getElementById('btn-sub-words').classList.remove('active');
+      newQuestion();
+    });
 
-    function hideVictoryModal() {
-      const modal = document.getElementById('victory-modal');
-      modal.classList.remove('active');
-      dinoStage.resetAnimation();
-      
-      const patients = activeTheme.patients;
-      const nextIdx = (activeTheme.patients.indexOf(dinoStage.currentPatient) + 1) % patients.length;
-      const nextPatient = patients[nextIdx];
-      
-      dinoStage.loadPatient(nextPatient);
-      document.getElementById('tool-icon').innerText = nextPatient.tool.split(' ')[0];
-      
-      nextQuestion();
-    }
+    document.getElementById('btn-sub-words').addEventListener('click', (e) => {
+      activeSubject = 'words';
+      document.getElementById('btn-sub-words').classList.add('active');
+      document.getElementById('btn-sub-math').classList.remove('active');
+      newQuestion();
+    });
 
-    /* Event Listeners Setup */
-    function setupEventListeners() {
-      // Subject Switcher
-      document.getElementById('subject-selector').addEventListener('change', (e) => {
-        adaptiveEngine.setSubject(e.target.value);
-        nextQuestion();
+    document.querySelectorAll('.key-button').forEach(b => {
+      b.addEventListener('click', (e) => {
+        const v = e.target.dataset.val;
+        audio.playTap(parseInt(v, 10));
+        typedAnswer += v;
       });
+    });
 
-      // Theme Switcher
-      document.getElementById('theme-selector').addEventListener('change', (e) => {
-        loadTheme(e.target.value);
-        nextQuestion();
-      });
+    document.getElementById('btn-check').addEventListener('click', checkAnswer);
+    document.getElementById('btn-next').addEventListener('click', () => {
+      document.getElementById('modal-victory').classList.remove('active');
+      document.getElementById('dino-avatar').classList.remove('happy');
+      currentPatientIdx = (currentPatientIdx + 1) % patients.length;
+      patientHealth = 25;
+      renderDino();
+      newQuestion();
+    });
 
-      // Age / Difficulty Selector
-      document.getElementById('age-selector').addEventListener('change', (e) => {
-        adaptiveEngine.setLevel(e.target.value);
-        nextQuestion();
-      });
-
-      // Mute / Unmute Toggle
-      document.getElementById('sound-toggle').addEventListener('click', () => {
-        audio.enabled = !audio.enabled;
-        document.getElementById('sound-toggle').innerText = audio.enabled ? '🔊' : '🔇';
-      });
-
-      // Keypad input listener
-      document.querySelectorAll('.key-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          const val = e.target.dataset.val;
-          audio.playTapCount(parseInt(val, 10));
-          userTypedAnswer += val;
-          document.getElementById('question-subtext').innerText = `Typed Answer: ${userTypedAnswer}`;
-        });
-      });
-
-      // Clear button
-      document.getElementById('btn-clear').addEventListener('click', () => {
-        userTypedAnswer = '';
-        if (currentQuestion.domain === 'math') {
-          tenFrame.currentCount = 10;
-          tenFrame.render();
-        } else {
-          phonicsComp.clear();
-        }
-        document.getElementById('question-subtext').innerText = `Tap slots or letter tiles to complete the answer!`;
-      });
-
-      // Submit check button
-      document.getElementById('btn-submit').addEventListener('click', checkAnswer);
-
-      // Modal next patient button
-      document.getElementById('btn-next-patient').addEventListener('click', hideVictoryModal);
-    }
-
-    /* Confetti Particle System */
+    /* Confetti System */
     function triggerConfetti() {
       const canvas = document.getElementById('confetti-canvas');
       const ctx = canvas.getContext('2d');
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
-
       const particles = [];
-      const colors = ['#ffb703', '#fb8500', '#2a9d8f', '#52b788', '#9d4edd', '#48cae4', '#ff4d6d'];
-
-      for (let i = 0; i < 90; i++) {
+      const colors = ['#ffb703', '#34d399', '#38bdf8', '#fb7185'];
+      for (let i = 0; i < 70; i++) {
         particles.push({
-          x: canvas.width / 2,
-          y: canvas.height / 2,
-          vx: (Math.random() - 0.5) * 14,
-          vy: (Math.random() - 0.7) * 16,
+          x: canvas.width / 2, y: canvas.height / 2,
+          vx: (Math.random() - 0.5) * 12, vy: (Math.random() - 0.7) * 14,
           color: colors[Math.floor(Math.random() * colors.length)],
-          size: Math.random() * 8 + 5,
-          rotation: Math.random() * 360,
-          vRot: (Math.random() - 0.5) * 10
+          size: Math.random() * 8 + 4
         });
       }
-
-      let frame = 0;
-      function animate() {
+      let f = 0;
+      function loop() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         particles.forEach(p => {
-          p.x += p.vx;
-          p.y += p.vy;
-          p.vy += 0.35;
-          p.rotation += p.vRot;
-
-          ctx.save();
-          ctx.translate(p.x, p.y);
-          ctx.rotate((p.rotation * Math.PI) / 180);
+          p.x += p.vx; p.y += p.vy; p.vy += 0.3;
           ctx.fillStyle = p.color;
-          ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
-          ctx.restore();
+          ctx.fillRect(p.x, p.y, p.size, p.size);
         });
-
-        frame++;
-        if (frame < 120) {
-          requestAnimationFrame(animate);
-        } else {
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
-        }
+        f++;
+        if (f < 100) requestAnimationFrame(loop);
+        else ctx.clearRect(0, 0, canvas.width, canvas.height);
       }
-      animate();
+      loop();
     }
 
-    window.addEventListener('DOMContentLoaded', initGame);
+    window.addEventListener('DOMContentLoaded', () => {
+      renderDino();
+      newQuestion();
+    });
   </script>
 </body>
 </html>
