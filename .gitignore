@@ -1,0 +1,16 @@
+# macOS files
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Node & dependencies (if expanded to npm/vite later)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Local environment & IDEs
+.vscode/
+.idea/
+*.swp
+*.swo

@@ -1,0 +1,1456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dino Rescue Clinic - Visual Math & Ten-Frame Learning</title>
+  <meta name="description" content="An adaptive, extensible visual math game for kids featuring Ten-Frame math, tap-to-count audio, and a Dino Rescue Clinic." />
+  
+  <!-- Google Fonts for Friendly Kid-Centric Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* ==========================================================================
+       DESIGN SYSTEM & CSS CUSTOM PROPERTIES
+       ========================================================================== */
+    :root {
+      --bg-gradient: linear-gradient(135deg, #1b2838 0%, #0d1b2a 100%);
+      --card-bg: rgba(255, 255, 255, 0.07);
+      --card-border: rgba(255, 255, 255, 0.15);
+      
+      --accent-amber: #ffb703;
+      --accent-orange: #fb8500;
+      --accent-green: #2a9d8f;
+      --accent-emerald: #52b788;
+      --accent-purple: #9d4edd;
+      --accent-pink: #ff4d6d;
+      --accent-blue: #48cae4;
+      
+      --text-main: #ffffff;
+      --text-muted: #b0c4de;
+      
+      --tenframe-bg: rgba(0, 0, 0, 0.35);
+      --tenframe-border: #ffb703;
+      --counter-ten-fill: linear-gradient(135deg, #ffb703, #fb8500);
+      --counter-extra-fill: linear-gradient(135deg, #48cae4, #0077b6);
+      
+      --font-heading: 'Fredoka', cursive, sans-serif;
+      --font-body: 'Quicksand', sans-serif;
+      
+      --radius-lg: 24px;
+      --radius-md: 16px;
+      --radius-sm: 10px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--bg-gradient);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 16px;
+      overflow-x: hidden;
+    }
+
+    /* Header & Navigation Bar */
+    header {
+      width: 100%;
+      max-width: 1050px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--card-bg);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--card-border);
+      padding: 14px 24px;
+      border-radius: var(--radius-lg);
+      margin-bottom: 16px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-icon {
+      font-size: 2.2rem;
+      filter: drop-shadow(0 2px 8px rgba(255, 183, 3, 0.5));
+      animation: gentle-bounce 3s infinite ease-in-out;
+    }
+
+    .brand-title h1 {
+      font-family: var(--font-heading);
+      font-size: 1.6rem;
+      font-weight: 700;
+      background: linear-gradient(90deg, #ffb703, #52b788, #48cae4);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: 0.5px;
+    }
+
+    .brand-title p {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+
+    .controls-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .select-input, .btn-icon {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid var(--card-border);
+      color: white;
+      font-family: var(--font-heading);
+      padding: 8px 14px;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      outline: none;
+      transition: all 0.2s ease;
+      font-size: 0.9rem;
+    }
+
+    .select-input:hover, .btn-icon:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px);
+    }
+
+    .select-input option {
+      background: #1b2838;
+      color: white;
+    }
+
+    .badge-journal {
+      background: linear-gradient(135deg, var(--accent-purple), #7209b7);
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-family: var(--font-heading);
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 4px 12px rgba(157, 78, 221, 0.4);
+    }
+
+    /* Main Content Layout Grid */
+    main {
+      width: 100%;
+      max-width: 1050px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      align-items: start;
+    }
+
+    @media (max-width: 850px) {
+      main {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .glass-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* ==========================================================================
+       DINO CLINIC STAGE & PATIENT VISUALS
+       ========================================================================== */
+    .clinic-stage {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .patient-header {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .patient-name-tag {
+      font-family: var(--font-heading);
+      font-size: 1.3rem;
+      color: var(--accent-amber);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .patient-species {
+      font-size: 0.8rem;
+      background: rgba(255, 183, 3, 0.2);
+      padding: 3px 10px;
+      border-radius: 12px;
+      color: #ffe066;
+    }
+
+    /* Health Meter Bar */
+    .health-bar-container {
+      width: 100%;
+      height: 22px;
+      background: rgba(0, 0, 0, 0.4);
+      border-radius: 12px;
+      padding: 3px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      margin-bottom: 16px;
+      position: relative;
+    }
+
+    .health-bar-fill {
+      height: 100%;
+      width: 25%;
+      background: linear-gradient(90deg, #ff4d6d, #52b788);
+      border-radius: 8px;
+      transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .health-bar-label {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+    }
+
+    /* Dino Avatar Container */
+    .dino-display-stage {
+      width: 100%;
+      height: 260px;
+      background: radial-gradient(circle, rgba(42, 157, 143, 0.2) 0%, rgba(0,0,0,0.3) 70%);
+      border-radius: var(--radius-md);
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border: 1px dashed rgba(255, 255, 255, 0.15);
+    }
+
+    .dino-svg-container {
+      width: 200px;
+      height: 200px;
+      position: relative;
+      transition: transform 0.4s ease;
+    }
+
+    .dino-svg-container.happy {
+      animation: happy-dance 0.8s ease infinite alternate;
+    }
+
+    /* Dirt & Soap Bubbles Overlay */
+    .mud-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    .dirt-spot {
+      position: absolute;
+      background: #5c3d2e;
+      border-radius: 50%;
+      opacity: 0.85;
+      transition: all 0.5s ease;
+      box-shadow: inset 2px 2px 4px rgba(0,0,0,0.5);
+    }
+
+    .bandage-spot {
+      position: absolute;
+      width: 32px;
+      height: 16px;
+      background: #f4acb7;
+      border: 2px solid #ffcad4;
+      border-radius: 4px;
+      transform: rotate(-15deg);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      transition: all 0.5s ease;
+    }
+
+    .bandage-spot::after {
+      content: '❤️';
+      font-size: 10px;
+    }
+
+    .cleaned-sparkle {
+      position: absolute;
+      font-size: 1.5rem;
+      pointer-events: none;
+      animation: sparkle-pop 0.6s ease forwards;
+    }
+
+    /* Clinical Tool Prompt Banner */
+    .status-banner {
+      margin-top: 16px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: var(--radius-md);
+      padding: 12px 18px;
+      width: 100%;
+      font-size: 0.95rem;
+      color: #e0e1dd;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .status-banner .tool-icon {
+      font-size: 1.4rem;
+    }
+
+    /* ==========================================================================
+       TEN-FRAME VISUAL MATH WORKSPACE
+       ========================================================================== */
+    .math-workspace {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .question-card {
+      background: linear-gradient(135deg, rgba(255, 183, 3, 0.15), rgba(251, 133, 0, 0.05));
+      border: 1px solid var(--accent-amber);
+      border-radius: var(--radius-md);
+      padding: 14px 20px;
+      text-align: center;
+    }
+
+    .question-prompt {
+      font-family: var(--font-heading);
+      font-size: 1.6rem;
+      letter-spacing: 1px;
+      color: #fff;
+    }
+
+    .question-prompt span.highlight {
+      color: var(--accent-amber);
+      text-decoration: underline;
+      text-decoration-color: var(--accent-emerald);
+    }
+
+    .question-subtext {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* Ten-Frame Grid Container */
+    .tenframes-container {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .tenframe-wrapper {
+      background: var(--tenframe-bg);
+      border: 2px solid var(--tenframe-border);
+      border-radius: var(--radius-md);
+      padding: 10px;
+      position: relative;
+    }
+
+    .tenframe-label {
+      position: absolute;
+      top: -12px;
+      left: 16px;
+      background: var(--accent-amber);
+      color: #000;
+      font-family: var(--font-heading);
+      font-weight: 700;
+      font-size: 0.75rem;
+      padding: 2px 10px;
+      border-radius: 10px;
+      text-transform: uppercase;
+    }
+
+    .tenframe-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      grid-template-rows: repeat(2, 1fr);
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    .tenframe-slot {
+      aspect-ratio: 1;
+      background: rgba(255, 255, 255, 0.05);
+      border: 2px dashed rgba(255, 255, 255, 0.2);
+      border-radius: var(--radius-sm);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+      position: relative;
+    }
+
+    .tenframe-slot:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 183, 3, 0.6);
+      transform: scale(1.04);
+    }
+
+    .tenframe-slot.filled {
+      border-style: solid;
+      border-color: rgba(255, 255, 255, 0.4);
+    }
+
+    /* Counter Token (Egg / Fossil / Dino Marker) */
+    .counter-token {
+      width: 82%;
+      height: 82%;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.3rem;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4), inset 0 2px 4px rgba(255, 255, 255, 0.4);
+      animation: pop-in 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .counter-token.base-ten {
+      background: var(--counter-ten-fill);
+    }
+
+    .counter-token.extra-addend {
+      background: var(--counter-extra-fill);
+    }
+
+    .counter-token .count-number {
+      font-family: var(--font-heading);
+      font-weight: 700;
+      font-size: 0.85rem;
+      color: #000;
+      background: rgba(255, 255, 255, 0.85);
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: absolute;
+      bottom: 2px;
+      right: 2px;
+    }
+
+    /* Number Pad & Submit Controls */
+    .answer-controls {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 8px;
+    }
+
+    .number-keypad {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+    }
+
+    .key-btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--card-border);
+      color: white;
+      font-family: var(--font-heading);
+      font-size: 1.3rem;
+      font-weight: 700;
+      padding: 12px 0;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+
+    .key-btn:hover {
+      background: var(--accent-amber);
+      color: #000;
+      transform: translateY(-2px);
+    }
+
+    .key-btn:active {
+      transform: translateY(1px);
+    }
+
+    .action-row {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn-action {
+      flex: 1;
+      font-family: var(--font-heading);
+      font-size: 1.1rem;
+      font-weight: 700;
+      padding: 14px;
+      border-radius: var(--radius-md);
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+    }
+
+    .btn-submit {
+      background: linear-gradient(135deg, var(--accent-emerald), #2a9d8f);
+      color: white;
+    }
+
+    .btn-submit:hover {
+      background: linear-gradient(135deg, #74c69d, #40916c);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(82, 183, 136, 0.4);
+    }
+
+    .btn-clear {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text-muted);
+      flex: 0.4;
+    }
+
+    .btn-clear:hover {
+      background: rgba(255, 77, 109, 0.2);
+      color: #ff4d6d;
+    }
+
+    /* Modal / Celebration Dialog */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(8px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 100;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-card {
+      background: #1b2838;
+      border: 2px solid var(--accent-amber);
+      border-radius: var(--radius-lg);
+      padding: 32px;
+      max-width: 440px;
+      width: 90%;
+      text-align: center;
+      transform: scale(0.8);
+      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+    }
+
+    .modal-overlay.active .modal-card {
+      transform: scale(1);
+    }
+
+    .modal-title {
+      font-family: var(--font-heading);
+      font-size: 2rem;
+      color: var(--accent-amber);
+      margin-bottom: 8px;
+    }
+
+    .modal-badge-icon {
+      font-size: 4rem;
+      margin: 16px 0;
+      animation: gentle-bounce 2s infinite ease-in-out;
+    }
+
+    .modal-text {
+      font-size: 1rem;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+
+    /* Animations */
+    @keyframes gentle-bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    @keyframes happy-dance {
+      0% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-14px) rotate(-4deg); }
+      100% { transform: translateY(0) rotate(4deg); }
+    }
+
+    @keyframes pop-in {
+      0% { transform: scale(0); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    @keyframes sparkle-pop {
+      0% { transform: scale(0) rotate(0deg); opacity: 1; }
+      100% { transform: scale(1.8) rotate(45deg); opacity: 0; }
+    }
+
+    /* Canvas Confetti Layer */
+    #confetti-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 99;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Confetti Canvas overlay -->
+  <canvas id="confetti-canvas"></canvas>
+
+  <!-- Application Header -->
+  <header>
+    <div class="brand">
+      <div class="brand-icon" id="brand-icon">🦕</div>
+      <div class="brand-title">
+        <h1>Dino Rescue Clinic</h1>
+        <p>Adaptive Visual Math & Ten-Frame Learning</p>
+      </div>
+    </div>
+
+    <div class="controls-group">
+      <!-- Theme Selection (Extensibility Feature) -->
+      <select id="theme-selector" class="select-input" title="Switch Theme Domain">
+        <option value="dino">🦕 Dino Rescue</option>
+        <option value="space">🚀 Space Clinic</option>
+        <option value="ocean">🐢 Ocean Sanctuary</option>
+      </select>
+
+      <!-- Difficulty / Target Age Selector (Adaptability Feature) -->
+      <select id="age-selector" class="select-input" title="Select Learning Level">
+        <option value="age4">Junior (Age 4-5: Count 1-10)</option>
+        <option value="age6" selected>Medic (Age 6: 10 + N Addition)</option>
+        <option value="age8">Chief Vet (Age 7-8: Double 10-Frame)</option>
+      </select>
+
+      <!-- Audio Mute Button -->
+      <button id="sound-toggle" class="btn-icon" title="Toggle Sound Feedback">🔊</button>
+
+      <!-- Rescued Patient Badge Counter -->
+      <div class="badge-journal">
+        <span>🏆</span>
+        <span id="rescue-count">0 Rescued</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Game Container -->
+  <main>
+    <!-- LEFT PANEL: Dino Rescue Clinic Patient Stage -->
+    <section class="glass-card clinic-stage">
+      <div class="patient-header">
+        <div class="patient-name-tag">
+          <span id="patient-icon">🦖</span>
+          <span id="patient-name">Rexy</span>
+        </div>
+        <span class="patient-species" id="patient-species">Baby T-Rex</span>
+      </div>
+
+      <!-- Treatment Health Bar -->
+      <div class="health-bar-container">
+        <div class="health-bar-fill" id="health-fill"></div>
+        <span class="health-bar-label" id="health-label">Treatment Progress 25%</span>
+      </div>
+
+      <!-- Dinosaur Canvas / SVG Visual Stage -->
+      <div class="dino-display-stage" id="dino-stage">
+        <div class="dino-svg-container" id="dino-avatar-container">
+          <!-- Dynamic SVG Dino Patient Rendered by JS -->
+        </div>
+        <div class="mud-overlay" id="dirt-overlay"></div>
+      </div>
+
+      <!-- Clinical Tool Action Prompt Banner -->
+      <div class="status-banner" id="status-banner">
+        <span class="tool-icon" id="tool-icon">🧼</span>
+        <span id="status-text">Solve the math equation to wash off mud and heal Rexy!</span>
+      </div>
+    </section>
+
+    <!-- RIGHT PANEL: Ten-Frame Visual Math Workspace -->
+    <section class="glass-card math-workspace">
+      <div class="question-card">
+        <div class="question-prompt" id="question-prompt">
+          Fill the Ten-Frame: <span class="highlight">10 + 2 = ?</span>
+        </div>
+        <div class="question-subtext" id="question-subtext">
+          Tap slots to count eggs or type the answer below!
+        </div>
+      </div>
+
+      <!-- Interactive Ten-Frame Grids -->
+      <div class="tenframes-container" id="tenframes-container">
+        <!-- Rendered by TenFrameComponent -->
+      </div>
+
+      <!-- Interactive Digit Pad & Controls -->
+      <div class="answer-controls">
+        <div class="number-keypad">
+          <button class="key-btn" data-val="1">1</button>
+          <button class="key-btn" data-val="2">2</button>
+          <button class="key-btn" data-val="3">3</button>
+          <button class="key-btn" data-val="4">4</button>
+          <button class="key-btn" data-val="5">5</button>
+          <button class="key-btn" data-val="6">6</button>
+          <button class="key-btn" data-val="7">7</button>
+          <button class="key-btn" data-val="8">8</button>
+          <button class="key-btn" data-val="9">9</button>
+          <button class="key-btn" data-val="0">0</button>
+        </div>
+
+        <div class="action-row">
+          <button class="btn-action btn-clear" id="btn-clear">Clear</button>
+          <button class="btn-action btn-submit" id="btn-submit">
+            <span>Check Answer</span> 🩺
+          </button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Patient Saved Celebration Modal -->
+  <div class="modal-overlay" id="victory-modal">
+    <div class="modal-card">
+      <div class="modal-title">Dino Rescued! 🎉</div>
+      <div class="modal-badge-icon" id="modal-dino-icon">🦖</div>
+      <div class="modal-text" id="modal-text">
+        Awesome job! You completely cleaned and healed Rexy!
+      </div>
+      <button class="btn-action btn-submit" id="btn-next-patient" style="width: 100%;">
+        Treat Next Patient 🩺
+      </button>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+     APPLICATION JAVASCRIPT LOGIC & MODULES
+     ========================================================================== -->
+  <script>
+    /* ==========================================================================
+       1. SYNTHESIZED WEB AUDIO & SPEECH ENGINE (Zero external sound dependencies)
+       ========================================================================== */
+    class AudioEngine {
+      constructor() {
+        this.ctx = null;
+        this.enabled = true;
+        // Ascending musical scale frequencies for tap-to-count feedback (C4 to E5)
+        this.scale = [261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88, 523.25, 587.33, 659.25, 698.46, 783.99, 880.00, 987.77, 1046.50];
+      }
+
+      initContext() {
+        if (!this.ctx) {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          this.ctx = new AudioCtx();
+        }
+        if (this.ctx && this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      }
+
+      // Tap-to-count pitch sound generator
+      playTapCount(index) {
+        if (!this.enabled) return;
+        this.initContext();
+        
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        
+        const freq = this.scale[index % this.scale.length];
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+        
+        gain.gain.setValueAtTime(0.3, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.25);
+        
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.25);
+      }
+
+      // Bubble washing sound effect when cleaning dirt
+      playBubbleWash() {
+        if (!this.enabled) return;
+        this.initContext();
+
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(400, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(800, this.ctx.currentTime + 0.15);
+
+        gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.15);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.15);
+      }
+
+      // Major Chord Victory Fanfare
+      playFanfare() {
+        if (!this.enabled) return;
+        this.initContext();
+
+        const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+        notes.forEach((freq, idx) => {
+          setTimeout(() => {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+
+            gain.gain.setValueAtTime(0.25, this.ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.5);
+
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+
+            osc.start();
+            osc.stop(this.ctx.currentTime + 0.5);
+          }, idx * 120);
+        });
+      }
+
+      // Play joyful Dino Happy Roar sound synthesizer
+      playDinoRoar() {
+        if (!this.enabled) return;
+        this.initContext();
+
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(140, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(260, this.ctx.currentTime + 0.3);
+        osc.frequency.exponentialRampToValueAtTime(100, this.ctx.currentTime + 0.7);
+
+        gain.gain.setValueAtTime(0.35, this.ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.7);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.7);
+      }
+
+      // Optional Speech Synthesis to speak problem text out loud for kids
+      speakText(text) {
+        if (!this.enabled || !('speechSynthesis' in window)) return;
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.pitch = 1.2;
+        utterance.rate = 0.95;
+        window.speechSynthesis.speak(utterance);
+      }
+    }
+
+    const audio = new AudioEngine();
+
+
+    /* ==========================================================================
+       2. EXTENSIBLE THEME REGISTRY (Supports Dino, Space, Ocean domains)
+       ========================================================================== */
+    const ThemeRegistry = {
+      dino: {
+        id: 'dino',
+        name: 'Dino Rescue Clinic',
+        brandIcon: '🦕',
+        tokenIcon: '🥚',
+        patients: [
+          { id: 'rexy', name: 'Rexy', species: 'Baby T-Rex', icon: '🦖', color: '#52b788', tool: '🧼 Sponge Wash' },
+          { id: 'trike', name: 'Trike', species: 'Triceratops', icon: '🦕', color: '#ffb703', tool: '🩺 Bandage Treat' },
+          { id: 'steggy', name: 'Steggy', species: 'Stegosaurus', icon: '🐊', color: '#9d4edd', tool: '🪮 Spine Brush' },
+          { id: 'ptery', name: 'Ptery', species: 'Pterodactyl', icon: '🦅', color: '#48cae4', tool: '🩹 Wing Heal' }
+        ]
+      },
+      space: {
+        id: 'space',
+        name: 'Space Rescue Clinic',
+        brandIcon: '🚀',
+        tokenIcon: '⭐',
+        patients: [
+          { id: 'zog', name: 'Zog', species: 'Cosmic Alien', icon: '👾', color: '#9d4edd', tool: '✨ Dust Off' },
+          { id: 'orion', name: 'Orion', species: 'Space Pup', icon: '🐶', color: '#48cae4', tool: '🛰️ Battery Charge' }
+        ]
+      },
+      ocean: {
+        id: 'ocean',
+        name: 'Ocean Sanctuary',
+        brandIcon: '🐢',
+        tokenIcon: '🐚',
+        patients: [
+          { id: 'shelly', name: 'Shelly', species: 'Sea Turtle', icon: '🐢', color: '#2a9d8f', tool: '🫧 Algae Wipe' },
+          { id: 'finny', name: 'Finny', species: 'Playful Dolphin', icon: '🐬', color: '#0077b6', tool: '🩹 Shell Patch' }
+        ]
+      }
+    };
+
+
+    /* ==========================================================================
+       3. ADAPTIVE DIFFICULTY ENGINE (Monitors speed/accuracy & adjusts)
+       ========================================================================== */
+    class AdaptiveEngine {
+      constructor() {
+        this.level = 'age6'; // Default level
+        this.streak = 0;
+        this.history = [];
+      }
+
+      setLevel(level) {
+        this.level = level;
+        this.streak = 0;
+      }
+
+      generateQuestion() {
+        let num1 = 10;
+        let num2 = Math.floor(Math.random() * 8) + 1; // 1 to 8
+
+        if (this.level === 'age4') {
+          // Junior counting 1 to 10
+          num1 = 0;
+          num2 = Math.floor(Math.random() * 9) + 1; // 1 to 9
+          const total = num2;
+          return {
+            type: 'count',
+            num1: 0,
+            num2: total,
+            targetAnswer: total,
+            promptText: `Count ${total} ${activeTheme.tokenIcon} tokens on the Ten-Frame!`,
+            speechText: `Count ${total} tokens on the ten frame`
+          };
+        } else if (this.level === 'age6') {
+          // Medic: 10 + N Addition
+          const total = num1 + num2;
+          return {
+            type: 'addition10',
+            num1: 10,
+            num2: num2,
+            targetAnswer: total,
+            promptText: `10 + ${num2} = ?`,
+            speechText: `What is 10 plus ${num2}?`
+          };
+        } else {
+          // Chief Vet: Double Ten-Frame & missing addends
+          const isMissing = Math.random() > 0.5;
+          const total = 10 + num2;
+          if (isMissing) {
+            return {
+              type: 'missingAddend',
+              num1: 10,
+              num2: num2,
+              targetAnswer: num2,
+              promptText: `10 + ? = ${total}`,
+              speechText: `10 plus what equals ${total}?`
+            };
+          } else {
+            return {
+              type: 'addition10',
+              num1: 10,
+              num2: num2,
+              targetAnswer: total,
+              promptText: `10 + ${num2} = ?`,
+              speechText: `What is 10 plus ${num2}?`
+            };
+          }
+        }
+      }
+
+      recordResult(isCorrect) {
+        if (isCorrect) {
+          this.streak++;
+        } else {
+          this.streak = 0;
+        }
+        this.history.push({ isCorrect, timestamp: Date.now() });
+      }
+    }
+
+    const adaptiveEngine = new AdaptiveEngine();
+
+
+    /* ==========================================================================
+       4. DINO PATIENT STAGE & CLEANING LOOP
+       ========================================================================== */
+    class DinoStageComponent {
+      constructor(containerId, dirtOverlayId) {
+        this.container = document.getElementById(containerId);
+        this.dirtOverlay = document.getElementById(dirtOverlayId);
+        this.healthFill = document.getElementById('health-fill');
+        this.healthLabel = document.getElementById('health-label');
+        this.patientName = document.getElementById('patient-name');
+        this.patientSpecies = document.getElementById('patient-species');
+        this.patientIcon = document.getElementById('patient-icon');
+        
+        this.currentPatientIndex = 0;
+        this.health = 20; // 0 to 100
+        this.totalDirtSpots = 5;
+      }
+
+      loadPatient(patient) {
+        this.currentPatient = patient;
+        this.health = 25; // Reset health for new patient
+        
+        this.patientName.innerText = patient.name;
+        this.patientSpecies.innerText = patient.species;
+        this.patientIcon.innerText = patient.icon;
+        
+        this.renderSVG();
+        this.renderDirtSpots();
+        this.updateHealthBar();
+      }
+
+      renderSVG() {
+        const color = this.currentPatient.color;
+        // Dynamic SVG Dinosaur representation with SVG shapes
+        this.container.innerHTML = `
+          <svg viewBox="0 0 200 200" width="100%" height="100%">
+            <!-- Tail -->
+            <path d="M 40 130 Q 10 120 20 90 Q 40 100 60 120 Z" fill="${color}" />
+            <!-- Body -->
+            <ellipse cx="100" cy="130" rx="50" ry="40" fill="${color}" />
+            <ellipse cx="100" cy="135" rx="35" ry="25" fill="rgba(255,255,255,0.25)" />
+            <!-- Legs -->
+            <rect x="70" y="155" width="18" height="30" rx="8" fill="${color}" />
+            <rect x="110" y="155" width="18" height="30" rx="8" fill="${color}" />
+            <!-- Head & Neck -->
+            <path d="M 120 110 Q 140 80 150 60 Q 175 60 180 85 Q 160 110 130 120 Z" fill="${color}" />
+            <!-- Cute Eye -->
+            <circle cx="158" cy="72" r="7" fill="#ffffff" />
+            <circle cx="160" cy="72" r="3.5" fill="#000000" />
+            <circle cx="162" cy="70" r="1.2" fill="#ffffff" />
+            <!-- Smile -->
+            <path d="M 165 85 Q 155 92 145 86" fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="round" />
+            <!-- Cheerful Blush -->
+            <circle cx="148" cy="82" r="5" fill="#ff4d6d" opacity="0.5" />
+          </svg>
+        `;
+      }
+
+      renderDirtSpots() {
+        this.dirtOverlay.innerHTML = '';
+        const coords = [
+          { top: '30%', left: '35%', size: '28px' },
+          { top: '45%', left: '55%', size: '36px' },
+          { top: '55%', left: '25%', size: '30px' },
+          { top: '65%', left: '48%', size: '40px' },
+          { top: '25%', left: '70%', size: '24px' }
+        ];
+
+        coords.forEach((c, i) => {
+          const spot = document.createElement('div');
+          spot.className = 'dirt-spot';
+          spot.id = `dirt-${i}`;
+          spot.style.top = c.top;
+          spot.style.left = c.left;
+          spot.style.width = c.size;
+          spot.style.height = c.size;
+          this.dirtOverlay.appendChild(spot);
+        });
+
+        // Add a bandage spot
+        const bandage = document.createElement('div');
+        bandage.className = 'bandage-spot';
+        bandage.id = 'bandage-0';
+        bandage.style.top = '40%';
+        bandage.style.left = '42%';
+        this.dirtOverlay.appendChild(bandage);
+      }
+
+      applyHealStep() {
+        audio.playBubbleWash();
+        this.health = Math.min(100, this.health + 25);
+        this.updateHealthBar();
+
+        // Fade out dirt spots as health increases
+        const remainingSpots = this.dirtOverlay.querySelectorAll('.dirt-spot:not([style*="opacity: 0"])');
+        if (remainingSpots.length > 0) {
+          const spotToClean = remainingSpots[0];
+          spotToClean.style.opacity = '0';
+          spotToClean.style.transform = 'scale(1.5)';
+          
+          // Add temporary sparkle effect
+          const sparkle = document.createElement('div');
+          sparkle.className = 'cleaned-sparkle';
+          sparkle.innerText = '✨';
+          sparkle.style.top = spotToClean.style.top;
+          sparkle.style.left = spotToClean.style.left;
+          this.dirtOverlay.appendChild(sparkle);
+          setTimeout(() => sparkle.remove(), 600);
+        } else {
+          // Remove bandage on final step
+          const bandage = document.getElementById('bandage-0');
+          if (bandage) {
+            bandage.style.opacity = '0';
+            bandage.style.transform = 'scale(1.5) rotate(20deg)';
+          }
+        }
+
+        return this.health >= 100;
+      }
+
+      updateHealthBar() {
+        this.healthFill.style.width = `${this.health}%`;
+        this.healthLabel.innerText = `Treatment Progress ${this.health}%`;
+      }
+
+      triggerVictoryAnimation() {
+        const container = document.getElementById('dino-avatar-container');
+        container.classList.add('happy');
+        audio.playDinoRoar();
+        audio.playFanfare();
+        triggerConfetti();
+      }
+
+      resetAnimation() {
+        const container = document.getElementById('dino-avatar-container');
+        container.classList.remove('happy');
+      }
+    }
+
+
+    /* ==========================================================================
+       5. INTERACTIVE TEN-FRAME WORKSPACE COMPONENT
+       ========================================================================== */
+    class TenFrameComponent {
+      constructor(containerId) {
+        this.container = document.getElementById(containerId);
+        this.currentCount = 0;
+        this.targetCount = 12;
+        this.baseTen = 10;
+        this.extraAddend = 2;
+      }
+
+      setupQuestion(question) {
+        this.baseTen = question.num1;
+        this.extraAddend = question.num2;
+        this.targetCount = question.targetAnswer;
+        this.currentCount = 0;
+        this.render();
+      }
+
+      render() {
+        this.container.innerHTML = '';
+
+        // Grid 1: Always the primary 10-frame
+        const frame1 = this.createFrameElement('Ten-Frame 1 (Base 10)', 0, 10, true);
+        this.container.appendChild(frame1);
+
+        // Grid 2: Second 10-frame if total > 10 or in double-frame mode
+        if (this.targetCount > 10 || adaptiveEngine.level === 'age8') {
+          const frame2 = this.createFrameElement('Ten-Frame 2 (Addend)', 10, 20, false);
+          this.container.appendChild(frame2);
+        }
+      }
+
+      createFrameElement(label, startIndex, endIndex, isBaseFrame) {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'tenframe-wrapper';
+
+        const labelEl = document.createElement('div');
+        labelEl.className = 'tenframe-label';
+        labelEl.innerText = label;
+        wrapper.appendChild(labelEl);
+
+        const grid = document.createElement('div');
+        grid.className = 'tenframe-grid';
+
+        for (let i = startIndex; i < endIndex; i++) {
+          const slot = document.createElement('div');
+          slot.className = 'tenframe-slot';
+          slot.dataset.index = i;
+
+          // Auto-fill logic for 10 + N visualization
+          const shouldBeFilled = (isBaseFrame && i < this.baseTen) || (i < this.currentCount);
+          if (shouldBeFilled) {
+            slot.classList.add('filled');
+            const token = document.createElement('div');
+            token.className = `counter-token ${i < 10 ? 'base-ten' : 'extra-addend'}`;
+            token.innerHTML = `${activeTheme.tokenIcon}<span class="count-number">${i + 1}</span>`;
+            slot.appendChild(token);
+          }
+
+          slot.addEventListener('click', () => this.handleSlotClick(i));
+          grid.appendChild(slot);
+        }
+
+        wrapper.appendChild(grid);
+        return wrapper;
+      }
+
+      handleSlotClick(index) {
+        if (index < this.currentCount) {
+          // Tap to remove token
+          this.currentCount = index;
+        } else {
+          // Tap to add token
+          this.currentCount = index + 1;
+        }
+        
+        audio.playTapCount(index);
+        this.render();
+      }
+
+      populateAuto() {
+        // Pre-fill full 10-frame for 10+N questions
+        if (this.baseTen === 10) {
+          this.currentCount = 10;
+          this.render();
+        }
+      }
+    }
+
+
+    /* ==========================================================================
+       6. GAME CONTROLLER & STATE MANAGEMENT
+       ========================================================================== */
+    let activeTheme = ThemeRegistry.dino;
+    let rescueCount = 0;
+    let userTypedAnswer = '';
+    let currentQuestion = null;
+
+    const dinoStage = new DinoStageComponent('dino-avatar-container', 'dirt-overlay');
+    const tenFrame = new TenFrameComponent('tenframes-container');
+
+    function initGame() {
+      setupEventListeners();
+      loadTheme('dino');
+      nextQuestion();
+    }
+
+    function loadTheme(themeId) {
+      activeTheme = ThemeRegistry[themeId] || ThemeRegistry.dino;
+      document.getElementById('brand-icon').innerText = activeTheme.brandIcon;
+      document.getElementById('theme-selector').value = activeTheme.id;
+      
+      // Load first patient in theme
+      const firstPatient = activeTheme.patients[0];
+      dinoStage.loadPatient(firstPatient);
+      document.getElementById('tool-icon').innerText = firstPatient.tool.split(' ')[0];
+    }
+
+    function nextQuestion() {
+      currentQuestion = adaptiveEngine.generateQuestion();
+      userTypedAnswer = '';
+      
+      // Update UI Prompt
+      const promptEl = document.getElementById('question-prompt');
+      promptEl.innerHTML = `Fill & Solve: <span class="highlight">${currentQuestion.promptText}</span>`;
+      
+      // Setup TenFrame
+      tenFrame.setupQuestion(currentQuestion);
+      tenFrame.populateAuto();
+
+      // Read question out loud if audio enabled
+      audio.speakText(currentQuestion.speechText);
+    }
+
+    function checkAnswer() {
+      // Allow checking either by filled ten-frame tokens OR typed keypad number
+      const answerVal = userTypedAnswer !== '' ? parseInt(userTypedAnswer, 10) : tenFrame.currentCount;
+      const isCorrect = (answerVal === currentQuestion.targetAnswer);
+
+      adaptiveEngine.recordResult(isCorrect);
+
+      if (isCorrect) {
+        const isFullyHealed = dinoStage.applyHealStep();
+
+        if (isFullyHealed) {
+          rescueCount++;
+          document.getElementById('rescue-count').innerText = `${rescueCount} Rescued`;
+          dinoStage.triggerVictoryAnimation();
+          showVictoryModal();
+        } else {
+          // Play positive chime and move to next math question for current patient
+          audio.playTapCount(10);
+          setTimeout(() => nextQuestion(), 800);
+        }
+      } else {
+        // Incorrect answer feedback
+        audio.playBubbleWash();
+        const promptEl = document.getElementById('question-prompt');
+        promptEl.innerHTML = `Try again! <span class="highlight">${currentQuestion.promptText}</span>`;
+      }
+    }
+
+    function showVictoryModal() {
+      const modal = document.getElementById('victory-modal');
+      document.getElementById('modal-dino-icon').innerText = dinoStage.currentPatient.icon;
+      document.getElementById('modal-text').innerText = `Hooray! You fully cleaned and treated ${dinoStage.currentPatient.name} the ${dinoStage.currentPatient.species}!`;
+      modal.classList.add('active');
+    }
+
+    function hideVictoryModal() {
+      const modal = document.getElementById('victory-modal');
+      modal.classList.remove('active');
+      dinoStage.resetAnimation();
+      
+      // Rotate to next patient in active theme
+      const patients = activeTheme.patients;
+      const nextIdx = (activeTheme.patients.indexOf(dinoStage.currentPatient) + 1) % patients.length;
+      const nextPatient = patients[nextIdx];
+      
+      dinoStage.loadPatient(nextPatient);
+      document.getElementById('tool-icon').innerText = nextPatient.tool.split(' ')[0];
+      
+      nextQuestion();
+    }
+
+    /* Event Listeners Setup */
+    function setupEventListeners() {
+      // Theme Switcher
+      document.getElementById('theme-selector').addEventListener('change', (e) => {
+        loadTheme(e.target.value);
+        nextQuestion();
+      });
+
+      // Age / Difficulty Selector
+      document.getElementById('age-selector').addEventListener('change', (e) => {
+        adaptiveEngine.setLevel(e.target.value);
+        nextQuestion();
+      });
+
+      // Mute / Unmute Toggle
+      document.getElementById('sound-toggle').addEventListener('click', () => {
+        audio.enabled = !audio.enabled;
+        document.getElementById('sound-toggle').innerText = audio.enabled ? '🔊' : '🔇';
+      });
+
+      // Keypad input listener
+      document.querySelectorAll('.key-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const val = e.target.dataset.val;
+          audio.playTapCount(parseInt(val, 10));
+          userTypedAnswer += val;
+          document.getElementById('question-subtext').innerText = `Typed Answer: ${userTypedAnswer}`;
+        });
+      });
+
+      // Clear button
+      document.getElementById('btn-clear').addEventListener('click', () => {
+        userTypedAnswer = '';
+        tenFrame.currentCount = 10;
+        tenFrame.render();
+        document.getElementById('question-subtext').innerText = `Tap slots to count eggs or type the answer below!`;
+      });
+
+      // Submit check button
+      document.getElementById('btn-submit').addEventListener('click', checkAnswer);
+
+      // Modal next patient button
+      document.getElementById('btn-next-patient').addEventListener('click', hideVictoryModal);
+    }
+
+    /* ==========================================================================
+       7. SIMPLE CANVAS CONFETTI PARTICLE SYSTEM
+       ========================================================================== */
+    function triggerConfetti() {
+      const canvas = document.getElementById('confetti-canvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      const particles = [];
+      const colors = ['#ffb703', '#fb8500', '#2a9d8f', '#52b788', '#9d4edd', '#48cae4', '#ff4d6d'];
+
+      for (let i = 0; i < 90; i++) {
+        particles.push({
+          x: canvas.width / 2,
+          y: canvas.height / 2,
+          vx: (Math.random() - 0.5) * 14,
+          vy: (Math.random() - 0.7) * 16,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          size: Math.random() * 8 + 5,
+          rotation: Math.random() * 360,
+          vRot: (Math.random() - 0.5) * 10
+        });
+      }
+
+      let frame = 0;
+      function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach(p => {
+          p.x += p.vx;
+          p.y += p.vy;
+          p.vy += 0.35; // Gravity
+          p.rotation += p.vRot;
+
+          ctx.save();
+          ctx.translate(p.x, p.y);
+          ctx.rotate((p.rotation * Math.PI) / 180);
+          ctx.fillStyle = p.color;
+          ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+          ctx.restore();
+        });
+
+        frame++;
+        if (frame < 120) {
+          requestAnimationFrame(animate);
+        } else {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+      }
+      animate();
+    }
+
+    // Initialize application on DOM ready
+    window.addEventListener('DOMContentLoaded', initGame);
+  </script>
+</body>
+</html>
