@@ -125,21 +125,15 @@
       box-shadow: 0 2px 8px rgba(0,0,0,0.3);
     }
 
-    .select-pill {
-      background: rgba(255, 255, 255, 0.08);
+    .btn-sound {
+      background: rgba(255, 255, 255, 0.1);
       border: 1px solid var(--card-border);
-      color: var(--text-primary);
+      color: white;
       font-family: var(--font-main);
-      font-size: 0.88rem;
+      font-size: 0.9rem;
       padding: 6px 14px;
       border-radius: 20px;
-      outline: none;
       cursor: pointer;
-    }
-
-    .select-pill option {
-      background: #0f172a;
-      color: white;
     }
 
     .star-badge {
@@ -182,9 +176,7 @@
       box-shadow: var(--card-shadow);
     }
 
-    /* ==========================================================================
-       DINO PATIENT STAGE
-       ========================================================================== */
+    /* Dino Patient Stage */
     .patient-card {
       display: flex;
       flex-direction: column;
@@ -265,9 +257,7 @@
       font-family: var(--font-main);
     }
 
-    /* ==========================================================================
-       WORKSPACE CARD & CLEAR ANSWER DISPLAY
-       ========================================================================== */
+    /* Workspace & Answer Display */
     .workspace-card {
       display: flex;
       flex-direction: column;
@@ -280,6 +270,10 @@
       background: rgba(255, 255, 255, 0.04);
       border-radius: var(--radius-lg);
       border: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
     }
 
     .question-title {
@@ -293,7 +287,25 @@
       color: var(--accent-gold);
     }
 
-    /* Big Clear Answer Display Box */
+    .btn-speaker {
+      background: rgba(255, 183, 3, 0.2);
+      border: 1px solid var(--accent-gold);
+      color: var(--accent-gold);
+      font-size: 1.2rem;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s ease;
+    }
+
+    .btn-speaker:hover {
+      transform: scale(1.1);
+    }
+
     .answer-display-row {
       display: flex;
       justify-content: center;
@@ -321,12 +333,6 @@
       transition: all 0.2s ease;
     }
 
-    .answer-box.active {
-      transform: scale(1.05);
-      border-color: var(--accent-emerald);
-      color: #ffffff;
-    }
-
     .btn-clear {
       background: rgba(255, 255, 255, 0.08);
       border: 1px solid var(--card-border);
@@ -337,7 +343,6 @@
       padding: 12px 16px;
       border-radius: var(--radius-md);
       cursor: pointer;
-      transition: all 0.2s ease;
     }
 
     .btn-clear:hover {
@@ -345,7 +350,7 @@
       color: var(--accent-coral);
     }
 
-    /* Ten-Frame Dual Grid Container ($10 + N) */
+    /* Ten-Frame Dual Grid */
     .tenframe-dual-container {
       display: flex;
       flex-direction: column;
@@ -357,7 +362,6 @@
       border-radius: var(--radius-lg);
       padding: 12px;
       border: 1px solid rgba(255, 255, 255, 0.1);
-      position: relative;
     }
 
     .tenframe-label {
@@ -367,7 +371,6 @@
       color: var(--accent-gold);
       margin-bottom: 6px;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
     }
 
     .tenframe-grid {
@@ -385,7 +388,7 @@
       justify-content: center;
       align-items: center;
       cursor: pointer;
-      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+      transition: all 0.2s ease;
     }
 
     .tenframe-slot:hover {
@@ -467,7 +470,6 @@
 
     .primary-check-btn:hover {
       transform: translateY(-2px);
-      box-shadow: 0 12px 30px rgba(52, 211, 153, 0.4);
     }
 
     /* Word Building Tiles */
@@ -517,13 +519,11 @@
       font-size: 1.7rem;
       font-weight: 700;
       cursor: pointer;
-      transition: all 0.2s ease;
     }
 
     .letter-tile-btn:hover {
       background: var(--accent-gold);
       color: #000;
-      transform: translateY(-2px);
     }
 
     /* Celebration Modal */
@@ -605,11 +605,7 @@
         <button class="segment-btn" id="btn-sub-words">🔤 Words</button>
       </div>
 
-      <select id="age-selector" class="select-pill">
-        <option value="age4">Age 4-5</option>
-        <option value="age6" selected>Age 6</option>
-        <option value="age8">Age 7-8</option>
-      </select>
+      <button class="btn-sound" id="btn-sound-toggle">🔊 Sound On</button>
 
       <div class="star-badge">
         <span>⭐</span>
@@ -644,6 +640,7 @@
     <!-- Interactive Workspace Card -->
     <section class="card workspace-card">
       <div class="question-banner">
+        <button class="btn-speaker" id="btn-read-question" title="Listen to Question">🔊</button>
         <div class="question-title" id="question-title">
           10 + 2 = <span class="highlight">?</span>
         </div>
@@ -693,11 +690,12 @@
   </div>
 
   <script>
-    /* Audio Synthesizer */
+    /* Robust Audio Synthesizer & Speech Engine */
     class AudioEngine {
       constructor() {
         this.ctx = null;
-        this.scale = [261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88, 523.25, 587.33, 659.25, 698.46, 783.99, 880.00];
+        this.enabled = true;
+        this.scale = [261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88, 523.25, 587.33, 659.25, 698.46, 783.99];
       }
 
       initCtx() {
@@ -705,48 +703,61 @@
           const AudioCtx = window.AudioContext || window.webkitAudioContext;
           this.ctx = new AudioCtx();
         }
-        if (this.ctx.state === 'suspended') this.ctx.resume();
+        if (this.ctx && this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
       }
 
       playTap(idx) {
+        if (!this.enabled) return;
         this.initCtx();
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(this.scale[idx % this.scale.length], this.ctx.currentTime);
-        gain.gain.setValueAtTime(0.25, this.ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.2);
-        osc.connect(gain);
-        gain.connect(this.ctx.destination);
-        osc.start();
-        osc.stop(this.ctx.currentTime + 0.2);
+        try {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(this.scale[idx % this.scale.length], this.ctx.currentTime);
+          gain.gain.setValueAtTime(0.35, this.ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.25);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start();
+          osc.stop(this.ctx.currentTime + 0.25);
+        } catch (e) { console.log(e); }
       }
 
       playBubble() {
+        if (!this.enabled) return;
         this.initCtx();
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(350, this.ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(700, this.ctx.currentTime + 0.15);
-        gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
-        gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.15);
-        osc.connect(gain);
-        gain.connect(this.ctx.destination);
-        osc.start();
-        osc.stop(this.ctx.currentTime + 0.15);
+        try {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(350, this.ctx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(700, this.ctx.currentTime + 0.15);
+          gain.gain.setValueAtTime(0.25, this.ctx.currentTime);
+          gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.15);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start();
+          osc.stop(this.ctx.currentTime + 0.15);
+        } catch (e) { console.log(e); }
       }
 
       speak(text) {
-        if (!('speechSynthesis' in window)) return;
+        if (!this.enabled || !('speechSynthesis' in window)) return;
         window.speechSynthesis.cancel();
         const u = new SpeechSynthesisUtterance(text);
         u.pitch = 1.2;
+        u.rate = 0.95;
         window.speechSynthesis.speak(u);
       }
     }
 
     const audio = new AudioEngine();
+
+    // Auto-unlock audio context on first user click anywhere
+    window.addEventListener('click', () => audio.initCtx(), { once: true });
+    window.addEventListener('touchstart', () => audio.initCtx(), { once: true });
 
     /* Patients */
     const patients = [
@@ -765,6 +776,7 @@
     let currentTarget = 12;
     let targetWord = 'DINO';
     let userWord = [];
+    let currentSpeechPrompt = 'What is 10 plus 2?';
 
     function renderDino() {
       const p = patients[currentPatientIdx];
@@ -817,11 +829,9 @@
       } else {
         box.innerText = userWord.length > 0 ? userWord.join('') : '?';
       }
-      box.classList.add('active');
-      setTimeout(() => box.classList.remove('active'), 200);
     }
 
-    /* Workspace Renderer (Dual Ten-Frame for 10 + N) */
+    /* Workspace Renderer */
     function renderWorkspace() {
       const area = document.getElementById('workspace-dynamic');
       const title = document.getElementById('question-title');
@@ -846,6 +856,7 @@
           const slot = document.createElement('div');
           slot.className = 'tenframe-slot filled';
           slot.innerHTML = `<div class="egg-token">🥚</div>`;
+          slot.addEventListener('click', () => audio.playTap(i));
           grid1.appendChild(slot);
         }
         frame1Sec.appendChild(grid1);
@@ -870,7 +881,7 @@
           slot.addEventListener('click', () => {
             const newTotal = 10 + (i + 1);
             typedAnswer = newTotal.toString();
-            audio.playTap(i);
+            audio.playTap(10 + i);
             updateAnswerDisplay();
             renderWorkspace();
           });
@@ -899,13 +910,14 @@
         const bankDiv = document.createElement('div');
         bankDiv.className = 'letter-tiles-bank';
         const letters = (targetWord + 'REST').split('').sort(() => Math.random() - 0.5);
-        letters.forEach(letter => {
+        letters.forEach((letter, idx) => {
           const btn = document.createElement('button');
           btn.className = 'letter-tile-btn';
           btn.innerText = letter;
           btn.addEventListener('click', () => {
             if (userWord.length < targetWord.length) {
               userWord.push(letter);
+              audio.playTap(idx);
               audio.speak(letter.toLowerCase());
               updateAnswerDisplay();
               renderWorkspace();
@@ -924,17 +936,18 @@
         num1 = 10;
         num2 = Math.floor(Math.random() * 8) + 1;
         currentTarget = num1 + num2;
-        audio.speak(`What is 10 plus ${num2}?`);
+        currentSpeechPrompt = `What is 10 plus ${num2}?`;
       } else {
         const words = ['DINO', 'ROAR', 'BONE', 'EGG', 'PARK', 'REXY'];
         targetWord = words[Math.floor(Math.random() * words.length)];
-        audio.speak(`Spell ${targetWord}`);
+        currentSpeechPrompt = `Spell ${targetWord}`;
       }
       updateAnswerDisplay();
       renderWorkspace();
     }
 
     function checkAnswer() {
+      audio.initCtx();
       let correct = false;
       if (activeSubject === 'math') {
         const val = parseInt(typedAnswer, 10);
@@ -948,6 +961,10 @@
         document.getElementById('star-count').innerText = stars;
 
         audio.playBubble();
+        if (activeSubject === 'words') {
+          audio.speak(`${targetWord}! Great job!`);
+        }
+
         patientHealth = Math.min(100, patientHealth + 34);
         document.getElementById('progress-fill').style.width = `${patientHealth}%`;
 
@@ -959,15 +976,16 @@
 
         if (patientHealth >= 100) {
           document.getElementById('dino-avatar').classList.add('happy');
-          audio.speak('Awesome! Patient healed!');
+          audio.speak('Awesome! Rexy is healed!');
           triggerConfetti();
           document.getElementById('modal-victory').classList.add('active');
         } else {
           audio.playTap(9);
-          setTimeout(() => newQuestion(), 700);
+          setTimeout(() => newQuestion(), 800);
         }
       } else {
         audio.playBubble();
+        audio.speak('Try again!');
         document.getElementById('answer-box').style.borderColor = '#fb7185';
         setTimeout(() => document.getElementById('answer-box').style.borderColor = 'var(--accent-gold)', 600);
       }
@@ -975,6 +993,7 @@
 
     /* Event Listeners */
     document.getElementById('btn-sub-math').addEventListener('click', () => {
+      audio.initCtx();
       activeSubject = 'math';
       document.getElementById('btn-sub-math').classList.add('active');
       document.getElementById('btn-sub-words').classList.remove('active');
@@ -982,14 +1001,28 @@
     });
 
     document.getElementById('btn-sub-words').addEventListener('click', () => {
+      audio.initCtx();
       activeSubject = 'words';
       document.getElementById('btn-sub-words').classList.add('active');
       document.getElementById('btn-sub-math').classList.remove('active');
       newQuestion();
     });
 
+    document.getElementById('btn-read-question').addEventListener('click', () => {
+      audio.initCtx();
+      audio.speak(currentSpeechPrompt);
+    });
+
+    document.getElementById('btn-sound-toggle').addEventListener('click', () => {
+      audio.initCtx();
+      audio.enabled = !audio.enabled;
+      document.getElementById('btn-sound-toggle').innerText = audio.enabled ? '🔊 Sound On' : '🔇 Sound Off';
+      if (audio.enabled) audio.playTap(4);
+    });
+
     document.querySelectorAll('.key-button').forEach(b => {
       b.addEventListener('click', (e) => {
+        audio.initCtx();
         const v = e.target.dataset.val;
         audio.playTap(parseInt(v, 10));
         typedAnswer += v;
@@ -999,6 +1032,8 @@
     });
 
     document.getElementById('btn-clear').addEventListener('click', () => {
+      audio.initCtx();
+      audio.playTap(1);
       typedAnswer = '';
       userWord = [];
       updateAnswerDisplay();
@@ -1008,6 +1043,7 @@
     document.getElementById('btn-check').addEventListener('click', checkAnswer);
 
     document.getElementById('btn-next').addEventListener('click', () => {
+      audio.initCtx();
       document.getElementById('modal-victory').classList.remove('active');
       document.getElementById('dino-avatar').classList.remove('happy');
       currentPatientIdx = (currentPatientIdx + 1) % patients.length;
