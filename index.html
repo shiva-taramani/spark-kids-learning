@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dino Rescue Clinic - Visual Math & Ten-Frame Learning</title>
-  <meta name="description" content="An adaptive, extensible visual math game for kids featuring Ten-Frame math, tap-to-count audio, and a Dino Rescue Clinic." />
+  <title>Dino Rescue Clinic - Multi-Subject Learning Platform</title>
+  <meta name="description" content="An adaptive, extensible multi-subject educational game for kids featuring Ten-Frame Math, Phonics & Sight Words, Dino Spelling, and a Dino Rescue Clinic." />
   
   <!-- Google Fonts for Friendly Kid-Centric Typography -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -67,7 +67,7 @@
     /* Header & Navigation Bar */
     header {
       width: 100%;
-      max-width: 1050px;
+      max-width: 1080px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -78,6 +78,8 @@
       border-radius: var(--radius-lg);
       margin-bottom: 16px;
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      flex-wrap: wrap;
+      gap: 12px;
     }
 
     .brand {
@@ -110,7 +112,7 @@
     .controls-group {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       flex-wrap: wrap;
     }
 
@@ -152,14 +154,14 @@
     /* Main Content Layout Grid */
     main {
       width: 100%;
-      max-width: 1050px;
+      max-width: 1080px;
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 20px;
       align-items: start;
     }
 
-    @media (max-width: 850px) {
+    @media (max-width: 880px) {
       main {
         grid-template-columns: 1fr;
       }
@@ -333,9 +335,9 @@
     }
 
     /* ==========================================================================
-       TEN-FRAME VISUAL MATH WORKSPACE
+       TEN-FRAME VISUAL MATH & PHONICS WORKSPACE
        ========================================================================== */
-    .math-workspace {
+    .workspace-card {
       display: flex;
       flex-direction: column;
       gap: 16px;
@@ -467,7 +469,75 @@
       right: 2px;
     }
 
-    /* Number Pad & Submit Controls */
+    /* ==========================================================================
+       PHONICS & SIGHT WORDS WORKSPACE STYLING
+       ========================================================================== */
+    .phonics-word-display {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin: 16px 0;
+    }
+
+    .letter-slot {
+      width: 60px;
+      height: 70px;
+      background: rgba(0, 0, 0, 0.35);
+      border: 3px dashed var(--accent-amber);
+      border-radius: var(--radius-md);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: var(--font-heading);
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: var(--accent-amber);
+      box-shadow: inset 0 2px 6px rgba(0,0,0,0.4);
+      transition: all 0.2s ease;
+    }
+
+    .letter-slot.filled {
+      border-style: solid;
+      background: linear-gradient(135deg, rgba(82, 183, 136, 0.3), rgba(42, 157, 143, 0.5));
+      color: #ffffff;
+      animation: pop-in 0.3s ease;
+    }
+
+    .letter-bank {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .letter-btn {
+      width: 54px;
+      height: 58px;
+      background: linear-gradient(135deg, var(--card-bg), rgba(255,255,255,0.15));
+      border: 2px solid var(--card-border);
+      border-radius: var(--radius-md);
+      font-family: var(--font-heading);
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: white;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+
+    .letter-btn:hover {
+      background: var(--accent-amber);
+      color: #000;
+      transform: translateY(-3px) scale(1.08);
+      border-color: #ffffff;
+    }
+
+    .letter-btn:active {
+      transform: translateY(1px);
+    }
+
+    /* Number Pad & Controls */
     .answer-controls {
       display: flex;
       flex-direction: column;
@@ -499,10 +569,6 @@
       background: var(--accent-amber);
       color: #000;
       transform: translateY(-2px);
-    }
-
-    .key-btn:active {
-      transform: translateY(1px);
     }
 
     .action-row {
@@ -654,23 +720,30 @@
       <div class="brand-icon" id="brand-icon">🦕</div>
       <div class="brand-title">
         <h1>Dino Rescue Clinic</h1>
-        <p>Adaptive Visual Math & Ten-Frame Learning</p>
+        <p>Multi-Subject Platform: Math, Phonics & Spelling</p>
       </div>
     </div>
 
     <div class="controls-group">
-      <!-- Theme Selection (Extensibility Feature) -->
+      <!-- Subject Selection (Multi-Subject Feature) -->
+      <select id="subject-selector" class="select-input" title="Switch Learning Subject">
+        <option value="math">🧮 Ten-Frame Math</option>
+        <option value="phonics">🔤 Phonics & Sight Words</option>
+        <option value="spelling">🦕 Dino Spelling</option>
+      </select>
+
+      <!-- Theme Selection -->
       <select id="theme-selector" class="select-input" title="Switch Theme Domain">
         <option value="dino">🦕 Dino Rescue</option>
         <option value="space">🚀 Space Clinic</option>
         <option value="ocean">🐢 Ocean Sanctuary</option>
       </select>
 
-      <!-- Difficulty / Target Age Selector (Adaptability Feature) -->
+      <!-- Difficulty / Target Age Selector -->
       <select id="age-selector" class="select-input" title="Select Learning Level">
-        <option value="age4">Junior (Age 4-5: Count 1-10)</option>
-        <option value="age6" selected>Medic (Age 6: 10 + N Addition)</option>
-        <option value="age8">Chief Vet (Age 7-8: Double 10-Frame)</option>
+        <option value="age4">Junior (Age 4-5)</option>
+        <option value="age6" selected>Medic (Age 6)</option>
+        <option value="age8">Chief Vet (Age 7-8)</option>
       </select>
 
       <!-- Audio Mute Button -->
@@ -702,7 +775,7 @@
         <span class="health-bar-label" id="health-label">Treatment Progress 25%</span>
       </div>
 
-      <!-- Dinosaur Canvas / SVG Visual Stage -->
+      <!-- Dinosaur Visual Stage -->
       <div class="dino-display-stage" id="dino-stage">
         <div class="dino-svg-container" id="dino-avatar-container">
           <!-- Dynamic SVG Dino Patient Rendered by JS -->
@@ -710,32 +783,32 @@
         <div class="mud-overlay" id="dirt-overlay"></div>
       </div>
 
-      <!-- Clinical Tool Action Prompt Banner -->
+      <!-- Clinical Tool Prompt Banner -->
       <div class="status-banner" id="status-banner">
         <span class="tool-icon" id="tool-icon">🧼</span>
-        <span id="status-text">Solve the math equation to wash off mud and heal Rexy!</span>
+        <span id="status-text">Solve the question to wash off mud and heal Rexy!</span>
       </div>
     </section>
 
-    <!-- RIGHT PANEL: Ten-Frame Visual Math Workspace -->
-    <section class="glass-card math-workspace">
+    <!-- RIGHT PANEL: Multi-Subject Workspace (Math / Phonics / Spelling) -->
+    <section class="glass-card workspace-card">
       <div class="question-card">
         <div class="question-prompt" id="question-prompt">
           Fill the Ten-Frame: <span class="highlight">10 + 2 = ?</span>
         </div>
         <div class="question-subtext" id="question-subtext">
-          Tap slots to count eggs or type the answer below!
+          Tap slots or letter tiles to complete the answer!
         </div>
       </div>
 
-      <!-- Interactive Ten-Frame Grids -->
-      <div class="tenframes-container" id="tenframes-container">
-        <!-- Rendered by TenFrameComponent -->
+      <!-- Dynamic Workspace Area (Ten-Frame OR Phonics Display) -->
+      <div id="dynamic-workspace">
+        <!-- Rendered dynamically by active subject component -->
       </div>
 
-      <!-- Interactive Digit Pad & Controls -->
-      <div class="answer-controls">
-        <div class="number-keypad">
+      <!-- Interactive Digit Keypad / Phonics Letter Bank & Actions -->
+      <div class="answer-controls" id="answer-controls">
+        <div class="number-keypad" id="number-keypad">
           <button class="key-btn" data-val="1">1</button>
           <button class="key-btn" data-val="2">2</button>
           <button class="key-btn" data-val="3">3</button>
@@ -777,13 +850,12 @@
      ========================================================================== -->
   <script>
     /* ==========================================================================
-       1. SYNTHESIZED WEB AUDIO & SPEECH ENGINE (Zero external sound dependencies)
+       1. SYNTHESIZED WEB AUDIO & SPEECH ENGINE
        ========================================================================== */
     class AudioEngine {
       constructor() {
         this.ctx = null;
         this.enabled = true;
-        // Ascending musical scale frequencies for tap-to-count feedback (C4 to E5)
         this.scale = [261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88, 523.25, 587.33, 659.25, 698.46, 783.99, 880.00, 987.77, 1046.50];
       }
 
@@ -797,7 +869,6 @@
         }
       }
 
-      // Tap-to-count pitch sound generator
       playTapCount(index) {
         if (!this.enabled) return;
         this.initContext();
@@ -819,7 +890,6 @@
         osc.stop(this.ctx.currentTime + 0.25);
       }
 
-      // Bubble washing sound effect when cleaning dirt
       playBubbleWash() {
         if (!this.enabled) return;
         this.initContext();
@@ -841,12 +911,11 @@
         osc.stop(this.ctx.currentTime + 0.15);
       }
 
-      // Major Chord Victory Fanfare
       playFanfare() {
         if (!this.enabled) return;
         this.initContext();
 
-        const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+        const notes = [523.25, 659.25, 783.99, 1046.50];
         notes.forEach((freq, idx) => {
           setTimeout(() => {
             const osc = this.ctx.createOscillator();
@@ -867,7 +936,6 @@
         });
       }
 
-      // Play joyful Dino Happy Roar sound synthesizer
       playDinoRoar() {
         if (!this.enabled) return;
         this.initContext();
@@ -890,7 +958,6 @@
         osc.stop(this.ctx.currentTime + 0.7);
       }
 
-      // Optional Speech Synthesis to speak problem text out loud for kids
       speakText(text) {
         if (!this.enabled || !('speechSynthesis' in window)) return;
         window.speechSynthesis.cancel();
@@ -905,7 +972,7 @@
 
 
     /* ==========================================================================
-       2. EXTENSIBLE THEME REGISTRY (Supports Dino, Space, Ocean domains)
+       2. EXTENSIBLE THEME REGISTRY
        ========================================================================== */
     const ThemeRegistry = {
       dino: {
@@ -944,13 +1011,13 @@
 
 
     /* ==========================================================================
-       3. ADAPTIVE DIFFICULTY ENGINE (Monitors speed/accuracy & adjusts)
+       3. ADAPTIVE DIFFICULTY & MULTI-SUBJECT ENGINE
        ========================================================================== */
     class AdaptiveEngine {
       constructor() {
-        this.level = 'age6'; // Default level
+        this.level = 'age6';
+        this.subject = 'math';
         this.streak = 0;
-        this.history = [];
       }
 
       setLevel(level) {
@@ -958,16 +1025,29 @@
         this.streak = 0;
       }
 
+      setSubject(subject) {
+        this.subject = subject;
+        this.streak = 0;
+      }
+
       generateQuestion() {
+        if (this.subject === 'math') {
+          return this.generateMathQuestion();
+        } else if (this.subject === 'phonics') {
+          return this.generatePhonicsQuestion();
+        } else {
+          return this.generateSpellingQuestion();
+        }
+      }
+
+      generateMathQuestion() {
         let num1 = 10;
-        let num2 = Math.floor(Math.random() * 8) + 1; // 1 to 8
+        let num2 = Math.floor(Math.random() * 8) + 1;
 
         if (this.level === 'age4') {
-          // Junior counting 1 to 10
-          num1 = 0;
-          num2 = Math.floor(Math.random() * 9) + 1; // 1 to 9
-          const total = num2;
+          const total = Math.floor(Math.random() * 9) + 1;
           return {
+            domain: 'math',
             type: 'count',
             num1: 0,
             num2: total,
@@ -976,9 +1056,9 @@
             speechText: `Count ${total} tokens on the ten frame`
           };
         } else if (this.level === 'age6') {
-          // Medic: 10 + N Addition
           const total = num1 + num2;
           return {
+            domain: 'math',
             type: 'addition10',
             num1: 10,
             num2: num2,
@@ -987,38 +1067,53 @@
             speechText: `What is 10 plus ${num2}?`
           };
         } else {
-          // Chief Vet: Double Ten-Frame & missing addends
           const isMissing = Math.random() > 0.5;
           const total = 10 + num2;
-          if (isMissing) {
-            return {
-              type: 'missingAddend',
-              num1: 10,
-              num2: num2,
-              targetAnswer: num2,
-              promptText: `10 + ? = ${total}`,
-              speechText: `10 plus what equals ${total}?`
-            };
-          } else {
-            return {
-              type: 'addition10',
-              num1: 10,
-              num2: num2,
-              targetAnswer: total,
-              promptText: `10 + ${num2} = ?`,
-              speechText: `What is 10 plus ${num2}?`
-            };
-          }
+          return {
+            domain: 'math',
+            type: isMissing ? 'missingAddend' : 'addition10',
+            num1: 10,
+            num2: num2,
+            targetAnswer: isMissing ? num2 : total,
+            promptText: isMissing ? `10 + ? = ${total}` : `10 + ${num2} = ?`,
+            speechText: isMissing ? `10 plus what equals ${total}?` : `What is 10 plus ${num2}?`
+          };
         }
       }
 
+      generatePhonicsQuestion() {
+        const wordPools = {
+          age4: ['CAT', 'DOG', 'SUN', 'EGG', 'RED', 'BIG', 'HAT'],
+          age6: ['DINO', 'BONE', 'ROAR', 'CLAW', 'PARK', 'NEST'],
+          age8: ['FOSSIL', 'JUNGLE', 'TRACKS', 'REPTILE', 'HUNTER']
+        };
+
+        const list = wordPools[this.level] || wordPools.age6;
+        const targetWord = list[Math.floor(Math.random() * list.length)];
+
+        return {
+          domain: 'phonics',
+          targetAnswer: targetWord,
+          promptText: `Spell the word: <span class="highlight">${targetWord}</span>`,
+          speechText: `Spell the word ${targetWord}`
+        };
+      }
+
+      generateSpellingQuestion() {
+        const dinoWords = ['REX', 'TRIKE', 'STEGGO', 'EGG', 'FOSSIL', 'BONE'];
+        const targetWord = dinoWords[Math.floor(Math.random() * dinoWords.length)];
+
+        return {
+          domain: 'spelling',
+          targetAnswer: targetWord,
+          promptText: `Dino Vocabulary: <span class="highlight">${targetWord}</span>`,
+          speechText: `Dinosaur spelling word: ${targetWord}`
+        };
+      }
+
       recordResult(isCorrect) {
-        if (isCorrect) {
-          this.streak++;
-        } else {
-          this.streak = 0;
-        }
-        this.history.push({ isCorrect, timestamp: Date.now() });
+        if (isCorrect) this.streak++;
+        else this.streak = 0;
       }
     }
 
@@ -1026,7 +1121,7 @@
 
 
     /* ==========================================================================
-       4. DINO PATIENT STAGE & CLEANING LOOP
+       4. DINO PATIENT STAGE
        ========================================================================== */
     class DinoStageComponent {
       constructor(containerId, dirtOverlayId) {
@@ -1038,14 +1133,12 @@
         this.patientSpecies = document.getElementById('patient-species');
         this.patientIcon = document.getElementById('patient-icon');
         
-        this.currentPatientIndex = 0;
-        this.health = 20; // 0 to 100
-        this.totalDirtSpots = 5;
+        this.health = 25;
       }
 
       loadPatient(patient) {
         this.currentPatient = patient;
-        this.health = 25; // Reset health for new patient
+        this.health = 25;
         
         this.patientName.innerText = patient.name;
         this.patientSpecies.innerText = patient.species;
@@ -1058,26 +1151,18 @@
 
       renderSVG() {
         const color = this.currentPatient.color;
-        // Dynamic SVG Dinosaur representation with SVG shapes
         this.container.innerHTML = `
           <svg viewBox="0 0 200 200" width="100%" height="100%">
-            <!-- Tail -->
             <path d="M 40 130 Q 10 120 20 90 Q 40 100 60 120 Z" fill="${color}" />
-            <!-- Body -->
             <ellipse cx="100" cy="130" rx="50" ry="40" fill="${color}" />
             <ellipse cx="100" cy="135" rx="35" ry="25" fill="rgba(255,255,255,0.25)" />
-            <!-- Legs -->
             <rect x="70" y="155" width="18" height="30" rx="8" fill="${color}" />
             <rect x="110" y="155" width="18" height="30" rx="8" fill="${color}" />
-            <!-- Head & Neck -->
             <path d="M 120 110 Q 140 80 150 60 Q 175 60 180 85 Q 160 110 130 120 Z" fill="${color}" />
-            <!-- Cute Eye -->
             <circle cx="158" cy="72" r="7" fill="#ffffff" />
             <circle cx="160" cy="72" r="3.5" fill="#000000" />
             <circle cx="162" cy="70" r="1.2" fill="#ffffff" />
-            <!-- Smile -->
             <path d="M 165 85 Q 155 92 145 86" fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="round" />
-            <!-- Cheerful Blush -->
             <circle cx="148" cy="82" r="5" fill="#ff4d6d" opacity="0.5" />
           </svg>
         `;
@@ -1104,7 +1189,6 @@
           this.dirtOverlay.appendChild(spot);
         });
 
-        // Add a bandage spot
         const bandage = document.createElement('div');
         bandage.className = 'bandage-spot';
         bandage.id = 'bandage-0';
@@ -1118,14 +1202,12 @@
         this.health = Math.min(100, this.health + 25);
         this.updateHealthBar();
 
-        // Fade out dirt spots as health increases
         const remainingSpots = this.dirtOverlay.querySelectorAll('.dirt-spot:not([style*="opacity: 0"])');
         if (remainingSpots.length > 0) {
           const spotToClean = remainingSpots[0];
           spotToClean.style.opacity = '0';
           spotToClean.style.transform = 'scale(1.5)';
           
-          // Add temporary sparkle effect
           const sparkle = document.createElement('div');
           sparkle.className = 'cleaned-sparkle';
           sparkle.innerText = '✨';
@@ -1134,7 +1216,6 @@
           this.dirtOverlay.appendChild(sparkle);
           setTimeout(() => sparkle.remove(), 600);
         } else {
-          // Remove bandage on final step
           const bandage = document.getElementById('bandage-0');
           if (bandage) {
             bandage.style.opacity = '0';
@@ -1166,20 +1247,18 @@
 
 
     /* ==========================================================================
-       5. INTERACTIVE TEN-FRAME WORKSPACE COMPONENT
+       5. WORKSPACE COMPONENTS (MATH & PHONICS)
        ========================================================================== */
     class TenFrameComponent {
-      constructor(containerId) {
-        this.container = document.getElementById(containerId);
+      constructor(container) {
+        this.container = container;
         this.currentCount = 0;
         this.targetCount = 12;
         this.baseTen = 10;
-        this.extraAddend = 2;
       }
 
       setupQuestion(question) {
         this.baseTen = question.num1;
-        this.extraAddend = question.num2;
         this.targetCount = question.targetAnswer;
         this.currentCount = 0;
         this.render();
@@ -1187,16 +1266,18 @@
 
       render() {
         this.container.innerHTML = '';
+        const tenframeContainer = document.createElement('div');
+        tenframeContainer.className = 'tenframes-container';
 
-        // Grid 1: Always the primary 10-frame
         const frame1 = this.createFrameElement('Ten-Frame 1 (Base 10)', 0, 10, true);
-        this.container.appendChild(frame1);
+        tenframeContainer.appendChild(frame1);
 
-        // Grid 2: Second 10-frame if total > 10 or in double-frame mode
         if (this.targetCount > 10 || adaptiveEngine.level === 'age8') {
           const frame2 = this.createFrameElement('Ten-Frame 2 (Addend)', 10, 20, false);
-          this.container.appendChild(frame2);
+          tenframeContainer.appendChild(frame2);
         }
+
+        this.container.appendChild(tenframeContainer);
       }
 
       createFrameElement(label, startIndex, endIndex, isBaseFrame) {
@@ -1216,7 +1297,6 @@
           slot.className = 'tenframe-slot';
           slot.dataset.index = i;
 
-          // Auto-fill logic for 10 + N visualization
           const shouldBeFilled = (isBaseFrame && i < this.baseTen) || (i < this.currentCount);
           if (shouldBeFilled) {
             slot.classList.add('filled');
@@ -1235,24 +1315,81 @@
       }
 
       handleSlotClick(index) {
-        if (index < this.currentCount) {
-          // Tap to remove token
-          this.currentCount = index;
-        } else {
-          // Tap to add token
-          this.currentCount = index + 1;
-        }
-        
+        this.currentCount = (index < this.currentCount) ? index : index + 1;
         audio.playTapCount(index);
         this.render();
       }
 
       populateAuto() {
-        // Pre-fill full 10-frame for 10+N questions
         if (this.baseTen === 10) {
           this.currentCount = 10;
           this.render();
         }
+      }
+    }
+
+    class PhonicsComponent {
+      constructor(container) {
+        this.container = container;
+        this.targetWord = 'DINO';
+        this.userLetters = [];
+      }
+
+      setupQuestion(question) {
+        this.targetWord = question.targetAnswer.toUpperCase();
+        this.userLetters = [];
+        this.render();
+      }
+
+      render() {
+        this.container.innerHTML = '';
+
+        // Display Word Slots
+        const slotsContainer = document.createElement('div');
+        slotsContainer.className = 'phonics-word-display';
+
+        for (let i = 0; i < this.targetWord.length; i++) {
+          const slot = document.createElement('div');
+          slot.className = `letter-slot ${this.userLetters[i] ? 'filled' : ''}`;
+          slot.innerText = this.userLetters[i] || '_';
+          slotsContainer.appendChild(slot);
+        }
+        this.container.appendChild(slotsContainer);
+
+        // Letter Bank Buttons
+        const bankContainer = document.createElement('div');
+        bankContainer.className = 'letter-bank';
+
+        // Shuffle target letters with extra random distractor letters
+        const pool = (this.targetWord + 'AEIOURST').split('').slice(0, Math.max(8, this.targetWord.length + 3));
+        pool.sort(() => Math.random() - 0.5);
+
+        pool.forEach(letter => {
+          const btn = document.createElement('button');
+          btn.className = 'letter-btn';
+          btn.innerText = letter;
+          btn.addEventListener('click', () => this.handleLetterClick(letter));
+          bankContainer.appendChild(btn);
+        });
+
+        this.container.appendChild(bankContainer);
+      }
+
+      handleLetterClick(letter) {
+        if (this.userLetters.length < this.targetWord.length) {
+          this.userLetters.push(letter);
+          audio.speakText(letter.toLowerCase());
+          this.render();
+        }
+      }
+
+      clear() {
+        this.userLetters = [];
+        this.render();
+      }
+
+      getUserString() {
+        return this.userLetters.join('');
       }
     }
 
@@ -1265,8 +1402,10 @@
     let userTypedAnswer = '';
     let currentQuestion = null;
 
+    const workspaceArea = document.getElementById('dynamic-workspace');
     const dinoStage = new DinoStageComponent('dino-avatar-container', 'dirt-overlay');
-    const tenFrame = new TenFrameComponent('tenframes-container');
+    const tenFrame = new TenFrameComponent(workspaceArea);
+    const phonicsComp = new PhonicsComponent(workspaceArea);
 
     function initGame() {
       setupEventListeners();
@@ -1279,7 +1418,6 @@
       document.getElementById('brand-icon').innerText = activeTheme.brandIcon;
       document.getElementById('theme-selector').value = activeTheme.id;
       
-      // Load first patient in theme
       const firstPatient = activeTheme.patients[0];
       dinoStage.loadPatient(firstPatient);
       document.getElementById('tool-icon').innerText = firstPatient.tool.split(' ')[0];
@@ -1289,26 +1427,41 @@
       currentQuestion = adaptiveEngine.generateQuestion();
       userTypedAnswer = '';
       
-      // Update UI Prompt
       const promptEl = document.getElementById('question-prompt');
-      promptEl.innerHTML = `Fill & Solve: <span class="highlight">${currentQuestion.promptText}</span>`;
+      promptEl.innerHTML = currentQuestion.promptText;
       
-      // Setup TenFrame
-      tenFrame.setupQuestion(currentQuestion);
-      tenFrame.populateAuto();
+      const keypad = document.getElementById('number-keypad');
 
-      // Read question out loud if audio enabled
+      if (currentQuestion.domain === 'math') {
+        keypad.style.display = 'grid';
+        tenFrame.setupQuestion(currentQuestion);
+        tenFrame.populateAuto();
+      } else {
+        keypad.style.display = 'none'; // Phonics uses letter bank buttons
+        phonicsComp.setupQuestion(currentQuestion);
+      }
+
       audio.speakText(currentQuestion.speechText);
     }
 
     function checkAnswer() {
-      // Allow checking either by filled ten-frame tokens OR typed keypad number
-      const answerVal = userTypedAnswer !== '' ? parseInt(userTypedAnswer, 10) : tenFrame.currentCount;
-      const isCorrect = (answerVal === currentQuestion.targetAnswer);
+      let isCorrect = false;
+
+      if (currentQuestion.domain === 'math') {
+        const answerVal = userTypedAnswer !== '' ? parseInt(userTypedAnswer, 10) : tenFrame.currentCount;
+        isCorrect = (answerVal === currentQuestion.targetAnswer);
+      } else {
+        const userWord = phonicsComp.getUserString();
+        isCorrect = (userWord === currentQuestion.targetAnswer);
+      }
 
       adaptiveEngine.recordResult(isCorrect);
 
       if (isCorrect) {
+        if (currentQuestion.domain !== 'math') {
+          audio.speakText(`${currentQuestion.targetAnswer}! Great job!`);
+        }
+
         const isFullyHealed = dinoStage.applyHealStep();
 
         if (isFullyHealed) {
@@ -1317,12 +1470,10 @@
           dinoStage.triggerVictoryAnimation();
           showVictoryModal();
         } else {
-          // Play positive chime and move to next math question for current patient
           audio.playTapCount(10);
-          setTimeout(() => nextQuestion(), 800);
+          setTimeout(() => nextQuestion(), 900);
         }
       } else {
-        // Incorrect answer feedback
         audio.playBubbleWash();
         const promptEl = document.getElementById('question-prompt');
         promptEl.innerHTML = `Try again! <span class="highlight">${currentQuestion.promptText}</span>`;
@@ -1341,7 +1492,6 @@
       modal.classList.remove('active');
       dinoStage.resetAnimation();
       
-      // Rotate to next patient in active theme
       const patients = activeTheme.patients;
       const nextIdx = (activeTheme.patients.indexOf(dinoStage.currentPatient) + 1) % patients.length;
       const nextPatient = patients[nextIdx];
@@ -1354,6 +1504,12 @@
 
     /* Event Listeners Setup */
     function setupEventListeners() {
+      // Subject Switcher
+      document.getElementById('subject-selector').addEventListener('change', (e) => {
+        adaptiveEngine.setSubject(e.target.value);
+        nextQuestion();
+      });
+
       // Theme Switcher
       document.getElementById('theme-selector').addEventListener('change', (e) => {
         loadTheme(e.target.value);
@@ -1385,9 +1541,13 @@
       // Clear button
       document.getElementById('btn-clear').addEventListener('click', () => {
         userTypedAnswer = '';
-        tenFrame.currentCount = 10;
-        tenFrame.render();
-        document.getElementById('question-subtext').innerText = `Tap slots to count eggs or type the answer below!`;
+        if (currentQuestion.domain === 'math') {
+          tenFrame.currentCount = 10;
+          tenFrame.render();
+        } else {
+          phonicsComp.clear();
+        }
+        document.getElementById('question-subtext').innerText = `Tap slots or letter tiles to complete the answer!`;
       });
 
       // Submit check button
@@ -1397,9 +1557,7 @@
       document.getElementById('btn-next-patient').addEventListener('click', hideVictoryModal);
     }
 
-    /* ==========================================================================
-       7. SIMPLE CANVAS CONFETTI PARTICLE SYSTEM
-       ========================================================================== */
+    /* Confetti Particle System */
     function triggerConfetti() {
       const canvas = document.getElementById('confetti-canvas');
       const ctx = canvas.getContext('2d');
@@ -1428,7 +1586,7 @@
         particles.forEach(p => {
           p.x += p.vx;
           p.y += p.vy;
-          p.vy += 0.35; // Gravity
+          p.vy += 0.35;
           p.rotation += p.vRot;
 
           ctx.save();
@@ -1449,7 +1607,6 @@
       animate();
     }
 
-    // Initialize application on DOM ready
     window.addEventListener('DOMContentLoaded', initGame);
   </script>
 </body>
