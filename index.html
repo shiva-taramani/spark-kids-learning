@@ -3,17 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dino Rescue Clinic - Pedagogical Visual Math & Phonics</title>
-  <meta name="description" content="An active manipulative visual math game based on early childhood math pedagogy." />
+  <title>Dino & Friends Rescue - Multi-Theme Learning Game</title>
+  <meta name="description" content="An active manipulative visual math and phonics game for young kids." />
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Quicksand:wght@600;700&display=swap" rel="stylesheet">
 
   <style>
-    /* ==========================================================================
-       PEDAGOGICAL APPLE-MINIMALIST DESIGN SYSTEM
-       ========================================================================== */
     :root {
       --bg-gradient: radial-gradient(circle at 50% 20%, #1e293b 0%, #0f172a 100%);
       --card-bg: rgba(255, 255, 255, 0.06);
@@ -58,7 +55,6 @@
       overflow-x: hidden;
     }
 
-    /* Navigation Bar */
     header {
       width: 100%;
       max-width: 980px;
@@ -72,6 +68,8 @@
       border-radius: var(--radius-xl);
       margin-bottom: 20px;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      flex-wrap: wrap;
+      gap: 10px;
     }
 
     .brand {
@@ -84,14 +82,11 @@
       color: var(--text-primary);
     }
 
-    .brand-icon {
-      font-size: 1.8rem;
-    }
-
     .pill-group {
       display: flex;
       align-items: center;
       gap: 8px;
+      flex-wrap: wrap;
     }
 
     .segmented-control {
@@ -122,11 +117,12 @@
     }
 
     .select-pill {
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid var(--card-border);
-      color: var(--text-primary);
+      background: rgba(255, 183, 3, 0.15);
+      border: 1px solid var(--accent-gold);
+      color: var(--accent-gold);
       font-family: var(--font-main);
-      font-size: 0.88rem;
+      font-size: 0.9rem;
+      font-weight: 700;
       padding: 6px 14px;
       border-radius: 20px;
       outline: none;
@@ -163,7 +159,6 @@
       gap: 6px;
     }
 
-    /* Main Grid Layout */
     main {
       width: 100%;
       max-width: 980px;
@@ -188,7 +183,6 @@
       box-shadow: var(--card-shadow);
     }
 
-    /* Dino Patient Stage */
     .patient-card {
       display: flex;
       flex-direction: column;
@@ -235,16 +229,6 @@
       position: relative;
     }
 
-    .dino-avatar {
-      width: 170px;
-      height: 170px;
-      transition: transform 0.4s ease;
-    }
-
-    .dino-avatar.happy {
-      animation: gentle-bounce 0.8s ease infinite alternate;
-    }
-
     .dirt-overlay {
       position: absolute;
       top: 0;
@@ -269,7 +253,6 @@
       font-family: var(--font-main);
     }
 
-    /* Workspace Card */
     .workspace-card {
       display: flex;
       flex-direction: column;
@@ -313,7 +296,6 @@
       justify-content: center;
     }
 
-    /* Place Value Decomposition Banner */
     .place-value-banner {
       background: rgba(0, 0, 0, 0.35);
       border: 2px solid var(--accent-gold);
@@ -327,17 +309,10 @@
       font-weight: 700;
     }
 
-    .pv-part {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
     .pv-part.ten { color: var(--accent-gold); }
     .pv-part.ones { color: var(--accent-blue); }
     .pv-part.total { color: var(--accent-emerald); font-size: 1.6rem; }
 
-    /* Ten-Frame Workspace */
     .tenframe-dual-container {
       display: flex;
       flex-direction: column;
@@ -417,7 +392,6 @@
       background: linear-gradient(135deg, var(--accent-blue), #0284c7);
     }
 
-    /* Word Building Tiles */
     .word-slots-container {
       display: flex;
       justify-content: center;
@@ -471,7 +445,6 @@
       color: #000;
     }
 
-    /* Celebration Modal */
     .modal-backdrop {
       position: fixed;
       top: 0;
@@ -564,8 +537,8 @@
   <!-- Navigation Bar -->
   <header>
     <div class="brand">
-      <span class="brand-icon">🦕</span>
-      <span>Dino Rescue</span>
+      <span className="text-2xl" id="brand-icon">🦕</span>
+      <span id="brand-title">Dino Rescue</span>
     </div>
 
     <div class="pill-group">
@@ -574,10 +547,18 @@
         <button class="segment-btn" id="btn-sub-words">🔤 Words</button>
       </div>
 
+      <!-- PROMINENT INTEREST THEME SELECTOR -->
+      <select id="theme-selector" class="select-pill" title="Choose Interest Theme">
+        <option value="dino" selected>🦕 Dino Rescue</option>
+        <option value="sports">⚽ Sports League</option>
+        <option value="legos">🧱 Lego Builders</option>
+        <option value="construction">🚜 Construction Crew</option>
+      </select>
+
       <select id="age-selector" class="select-pill" title="Select Target Age Group">
-        <option value="age4">Age 4-5 (Junior)</option>
-        <option value="age6" selected>Age 6 (Medic)</option>
-        <option value="age8">Age 7-8 (Chief Vet)</option>
+        <option value="age4">Age 4-5</option>
+        <option value="age6" selected>Age 6</option>
+        <option value="age8">Age 7-8</option>
       </select>
 
       <button class="btn-sound" id="btn-sound-toggle">🔊 Sound On</button>
@@ -591,7 +572,7 @@
 
   <!-- Main Layout -->
   <main>
-    <!-- Dino Patient Stage -->
+    <!-- Dino / Hero Stage -->
     <section class="card patient-card">
       <div class="patient-title">
         <span id="patient-icon">🦖</span>
@@ -603,12 +584,12 @@
       </div>
 
       <div class="dino-stage-box">
-        <div class="dino-avatar" id="dino-avatar"></div>
+        <div style="font-size: 6rem;" id="dino-avatar">🦖</div>
         <div class="dirt-overlay" id="dirt-overlay"></div>
       </div>
 
       <div class="status-text" id="status-text">
-        Tap empty slots to add eggs and heal Rexy! 🧼
+        Tap empty slots to add items and heal! 🧼
       </div>
     </section>
 
@@ -638,11 +619,11 @@
   <!-- Celebration Modal -->
   <div class="modal-backdrop" id="modal-victory">
     <div class="modal-sheet">
-      <h2>Patient Rescued! 🎉</h2>
+      <h2>Hero Saved! 🎉</h2>
       <div style="font-size: 4rem; margin: 16px 0;" id="modal-icon">🦖</div>
-      <p style="color: var(--text-secondary); margin-bottom: 24px;">You healed Rexy!</p>
+      <p style="color: var(--text-secondary); margin-bottom: 24px;" id="modal-text">Great job!</p>
       <button class="primary-check-btn" id="btn-next">
-        Next Patient 🩺
+        Next Challenge 🩺
       </button>
     </div>
   </div>
@@ -716,45 +697,88 @@
     window.addEventListener('click', () => audio.initCtx(), { once: true });
     window.addEventListener('touchstart', () => audio.initCtx(), { once: true });
 
-    /* Patients */
-    const patients = [
-      { name: 'Rexy', species: 'Baby T-Rex', icon: '🦖', color: '#34d399' },
-      { name: 'Trike', species: 'Triceratops', icon: '🦕', color: '#ffb703' },
-      { name: 'Steggy', species: 'Stegosaurus', icon: '🐊', color: '#fb7185' }
-    ];
+    /* THEMES REGISTRY */
+    const THEMES = {
+      dino: {
+        id: 'dino',
+        name: 'Dino Rescue',
+        icon: '🦕',
+        tokenBaseIcon: '🥚',
+        tokenExtraIcon: '🪺',
+        tokenBaseLabel: 'Gold Eggs',
+        tokenExtraLabel: 'Blue Eggs',
+        patients: [
+          { name: 'Rexy', species: 'Baby T-Rex', icon: '🦖', color: '#34d399' },
+          { name: 'Trike', species: 'Triceratops', icon: '🦕', color: '#ffb703' },
+          { name: 'Steggy', species: 'Stegosaurus', icon: '🐊', color: '#fb7185' }
+        ]
+      },
+      sports: {
+        id: 'sports',
+        name: 'Sports League',
+        icon: '⚽',
+        tokenBaseIcon: '🏆',
+        tokenExtraIcon: '🏀',
+        tokenBaseLabel: 'Trophies',
+        tokenExtraLabel: 'Baseballs',
+        patients: [
+          { name: 'Hoops', species: 'Basketball Champ', icon: '🏀', color: '#f97316' },
+          { name: 'Striker', species: 'Soccer Star', icon: '⚽', color: '#38bdf8' },
+          { name: 'Slugger', species: 'Baseball Ace', icon: '⚾', color: '#a855f7' }
+        ]
+      },
+      legos: {
+        id: 'legos',
+        name: 'Lego Builders',
+        icon: '🧱',
+        tokenBaseIcon: '🧱',
+        tokenExtraIcon: '🟨',
+        tokenBaseLabel: 'Red Bricks',
+        tokenExtraLabel: 'Yellow Studs',
+        patients: [
+          { name: 'King Castle', species: 'Lego Castle', icon: '🏰', color: '#eab308' },
+          { name: 'Galaxy One', species: 'Lego Rocket', icon: '🚀', color: '#ec4899' },
+          { name: 'Brick Bot', species: 'Toy Robot', icon: '🤖', color: '#06b6d4' }
+        ]
+      },
+      construction: {
+        id: 'construction',
+        name: 'Construction Crew',
+        icon: '🚜',
+        tokenBaseIcon: '⚠️',
+        tokenExtraIcon: '🪨',
+        tokenBaseLabel: 'Cones',
+        tokenExtraLabel: 'Rocks',
+        patients: [
+          { name: 'Diggy', species: 'Excavator', icon: '🚜', color: '#f59e0b' },
+          { name: 'Dumper', species: 'Dump Truck', icon: '🚚', color: '#10b981' },
+          { name: 'Tower', species: 'Crane Rig', icon: '🏗️', color: '#6366f1' }
+        ]
+      }
+    };
 
+    let activeThemeKey = 'dino';
     let currentPatientIdx = 0;
     let patientHealth = 25;
     let stars = 0;
     let activeSubject = 'math';
     let activeLevel = 'age6';
     let num1 = 10;
-    let num2 = 2; // Target extra addend
-    let placedOnes = 0; // Number of ones placed by child
+    let num2 = 2;
+    let placedOnes = 0;
     let targetWord = 'DINO';
     let userWord = [];
-    let currentSpeechPrompt = 'Tap 2 slots to add 2 blue eggs!';
+    let currentSpeechPrompt = 'Tap 2 slots to add 2 items!';
 
     function renderDino() {
-      const p = patients[currentPatientIdx];
+      const theme = THEMES[activeThemeKey] || THEMES.dino;
+      const p = theme.patients[currentPatientIdx % theme.patients.length];
+      document.getElementById('brand-icon').innerText = theme.icon;
+      document.getElementById('brand-title').innerText = theme.name;
       document.getElementById('patient-name').innerText = p.name;
       document.getElementById('patient-icon').innerText = p.icon;
+      document.getElementById('dino-avatar').innerText = p.icon;
       document.getElementById('progress-fill').style.width = `${patientHealth}%`;
-
-      const avatar = document.getElementById('dino-avatar');
-      avatar.innerHTML = `
-        <svg viewBox="0 0 200 200" width="100%" height="100%">
-          <path d="M 40 130 Q 10 120 20 90 Q 40 100 60 120 Z" fill="${p.color}" />
-          <ellipse cx="100" cy="130" rx="50" ry="40" fill="${p.color}" />
-          <rect x="70" y="155" width="18" height="30" rx="8" fill="${p.color}" />
-          <rect x="110" y="155" width="18" height="30" rx="8" fill="${p.color}" />
-          <path d="M 120 110 Q 140 80 150 60 Q 175 60 180 85 Q 160 110 130 120 Z" fill="${p.color}" />
-          <circle cx="158" cy="72" r="7" fill="#ffffff" />
-          <circle cx="160" cy="72" r="3.5" fill="#000000" />
-          <circle cx="162" cy="70" r="1.2" fill="#ffffff" />
-          <path d="M 165 85 Q 155 92 145 86" fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="round" />
-        </svg>
-      `;
 
       renderDirt();
     }
@@ -791,32 +815,29 @@
       }
     }
 
-    /* Active Manipulative Workspace Renderer */
     function renderWorkspace() {
+      const theme = THEMES[activeThemeKey] || THEMES.dino;
       const area = document.getElementById('workspace-dynamic');
       const title = document.getElementById('question-title');
 
       if (activeSubject === 'math') {
         if (num1 === 0) {
-          // Junior 1-10 counting
-          title.innerHTML = `Add ${num2} Eggs: <span class="highlight">Count to ${num2}</span>`;
+          title.innerHTML = `Add ${num2} Items: <span class="highlight">Count to ${num2}</span>`;
         } else {
-          // Medic & Chief Vet addition
-          title.innerHTML = `Add ${num2} Eggs: <span class="highlight">${num1} + ${num2} = ?</span>`;
+          title.innerHTML = `Add ${num2} Items: <span class="highlight">${num1} + ${num2} = ?</span>`;
         }
 
         area.innerHTML = '';
         const dualContainer = document.createElement('div');
         dualContainer.className = 'tenframe-dual-container';
 
-        // Frame 1: Base Frame (Pre-filled with num1 Gold Eggs)
         if (num1 > 0) {
           const frame1Sec = document.createElement('div');
           frame1Sec.className = 'tenframe-section';
           frame1Sec.innerHTML = `
             <div class="tenframe-header">
               <span class="tenframe-label">Ten-Frame 1 (Base ${num1})</span>
-              <span style="color: var(--accent-gold); font-weight:700;">${num1} Gold Eggs</span>
+              <span style="color: var(--accent-gold); font-weight:700;">${num1} ${theme.tokenBaseLabel}</span>
             </div>`;
           const grid1 = document.createElement('div');
           grid1.className = 'tenframe-grid';
@@ -826,7 +847,7 @@
             const isFilled = (i < num1);
             slot.className = `tenframe-slot ${isFilled ? 'filled' : ''}`;
             if (isFilled) {
-              slot.innerHTML = `<div class="egg-token">🥚</div>`;
+              slot.innerHTML = `<div class="egg-token">${theme.tokenBaseIcon}</div>`;
             }
             slot.addEventListener('click', () => audio.playTap(i));
             grid1.appendChild(slot);
@@ -835,7 +856,6 @@
           dualContainer.appendChild(frame1Sec);
         }
 
-        // Frame 2: Active Manipulative Ones Frame
         const frame2Sec = document.createElement('div');
         frame2Sec.className = 'tenframe-section';
         frame2Sec.innerHTML = `
@@ -853,17 +873,15 @@
 
           slot.className = `tenframe-slot ${isFilled ? 'filled' : ''} ${isTargetHint ? 'hint' : ''}`;
           if (isFilled) {
-            slot.innerHTML = `<div class="egg-token secondary">🪺</div>`;
+            slot.innerHTML = `<div class="egg-token secondary">${theme.tokenExtraIcon}</div>`;
           }
 
           slot.addEventListener('click', () => {
             audio.initCtx();
             if (i < placedOnes) {
-              // Tap an already filled slot to clear back to that slot
               placedOnes = i;
               audio.playTap(placedOnes);
             } else {
-              // Tap slot to add egg up to slot i + 1
               placedOnes = i + 1;
               audio.playTap(num1 + placedOnes);
               audio.speak(`${num1 + placedOnes}`);
@@ -872,7 +890,6 @@
             updatePlaceValueBanner();
             renderWorkspace();
 
-            // Auto-check when exactly num2 ones are placed!
             if (placedOnes === num2) {
               setTimeout(checkAnswer, 400);
             }
@@ -922,27 +939,24 @@
       }
     }
 
-    /* Adaptive Multi-Age Question Generator */
     function newQuestion() {
       placedOnes = 0;
       userWord = [];
+      const theme = THEMES[activeThemeKey] || THEMES.dino;
 
       if (activeSubject === 'math') {
         if (activeLevel === 'age4') {
-          // Junior: 1 to 10 counting on a single frame
           num1 = 0;
-          num2 = Math.floor(Math.random() * 9) + 1; // 1 to 9
-          currentSpeechPrompt = `Tap ${num2} slots to count ${num2} eggs!`;
+          num2 = Math.floor(Math.random() * 9) + 1;
+          currentSpeechPrompt = `Tap ${num2} slots to count ${num2} ${theme.tokenExtraLabel}!`;
         } else if (activeLevel === 'age6') {
-          // Medic: 10 + N addition
           num1 = 10;
-          num2 = Math.floor(Math.random() * 8) + 1; // 1 to 8
-          currentSpeechPrompt = `Tap ${num2} slots to add ${num2} blue eggs!`;
+          num2 = Math.floor(Math.random() * 8) + 1;
+          currentSpeechPrompt = `Tap ${num2} slots to add ${num2} ${theme.tokenExtraLabel}!`;
         } else {
-          // Chief Vet: Addition up to 20 (varying base num1 like 8 or 9)
-          num1 = Math.floor(Math.random() * 3) + 7; // 7, 8, or 9
-          num2 = Math.floor(Math.random() * 6) + 3; // 3 to 8
-          currentSpeechPrompt = `Add ${num2} eggs to complete ${num1} plus ${num2}!`;
+          num1 = Math.floor(Math.random() * 3) + 7;
+          num2 = Math.floor(Math.random() * 6) + 3;
+          currentSpeechPrompt = `Add ${num2} items to complete ${num1} plus ${num2}!`;
         }
       } else {
         const wordPools = {
@@ -975,7 +989,7 @@
         audio.playBubble();
         if (activeSubject === 'math') {
           if (num1 === 0) {
-            audio.speak(`You counted ${num2} eggs! Great job!`);
+            audio.speak(`You counted ${num2}! Great job!`);
           } else {
             audio.speak(`${num1} plus ${num2} equals ${num1 + num2}! Excellent!`);
           }
@@ -993,10 +1007,13 @@
         }
 
         if (patientHealth >= 100) {
-          document.getElementById('dino-avatar').classList.add('happy');
-          audio.speak('Awesome! Rexy is fully healed!');
+          const theme = THEMES[activeThemeKey] || THEMES.dino;
+          const p = theme.patients[currentPatientIdx % theme.patients.length];
+          audio.speak(`Awesome! ${p.name} is complete!`);
           triggerConfetti();
-          document.getElementById('modal-victory').classList.add('active');
+          document.getElementById('modal-icon').innerText = p.icon;
+          document.getElementById('modal-text').innerText = `You completed ${p.name}!`;
+          document.getElementById('modal-backdrop')?.classList.add('active');
         } else {
           setTimeout(() => newQuestion(), 1200);
         }
@@ -1004,6 +1021,15 @@
     }
 
     /* Event Listeners */
+    document.getElementById('theme-selector').addEventListener('change', (e) => {
+      audio.initCtx();
+      activeThemeKey = e.target.value;
+      currentPatientIdx = 0;
+      patientHealth = 25;
+      renderDino();
+      newQuestion();
+    });
+
     document.getElementById('btn-sub-math').addEventListener('click', () => {
       audio.initCtx();
       activeSubject = 'math';
@@ -1040,9 +1066,9 @@
 
     document.getElementById('btn-next').addEventListener('click', () => {
       audio.initCtx();
-      document.getElementById('modal-victory').classList.remove('active');
-      document.getElementById('dino-avatar').classList.remove('happy');
-      currentPatientIdx = (currentPatientIdx + 1) % patients.length;
+      document.getElementById('modal-backdrop')?.classList.remove('active');
+      const theme = THEMES[activeThemeKey] || THEMES.dino;
+      currentPatientIdx = (currentPatientIdx + 1) % theme.patients.length;
       patientHealth = 25;
       renderDino();
       newQuestion();
