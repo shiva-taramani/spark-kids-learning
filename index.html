@@ -3,17 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dino Rescue Clinic - Apple-Simple Learning Game</title>
-  <meta name="description" content="An Apple-simple, minimalist visual math and phonics game for young kids." />
+  <title>Dino Rescue Clinic - Pedagogical Visual Math & Phonics</title>
+  <meta name="description" content="An active manipulative visual math game based on early childhood math pedagogy." />
   
-  <!-- Apple San Francisco-inspired & friendly rounded fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Quicksand:wght@600;700&display=swap" rel="stylesheet">
 
   <style>
     /* ==========================================================================
-       APPLE-INSPIRED MINIMALIST DESIGN SYSTEM
+       PEDAGOGICAL APPLE-MINIMALIST DESIGN SYSTEM
        ========================================================================== */
     :root {
       --bg-gradient: radial-gradient(circle at 50% 20%, #1e293b 0%, #0f172a 100%);
@@ -59,7 +58,7 @@
       overflow-x: hidden;
     }
 
-    /* Minimalist Top Navigation Bar */
+    /* Navigation Bar */
     header {
       width: 100%;
       max-width: 980px;
@@ -68,7 +67,6 @@
       align-items: center;
       background: rgba(255, 255, 255, 0.04);
       backdrop-filter: blur(24px);
-      -webkit-backdrop-filter: blur(24px);
       border: 1px solid var(--card-border);
       padding: 12px 24px;
       border-radius: var(--radius-xl);
@@ -84,7 +82,6 @@
       font-size: 1.35rem;
       font-weight: 700;
       color: var(--text-primary);
-      letter-spacing: 0.3px;
     }
 
     .brand-icon {
@@ -116,13 +113,12 @@
       padding: 6px 14px;
       border-radius: 16px;
       cursor: pointer;
-      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: all 0.25s ease;
     }
 
     .segment-btn.active {
       background: rgba(255, 255, 255, 0.15);
       color: #ffffff;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
     }
 
     .btn-sound {
@@ -150,7 +146,7 @@
       gap: 6px;
     }
 
-    /* Main App Layout */
+    /* Main Grid Layout */
     main {
       width: 100%;
       max-width: 980px;
@@ -169,7 +165,6 @@
     .card {
       background: var(--card-bg);
       backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
       border: 1px solid var(--card-border);
       border-radius: var(--radius-xl);
       padding: 24px;
@@ -257,7 +252,7 @@
       font-family: var(--font-main);
     }
 
-    /* Workspace & Answer Display */
+    /* Workspace Card */
     .workspace-card {
       display: flex;
       flex-direction: column;
@@ -266,7 +261,7 @@
 
     .question-banner {
       text-align: center;
-      padding: 12px;
+      padding: 14px;
       background: rgba(255, 255, 255, 0.04);
       border-radius: var(--radius-lg);
       border: 1px solid rgba(255, 255, 255, 0.08);
@@ -299,84 +294,65 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: transform 0.2s ease;
     }
 
-    .btn-speaker:hover {
-      transform: scale(1.1);
-    }
-
-    .answer-display-row {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 12px;
-      margin: 4px 0;
-    }
-
-    .answer-box {
-      min-width: 140px;
-      height: 60px;
-      background: rgba(0, 0, 0, 0.4);
-      border: 3px solid var(--accent-gold);
+    /* Place Value Decomposition Banner (1 Ten + 2 Ones = 12) */
+    .place-value-banner {
+      background: rgba(0, 0, 0, 0.35);
+      border: 2px solid var(--accent-gold);
       border-radius: var(--radius-lg);
+      padding: 12px 20px;
       display: flex;
-      justify-content: center;
+      justify-content: space-around;
       align-items: center;
       font-family: var(--font-main);
-      font-size: 2.2rem;
+      font-size: 1.3rem;
       font-weight: 700;
-      color: var(--accent-gold);
-      box-shadow: inset 0 2px 8px rgba(0,0,0,0.5);
-      padding: 0 16px;
-      letter-spacing: 2px;
-      transition: all 0.2s ease;
     }
 
-    .btn-clear {
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid var(--card-border);
-      color: var(--text-secondary);
-      font-family: var(--font-main);
-      font-size: 0.95rem;
-      font-weight: 600;
-      padding: 12px 16px;
-      border-radius: var(--radius-md);
-      cursor: pointer;
+    .pv-part {
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
-    .btn-clear:hover {
-      background: rgba(251, 113, 133, 0.2);
-      color: var(--accent-coral);
-    }
+    .pv-part.ten { color: var(--accent-gold); }
+    .pv-part.ones { color: var(--accent-blue); }
+    .pv-part.total { color: var(--accent-emerald); font-size: 1.6rem; }
 
-    /* Ten-Frame Dual Grid */
+    /* Ten-Frame Active Manipulative Workspace */
     .tenframe-dual-container {
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 14px;
     }
 
     .tenframe-section {
       background: rgba(0, 0, 0, 0.25);
       border-radius: var(--radius-lg);
-      padding: 12px;
+      padding: 14px;
       border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .tenframe-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
     }
 
     .tenframe-label {
       font-family: var(--font-main);
-      font-size: 0.8rem;
+      font-size: 0.9rem;
       font-weight: 700;
       color: var(--accent-gold);
-      margin-bottom: 6px;
       text-transform: uppercase;
     }
 
     .tenframe-grid {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
-      gap: 8px;
+      gap: 10px;
     }
 
     .tenframe-slot {
@@ -388,12 +364,12 @@
       justify-content: center;
       align-items: center;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
 
     .tenframe-slot:hover {
       background: rgba(255, 255, 255, 0.12);
-      transform: scale(1.05);
+      transform: scale(1.06);
     }
 
     .tenframe-slot.filled {
@@ -401,75 +377,27 @@
       border-color: rgba(255, 255, 255, 0.4);
     }
 
+    .tenframe-slot.hint {
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 15px rgba(56, 189, 248, 0.5);
+      animation: pulse-glow 1.5s infinite alternate;
+    }
+
     .egg-token {
-      width: 82%;
-      height: 82%;
+      width: 84%;
+      height: 84%;
       border-radius: 50%;
       background: linear-gradient(135deg, var(--accent-gold), var(--accent-orange));
       display: flex;
       justify-content: center;
       align-items: center;
-      font-size: 1.2rem;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      font-size: 1.3rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
       animation: pop-in 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
 
     .egg-token.secondary {
       background: linear-gradient(135deg, var(--accent-blue), #0284c7);
-    }
-
-    /* Keypad & Primary Check Button */
-    .controls-area {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .keypad-grid {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 8px;
-    }
-
-    .key-button {
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid var(--card-border);
-      border-radius: var(--radius-md);
-      color: white;
-      font-family: var(--font-main);
-      font-size: 1.4rem;
-      font-weight: 700;
-      padding: 12px 0;
-      cursor: pointer;
-      transition: all 0.15s ease;
-    }
-
-    .key-button:hover {
-      background: var(--accent-gold);
-      color: #000;
-      transform: translateY(-2px);
-    }
-
-    .primary-check-btn {
-      background: linear-gradient(135deg, var(--accent-emerald), #059669);
-      border: none;
-      color: white;
-      font-family: var(--font-main);
-      font-size: 1.25rem;
-      font-weight: 700;
-      padding: 16px;
-      border-radius: var(--radius-lg);
-      cursor: pointer;
-      box-shadow: 0 10px 25px rgba(52, 211, 153, 0.3);
-      transition: all 0.2s ease;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .primary-check-btn:hover {
-      transform: translateY(-2px);
     }
 
     /* Word Building Tiles */
@@ -509,14 +437,14 @@
     }
 
     .letter-tile-btn {
-      width: 52px;
-      height: 56px;
+      width: 54px;
+      height: 58px;
       background: rgba(255, 255, 255, 0.1);
       border: 1px solid var(--card-border);
       border-radius: var(--radius-md);
       color: white;
       font-family: var(--font-main);
-      font-size: 1.7rem;
+      font-size: 1.8rem;
       font-weight: 700;
       cursor: pointer;
     }
@@ -567,9 +495,33 @@
       margin-bottom: 8px;
     }
 
+    .primary-check-btn {
+      background: linear-gradient(135deg, var(--accent-emerald), #059669);
+      border: none;
+      color: white;
+      font-family: var(--font-main);
+      font-size: 1.25rem;
+      font-weight: 700;
+      padding: 16px;
+      border-radius: var(--radius-lg);
+      cursor: pointer;
+      box-shadow: 0 10px 25px rgba(52, 211, 153, 0.3);
+      transition: all 0.2s ease;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+    }
+
     @keyframes gentle-bounce {
       0% { transform: translateY(0); }
       100% { transform: translateY(-10px); }
+    }
+
+    @keyframes pulse-glow {
+      0% { box-shadow: 0 0 5px rgba(56, 189, 248, 0.4); }
+      100% { box-shadow: 0 0 20px rgba(56, 189, 248, 0.9); }
     }
 
     @keyframes pop-in {
@@ -592,7 +544,7 @@
 
   <canvas id="confetti-canvas"></canvas>
 
-  <!-- Top Navigation -->
+  <!-- Navigation Bar -->
   <header>
     <div class="brand">
       <span class="brand-icon">🦕</span>
@@ -633,11 +585,11 @@
       </div>
 
       <div class="status-text" id="status-text">
-        Clean mud to heal Rexy! 🧼
+        Tap empty slots to add eggs and heal Rexy! 🧼
       </div>
     </section>
 
-    <!-- Interactive Workspace Card -->
+    <!-- Workspace Card -->
     <section class="card workspace-card">
       <div class="question-banner">
         <button class="btn-speaker" id="btn-read-question" title="Listen to Question">🔊</button>
@@ -646,34 +598,17 @@
         </div>
       </div>
 
-      <!-- BIG VISIBLE ANSWER DISPLAY BOX -->
-      <div class="answer-display-row">
-        <div class="answer-box" id="answer-box">?</div>
-        <button class="btn-clear" id="btn-clear">⌫ Clear</button>
+      <!-- PLACE VALUE DECOMPOSITION BANNER (1 Ten + 2 Ones = 12) -->
+      <div class="place-value-banner" id="place-value-banner">
+        <div class="pv-part ten">10 (1 Ten)</div>
+        <div>+</div>
+        <div class="pv-part ones" id="pv-ones">0 (Ones)</div>
+        <div>=</div>
+        <div class="pv-part total" id="pv-total">10</div>
       </div>
 
-      <!-- Dynamic Workspace: Ten-Frame OR Phonics -->
+      <!-- Dynamic Manipulative Workspace -->
       <div id="workspace-dynamic"></div>
-
-      <!-- Keypad & Check Action -->
-      <div class="controls-area">
-        <div class="keypad-grid" id="keypad-grid">
-          <button class="key-button" data-val="1">1</button>
-          <button class="key-button" data-val="2">2</button>
-          <button class="key-button" data-val="3">3</button>
-          <button class="key-button" data-val="4">4</button>
-          <button class="key-button" data-val="5">5</button>
-          <button class="key-button" data-val="6">6</button>
-          <button class="key-button" data-val="7">7</button>
-          <button class="key-button" data-val="8">8</button>
-          <button class="key-button" data-val="9">9</button>
-          <button class="key-button" data-val="0">0</button>
-        </div>
-
-        <button class="primary-check-btn" id="btn-check">
-          <span>Check Answer</span> ✨
-        </button>
-      </div>
     </section>
   </main>
 
@@ -683,14 +618,14 @@
       <h2>Patient Rescued! 🎉</h2>
       <div style="font-size: 4rem; margin: 16px 0;" id="modal-icon">🦖</div>
       <p style="color: var(--text-secondary); margin-bottom: 24px;">You healed Rexy!</p>
-      <button class="primary-check-btn" id="btn-next" style="width: 100%;">
+      <button class="primary-check-btn" id="btn-next">
         Next Patient 🩺
       </button>
     </div>
   </div>
 
   <script>
-    /* Robust Audio Synthesizer & Speech Engine */
+    /* Audio Engine */
     class AudioEngine {
       constructor() {
         this.ctx = null;
@@ -755,7 +690,6 @@
 
     const audio = new AudioEngine();
 
-    // Auto-unlock audio context on first user click anywhere
     window.addEventListener('click', () => audio.initCtx(), { once: true });
     window.addEventListener('touchstart', () => audio.initCtx(), { once: true });
 
@@ -770,13 +704,12 @@
     let patientHealth = 25;
     let stars = 0;
     let activeSubject = 'math';
-    let typedAnswer = '';
     let num1 = 10;
-    let num2 = 2;
-    let currentTarget = 12;
+    let num2 = 2; // Extra addend to place
+    let placedOnes = 0; // Number of ones placed by child
     let targetWord = 'DINO';
     let userWord = [];
-    let currentSpeechPrompt = 'What is 10 plus 2?';
+    let currentSpeechPrompt = 'Tap 2 slots to add 2 blue eggs!';
 
     function renderDino() {
       const p = patients[currentPatientIdx];
@@ -822,33 +755,37 @@
       });
     }
 
-    function updateAnswerDisplay() {
-      const box = document.getElementById('answer-box');
+    function updatePlaceValueBanner() {
+      const banner = document.getElementById('place-value-banner');
       if (activeSubject === 'math') {
-        box.innerText = typedAnswer !== '' ? typedAnswer : '?';
+        banner.style.display = 'flex';
+        document.getElementById('pv-ones').innerText = `${placedOnes} (Ones)`;
+        document.getElementById('pv-total').innerText = `${10 + placedOnes}`;
       } else {
-        box.innerText = userWord.length > 0 ? userWord.join('') : '?';
+        banner.style.display = 'none';
       }
     }
 
-    /* Workspace Renderer */
+    /* Active Manipulative Workspace Renderer */
     function renderWorkspace() {
       const area = document.getElementById('workspace-dynamic');
       const title = document.getElementById('question-title');
-      const keypad = document.getElementById('keypad-grid');
 
       if (activeSubject === 'math') {
-        keypad.style.display = 'grid';
-        title.innerHTML = `${num1} + ${num2} = <span class="highlight">?</span>`;
+        title.innerHTML = `Add ${num2} Eggs: <span class="highlight">10 + ${num2} = ?</span>`;
 
         area.innerHTML = '';
         const dualContainer = document.createElement('div');
         dualContainer.className = 'tenframe-dual-container';
 
-        // Frame 1: Base 10
+        // Frame 1: Base 10 (Full of 10 Gold Eggs)
         const frame1Sec = document.createElement('div');
         frame1Sec.className = 'tenframe-section';
-        frame1Sec.innerHTML = `<div class="tenframe-label">Ten-Frame 1 (Base 10)</div>`;
+        frame1Sec.innerHTML = `
+          <div class="tenframe-header">
+            <span class="tenframe-label">Ten-Frame 1 (Base 10)</span>
+            <span style="color: var(--accent-gold); font-weight:700;">10 Gold Eggs</span>
+          </div>`;
         const grid1 = document.createElement('div');
         grid1.className = 'tenframe-grid';
 
@@ -862,28 +799,47 @@
         frame1Sec.appendChild(grid1);
         dualContainer.appendChild(frame1Sec);
 
-        // Frame 2: Extra Addend
+        // Frame 2: Active Manipulative Ones Frame
         const frame2Sec = document.createElement('div');
         frame2Sec.className = 'tenframe-section';
-        frame2Sec.innerHTML = `<div class="tenframe-label">Ten-Frame 2 (Add ${num2})</div>`;
+        frame2Sec.innerHTML = `
+          <div class="tenframe-header">
+            <span class="tenframe-label">Ten-Frame 2 (Tap to add ${num2} Ones)</span>
+            <span style="color: var(--accent-blue); font-weight:700;">${placedOnes} / ${num2} Placed</span>
+          </div>`;
         const grid2 = document.createElement('div');
         grid2.className = 'tenframe-grid';
 
-        const extraCount = typedAnswer !== '' ? Math.max(0, parseInt(typedAnswer, 10) - 10) : num2;
-
         for (let i = 0; i < 10; i++) {
           const slot = document.createElement('div');
-          const isFilled = i < extraCount;
-          slot.className = `tenframe-slot ${isFilled ? 'filled' : ''}`;
+          const isFilled = (i < placedOnes);
+          const isTargetHint = (i === placedOnes && placedOnes < num2);
+
+          slot.className = `tenframe-slot ${isFilled ? 'filled' : ''} ${isTargetHint ? 'hint' : ''}`;
           if (isFilled) {
             slot.innerHTML = `<div class="egg-token secondary">🪺</div>`;
           }
+
           slot.addEventListener('click', () => {
-            const newTotal = 10 + (i + 1);
-            typedAnswer = newTotal.toString();
-            audio.playTap(10 + i);
-            updateAnswerDisplay();
+            audio.initCtx();
+            if (i < placedOnes) {
+              // Tap filled slot to remove egg
+              placedOnes = i;
+              audio.playTap(placedOnes);
+            } else {
+              // Tap slot to add egg
+              placedOnes = i + 1;
+              audio.playTap(10 + placedOnes);
+              audio.speak(`${10 + placedOnes}`);
+            }
+
+            updatePlaceValueBanner();
             renderWorkspace();
+
+            // Auto-check when exactly num2 ones are placed!
+            if (placedOnes === num2) {
+              setTimeout(checkAnswer, 400);
+            }
           });
           grid2.appendChild(slot);
         }
@@ -892,7 +848,6 @@
 
         area.appendChild(dualContainer);
       } else {
-        keypad.style.display = 'none';
         title.innerHTML = `Spell: <span class="highlight">${targetWord}</span>`;
 
         area.innerHTML = '';
@@ -919,8 +874,10 @@
               userWord.push(letter);
               audio.playTap(idx);
               audio.speak(letter.toLowerCase());
-              updateAnswerDisplay();
               renderWorkspace();
+              if (userWord.length === targetWord.length) {
+                setTimeout(checkAnswer, 400);
+              }
             }
           });
           bankDiv.appendChild(btn);
@@ -930,19 +887,18 @@
     }
 
     function newQuestion() {
-      typedAnswer = '';
+      placedOnes = 0;
       userWord = [];
       if (activeSubject === 'math') {
         num1 = 10;
         num2 = Math.floor(Math.random() * 8) + 1;
-        currentTarget = num1 + num2;
-        currentSpeechPrompt = `What is 10 plus ${num2}?`;
+        currentSpeechPrompt = `Tap ${num2} slots to add ${num2} blue eggs!`;
       } else {
         const words = ['DINO', 'ROAR', 'BONE', 'EGG', 'PARK', 'REXY'];
         targetWord = words[Math.floor(Math.random() * words.length)];
         currentSpeechPrompt = `Spell ${targetWord}`;
       }
-      updateAnswerDisplay();
+      updatePlaceValueBanner();
       renderWorkspace();
     }
 
@@ -950,8 +906,7 @@
       audio.initCtx();
       let correct = false;
       if (activeSubject === 'math') {
-        const val = parseInt(typedAnswer, 10);
-        correct = (val === currentTarget);
+        correct = (placedOnes === num2);
       } else {
         correct = (userWord.join('') === targetWord);
       }
@@ -961,7 +916,9 @@
         document.getElementById('star-count').innerText = stars;
 
         audio.playBubble();
-        if (activeSubject === 'words') {
+        if (activeSubject === 'math') {
+          audio.speak(`Ten plus ${num2} equals ${10 + num2}! Excellent!`);
+        } else {
           audio.speak(`${targetWord}! Great job!`);
         }
 
@@ -976,18 +933,12 @@
 
         if (patientHealth >= 100) {
           document.getElementById('dino-avatar').classList.add('happy');
-          audio.speak('Awesome! Rexy is healed!');
+          audio.speak('Awesome! Rexy is fully healed!');
           triggerConfetti();
           document.getElementById('modal-victory').classList.add('active');
         } else {
-          audio.playTap(9);
-          setTimeout(() => newQuestion(), 800);
+          setTimeout(() => newQuestion(), 1200);
         }
-      } else {
-        audio.playBubble();
-        audio.speak('Try again!');
-        document.getElementById('answer-box').style.borderColor = '#fb7185';
-        setTimeout(() => document.getElementById('answer-box').style.borderColor = 'var(--accent-gold)', 600);
       }
     }
 
@@ -1020,28 +971,6 @@
       if (audio.enabled) audio.playTap(4);
     });
 
-    document.querySelectorAll('.key-button').forEach(b => {
-      b.addEventListener('click', (e) => {
-        audio.initCtx();
-        const v = e.target.dataset.val;
-        audio.playTap(parseInt(v, 10));
-        typedAnswer += v;
-        updateAnswerDisplay();
-        renderWorkspace();
-      });
-    });
-
-    document.getElementById('btn-clear').addEventListener('click', () => {
-      audio.initCtx();
-      audio.playTap(1);
-      typedAnswer = '';
-      userWord = [];
-      updateAnswerDisplay();
-      renderWorkspace();
-    });
-
-    document.getElementById('btn-check').addEventListener('click', checkAnswer);
-
     document.getElementById('btn-next').addEventListener('click', () => {
       audio.initCtx();
       document.getElementById('modal-victory').classList.remove('active');
@@ -1063,7 +992,7 @@
         particles.push({
           x: canvas.width / 2, y: canvas.height / 2,
           vx: (Math.random() - 0.5) * 12, vy: (Math.random() - 0.7) * 14,
-          color: colors[Math.floor(Math.random() * colors.length)],
+          color: colors[Math.color || Math.floor(Math.random() * colors.length)],
           size: Math.random() * 8 + 4
         });
       }
@@ -1072,7 +1001,7 @@
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         particles.forEach(p => {
           p.x += p.vx; p.y += p.vy; p.vy += 0.3;
-          ctx.fillStyle = p.color;
+          ctx.fillStyle = p.color || '#ffb703';
           ctx.fillRect(p.x, p.y, p.size, p.size);
         });
         f++;
