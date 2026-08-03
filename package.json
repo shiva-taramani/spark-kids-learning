@@ -4,8 +4,8 @@
   "description": "Adaptive Multi-Subject Educational Game for Kids (Math, Phonics, Spelling)",
   "main": "index.html",
   "scripts": {
-    "start": "npx serve . -l 3000",
-    "dev": "npx serve . -l 3000"
+    "start": "npx -y serve . -l 3000",
+    "dev": "npx -y serve . -l 3000"
   },
   "keywords": [
     "education",
