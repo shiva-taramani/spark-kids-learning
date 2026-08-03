@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dino & Friends Rescue - Multi-Theme Learning Game</title>
-  <meta name="description" content="An active manipulative visual math and phonics game for young kids." />
+  <title>Dino & Friends Rescue - Dynamic Adaptive & Progress Saved</title>
+  <meta name="description" content="An active manipulative visual math and phonics game with local progress saving and procedural level generation." />
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -504,6 +504,17 @@
       width: 100%;
     }
 
+    .level-badge {
+      font-size: 0.75rem;
+      background: rgba(56, 189, 248, 0.2);
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      color: var(--accent-blue);
+      padding: 2px 10px;
+      border-radius: 10px;
+      margin-top: 4px;
+      display: inline-block;
+    }
+
     @keyframes gentle-bounce {
       0% { transform: translateY(0); }
       100% { transform: translateY(-10px); }
@@ -537,7 +548,7 @@
   <!-- Navigation Bar -->
   <header>
     <div class="brand">
-      <span className="text-2xl" id="brand-icon">🦕</span>
+      <span class="text-2xl" id="brand-icon">🦕</span>
       <span id="brand-title">Dino Rescue</span>
     </div>
 
@@ -547,7 +558,7 @@
         <button class="segment-btn" id="btn-sub-words">🔤 Words</button>
       </div>
 
-      <!-- PROMINENT INTEREST THEME SELECTOR -->
+      <!-- INTEREST THEME SELECTOR -->
       <select id="theme-selector" class="select-pill" title="Choose Interest Theme">
         <option value="dino" selected>🦕 Dino Rescue</option>
         <option value="sports">⚽ Sports League</option>
@@ -591,6 +602,7 @@
       <div class="status-text" id="status-text">
         Tap empty slots to add items and heal! 🧼
       </div>
+      <div class="level-badge" id="level-badge">Procedural Skill Level 1</div>
     </section>
 
     <!-- Workspace Card -->
@@ -629,6 +641,32 @@
   </div>
 
   <script>
+    /* LOCAL STORAGE PERSISTENCE ENGINE */
+    const STORAGE_KEY = 'dino_rescue_app_progress';
+
+    function loadSavedProgress() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          return JSON.parse(saved);
+        }
+      } catch (e) { console.error(e); }
+      return { stars: 0, skillElo: 100, activeThemeKey: 'dino', activeSubject: 'math', activeLevel: 'age6' };
+    }
+
+    function saveProgressData() {
+      try {
+        const state = {
+          stars,
+          skillElo,
+          activeThemeKey,
+          activeSubject,
+          activeLevel
+        };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      } catch (e) { console.error(e); }
+    }
+
     /* Audio Engine */
     class AudioEngine {
       constructor() {
@@ -693,7 +731,6 @@
     }
 
     const audio = new AudioEngine();
-
     window.addEventListener('click', () => audio.initCtx(), { once: true });
     window.addEventListener('touchstart', () => audio.initCtx(), { once: true });
 
@@ -757,12 +794,16 @@
       }
     };
 
-    let activeThemeKey = 'dino';
+    // Load persisted state
+    const loadedState = loadSavedProgress();
+    let activeThemeKey = loadedState.activeThemeKey || 'dino';
+    let activeSubject = loadedState.activeSubject || 'math';
+    let activeLevel = loadedState.activeLevel || 'age6';
+    let stars = loadedState.stars || 0;
+    let skillElo = loadedState.skillElo || 100;
+
     let currentPatientIdx = 0;
     let patientHealth = 25;
-    let stars = 0;
-    let activeSubject = 'math';
-    let activeLevel = 'age6';
     let num1 = 10;
     let num2 = 2;
     let placedOnes = 0;
@@ -779,6 +820,8 @@
       document.getElementById('patient-icon').innerText = p.icon;
       document.getElementById('dino-avatar').innerText = p.icon;
       document.getElementById('progress-fill').style.width = `${patientHealth}%`;
+      document.getElementById('star-count').innerText = stars;
+      document.getElementById('level-badge').innerText = `Procedural Elo: ${skillElo}`;
 
       renderDirt();
     }
@@ -939,6 +982,7 @@
       }
     }
 
+    /* DYNAMIC PROCEDURAL LEVEL GENERATOR */
     function newQuestion() {
       placedOnes = 0;
       userWord = [];
@@ -946,26 +990,45 @@
 
       if (activeSubject === 'math') {
         if (activeLevel === 'age4') {
+          // Dynamic Single-Frame Counting (Procedural 1 to 9)
           num1 = 0;
           num2 = Math.floor(Math.random() * 9) + 1;
           currentSpeechPrompt = `Tap ${num2} slots to count ${num2} ${theme.tokenExtraLabel}!`;
         } else if (activeLevel === 'age6') {
+          // Dynamic Ten-Frame $10 + N$ Addition (Procedural N in 1..8)
           num1 = 10;
           num2 = Math.floor(Math.random() * 8) + 1;
           currentSpeechPrompt = `Tap ${num2} slots to add ${num2} ${theme.tokenExtraLabel}!`;
         } else {
+          // Dynamic Regrouping Addition (Procedural Base 7..9 + Addend 3..8)
           num1 = Math.floor(Math.random() * 3) + 7;
           num2 = Math.floor(Math.random() * 6) + 3;
           currentSpeechPrompt = `Add ${num2} items to complete ${num1} plus ${num2}!`;
         }
       } else {
-        const wordPools = {
-          age4: ['CAT', 'DOG', 'SUN', 'EGG', 'RED', 'BIG'],
-          age6: ['DINO', 'ROAR', 'BONE', 'EGG', 'PARK', 'REXY'],
-          age8: ['FOSSIL', 'JUNGLE', 'TRACKS', 'REPTILE']
-        };
-        const list = wordPools[activeLevel] || wordPools.age6;
-        targetWord = list[Math.floor(Math.random() * list.length)];
+        // Procedural Phonics & Theme Word Synthesizer
+        const CVC_CONSONANTS = ['B', 'C', 'D', 'F', 'G', 'H', 'J', 'M', 'N', 'P', 'R', 'S', 'T', 'V', 'W'];
+        const CVC_VOWELS = ['A', 'E', 'I', 'O', 'U'];
+
+        if (activeLevel === 'age4') {
+          // Synthesize procedural CVC word
+          const c1 = CVC_CONSONANTS[Math.floor(Math.random() * CVC_CONSONANTS.length)];
+          const v = CVC_VOWELS[Math.floor(Math.random() * CVC_VOWELS.length)];
+          const c2 = CVC_CONSONANTS[Math.floor(Math.random() * CVC_CONSONANTS.length)];
+          targetWord = `${c1}${v}${c2}`;
+        } else if (activeLevel === 'age6') {
+          const themeWords: Record<string, string[]> = {
+            dino: ['DINO', 'ROAR', 'BONE', 'EGG', 'PARK', 'REXY'],
+            sports: ['GOAL', 'BALL', 'TEAM', 'STAR', 'RACE', 'FAST'],
+            legos: ['BRICK', 'BUILD', 'STUD', 'CITY', 'TOWER', 'PLAY'],
+            construction: ['DIG', 'CREW', 'LIFT', 'ROCK', 'WORK', 'MUD']
+          };
+          const pool = themeWords[activeThemeKey] || themeWords.dino;
+          targetWord = pool[Math.floor(Math.random() * pool.length)];
+        } else {
+          const advancedWords = ['FOSSIL', 'CHAMPION', 'BUILDER', 'EXCAVATOR', 'TRACKS', 'ROCKET'];
+          targetWord = advancedWords[Math.floor(Math.random() * advancedWords.length)];
+        }
         currentSpeechPrompt = `Spell ${targetWord}`;
       }
 
@@ -984,7 +1047,11 @@
 
       if (correct) {
         stars += 1;
+        skillElo += 25; // Increase procedural skill Elo rating
+        saveProgressData(); // Persist progress to LocalStorage!
+
         document.getElementById('star-count').innerText = stars;
+        document.getElementById('level-badge').innerText = `Procedural Elo: ${skillElo}`;
 
         audio.playBubble();
         if (activeSubject === 'math') {
@@ -1012,7 +1079,7 @@
           audio.speak(`Awesome! ${p.name} is complete!`);
           triggerConfetti();
           document.getElementById('modal-icon').innerText = p.icon;
-          document.getElementById('modal-text').innerText = `You completed ${p.name}!`;
+          document.getElementById('modal-text').innerText = `You completed ${p.name}! Progress saved!`;
           document.getElementById('modal-backdrop')?.classList.add('active');
         } else {
           setTimeout(() => newQuestion(), 1200);
@@ -1021,11 +1088,13 @@
     }
 
     /* Event Listeners */
+    document.getElementById('theme-selector').value = activeThemeKey;
     document.getElementById('theme-selector').addEventListener('change', (e) => {
       audio.initCtx();
       activeThemeKey = e.target.value;
       currentPatientIdx = 0;
       patientHealth = 25;
+      saveProgressData();
       renderDino();
       newQuestion();
     });
@@ -1035,6 +1104,7 @@
       activeSubject = 'math';
       document.getElementById('btn-sub-math').classList.add('active');
       document.getElementById('btn-sub-words').classList.remove('active');
+      saveProgressData();
       newQuestion();
     });
 
@@ -1043,12 +1113,15 @@
       activeSubject = 'words';
       document.getElementById('btn-sub-words').classList.add('active');
       document.getElementById('btn-sub-math').classList.remove('active');
+      saveProgressData();
       newQuestion();
     });
 
+    document.getElementById('age-selector').value = activeLevel;
     document.getElementById('age-selector').addEventListener('change', (e) => {
       audio.initCtx();
       activeLevel = e.target.value;
+      saveProgressData();
       newQuestion();
     });
 
