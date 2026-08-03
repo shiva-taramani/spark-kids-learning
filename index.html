@@ -121,6 +121,23 @@
       color: #ffffff;
     }
 
+    .select-pill {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--card-border);
+      color: var(--text-primary);
+      font-family: var(--font-main);
+      font-size: 0.88rem;
+      padding: 6px 14px;
+      border-radius: 20px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .select-pill option {
+      background: #0f172a;
+      color: white;
+    }
+
     .btn-sound {
       background: rgba(255, 255, 255, 0.1);
       border: 1px solid var(--card-border);
@@ -296,7 +313,7 @@
       justify-content: center;
     }
 
-    /* Place Value Decomposition Banner (1 Ten + 2 Ones = 12) */
+    /* Place Value Decomposition Banner */
     .place-value-banner {
       background: rgba(0, 0, 0, 0.35);
       border: 2px solid var(--accent-gold);
@@ -320,7 +337,7 @@
     .pv-part.ones { color: var(--accent-blue); }
     .pv-part.total { color: var(--accent-emerald); font-size: 1.6rem; }
 
-    /* Ten-Frame Active Manipulative Workspace */
+    /* Ten-Frame Workspace */
     .tenframe-dual-container {
       display: flex;
       flex-direction: column;
@@ -557,6 +574,12 @@
         <button class="segment-btn" id="btn-sub-words">🔤 Words</button>
       </div>
 
+      <select id="age-selector" class="select-pill" title="Select Target Age Group">
+        <option value="age4">Age 4-5 (Junior)</option>
+        <option value="age6" selected>Age 6 (Medic)</option>
+        <option value="age8">Age 7-8 (Chief Vet)</option>
+      </select>
+
       <button class="btn-sound" id="btn-sound-toggle">🔊 Sound On</button>
 
       <div class="star-badge">
@@ -598,9 +621,9 @@
         </div>
       </div>
 
-      <!-- PLACE VALUE DECOMPOSITION BANNER (1 Ten + 2 Ones = 12) -->
+      <!-- PLACE VALUE DECOMPOSITION BANNER -->
       <div class="place-value-banner" id="place-value-banner">
-        <div class="pv-part ten">10 (1 Ten)</div>
+        <div class="pv-part ten" id="pv-tens">10 (1 Ten)</div>
         <div>+</div>
         <div class="pv-part ones" id="pv-ones">0 (Ones)</div>
         <div>=</div>
@@ -704,8 +727,9 @@
     let patientHealth = 25;
     let stars = 0;
     let activeSubject = 'math';
+    let activeLevel = 'age6';
     let num1 = 10;
-    let num2 = 2; // Extra addend to place
+    let num2 = 2; // Target extra addend
     let placedOnes = 0; // Number of ones placed by child
     let targetWord = 'DINO';
     let userWord = [];
@@ -759,8 +783,9 @@
       const banner = document.getElementById('place-value-banner');
       if (activeSubject === 'math') {
         banner.style.display = 'flex';
+        document.getElementById('pv-tens').innerText = `${num1} (${num1 === 10 ? '1 Ten' : 'Base'})`;
         document.getElementById('pv-ones').innerText = `${placedOnes} (Ones)`;
-        document.getElementById('pv-total').innerText = `${10 + placedOnes}`;
+        document.getElementById('pv-total').innerText = `${num1 + placedOnes}`;
       } else {
         banner.style.display = 'none';
       }
@@ -772,39 +797,50 @@
       const title = document.getElementById('question-title');
 
       if (activeSubject === 'math') {
-        title.innerHTML = `Add ${num2} Eggs: <span class="highlight">10 + ${num2} = ?</span>`;
+        if (num1 === 0) {
+          // Junior 1-10 counting
+          title.innerHTML = `Add ${num2} Eggs: <span class="highlight">Count to ${num2}</span>`;
+        } else {
+          // Medic & Chief Vet addition
+          title.innerHTML = `Add ${num2} Eggs: <span class="highlight">${num1} + ${num2} = ?</span>`;
+        }
 
         area.innerHTML = '';
         const dualContainer = document.createElement('div');
         dualContainer.className = 'tenframe-dual-container';
 
-        // Frame 1: Base 10 (Full of 10 Gold Eggs)
-        const frame1Sec = document.createElement('div');
-        frame1Sec.className = 'tenframe-section';
-        frame1Sec.innerHTML = `
-          <div class="tenframe-header">
-            <span class="tenframe-label">Ten-Frame 1 (Base 10)</span>
-            <span style="color: var(--accent-gold); font-weight:700;">10 Gold Eggs</span>
-          </div>`;
-        const grid1 = document.createElement('div');
-        grid1.className = 'tenframe-grid';
+        // Frame 1: Base Frame (Pre-filled with num1 Gold Eggs)
+        if (num1 > 0) {
+          const frame1Sec = document.createElement('div');
+          frame1Sec.className = 'tenframe-section';
+          frame1Sec.innerHTML = `
+            <div class="tenframe-header">
+              <span class="tenframe-label">Ten-Frame 1 (Base ${num1})</span>
+              <span style="color: var(--accent-gold); font-weight:700;">${num1} Gold Eggs</span>
+            </div>`;
+          const grid1 = document.createElement('div');
+          grid1.className = 'tenframe-grid';
 
-        for (let i = 0; i < 10; i++) {
-          const slot = document.createElement('div');
-          slot.className = 'tenframe-slot filled';
-          slot.innerHTML = `<div class="egg-token">🥚</div>`;
-          slot.addEventListener('click', () => audio.playTap(i));
-          grid1.appendChild(slot);
+          for (let i = 0; i < 10; i++) {
+            const slot = document.createElement('div');
+            const isFilled = (i < num1);
+            slot.className = `tenframe-slot ${isFilled ? 'filled' : ''}`;
+            if (isFilled) {
+              slot.innerHTML = `<div class="egg-token">🥚</div>`;
+            }
+            slot.addEventListener('click', () => audio.playTap(i));
+            grid1.appendChild(slot);
+          }
+          frame1Sec.appendChild(grid1);
+          dualContainer.appendChild(frame1Sec);
         }
-        frame1Sec.appendChild(grid1);
-        dualContainer.appendChild(frame1Sec);
 
         // Frame 2: Active Manipulative Ones Frame
         const frame2Sec = document.createElement('div');
         frame2Sec.className = 'tenframe-section';
         frame2Sec.innerHTML = `
           <div class="tenframe-header">
-            <span class="tenframe-label">Ten-Frame 2 (Tap to add ${num2} Ones)</span>
+            <span class="tenframe-label">${num1 > 0 ? 'Ten-Frame 2' : 'Ten-Frame'} (Tap to add ${num2} Ones)</span>
             <span style="color: var(--accent-blue); font-weight:700;">${placedOnes} / ${num2} Placed</span>
           </div>`;
         const grid2 = document.createElement('div');
@@ -823,14 +859,14 @@
           slot.addEventListener('click', () => {
             audio.initCtx();
             if (i < placedOnes) {
-              // Tap filled slot to remove egg
+              // Tap an already filled slot to clear back to that slot
               placedOnes = i;
               audio.playTap(placedOnes);
             } else {
-              // Tap slot to add egg
+              // Tap slot to add egg up to slot i + 1
               placedOnes = i + 1;
-              audio.playTap(10 + placedOnes);
-              audio.speak(`${10 + placedOnes}`);
+              audio.playTap(num1 + placedOnes);
+              audio.speak(`${num1 + placedOnes}`);
             }
 
             updatePlaceValueBanner();
@@ -886,18 +922,39 @@
       }
     }
 
+    /* Adaptive Multi-Age Question Generator */
     function newQuestion() {
       placedOnes = 0;
       userWord = [];
+
       if (activeSubject === 'math') {
-        num1 = 10;
-        num2 = Math.floor(Math.random() * 8) + 1;
-        currentSpeechPrompt = `Tap ${num2} slots to add ${num2} blue eggs!`;
+        if (activeLevel === 'age4') {
+          // Junior: 1 to 10 counting on a single frame
+          num1 = 0;
+          num2 = Math.floor(Math.random() * 9) + 1; // 1 to 9
+          currentSpeechPrompt = `Tap ${num2} slots to count ${num2} eggs!`;
+        } else if (activeLevel === 'age6') {
+          // Medic: 10 + N addition
+          num1 = 10;
+          num2 = Math.floor(Math.random() * 8) + 1; // 1 to 8
+          currentSpeechPrompt = `Tap ${num2} slots to add ${num2} blue eggs!`;
+        } else {
+          // Chief Vet: Addition up to 20 (varying base num1 like 8 or 9)
+          num1 = Math.floor(Math.random() * 3) + 7; // 7, 8, or 9
+          num2 = Math.floor(Math.random() * 6) + 3; // 3 to 8
+          currentSpeechPrompt = `Add ${num2} eggs to complete ${num1} plus ${num2}!`;
+        }
       } else {
-        const words = ['DINO', 'ROAR', 'BONE', 'EGG', 'PARK', 'REXY'];
-        targetWord = words[Math.floor(Math.random() * words.length)];
+        const wordPools = {
+          age4: ['CAT', 'DOG', 'SUN', 'EGG', 'RED', 'BIG'],
+          age6: ['DINO', 'ROAR', 'BONE', 'EGG', 'PARK', 'REXY'],
+          age8: ['FOSSIL', 'JUNGLE', 'TRACKS', 'REPTILE']
+        };
+        const list = wordPools[activeLevel] || wordPools.age6;
+        targetWord = list[Math.floor(Math.random() * list.length)];
         currentSpeechPrompt = `Spell ${targetWord}`;
       }
+
       updatePlaceValueBanner();
       renderWorkspace();
     }
@@ -917,7 +974,11 @@
 
         audio.playBubble();
         if (activeSubject === 'math') {
-          audio.speak(`Ten plus ${num2} equals ${10 + num2}! Excellent!`);
+          if (num1 === 0) {
+            audio.speak(`You counted ${num2} eggs! Great job!`);
+          } else {
+            audio.speak(`${num1} plus ${num2} equals ${num1 + num2}! Excellent!`);
+          }
         } else {
           audio.speak(`${targetWord}! Great job!`);
         }
@@ -959,6 +1020,12 @@
       newQuestion();
     });
 
+    document.getElementById('age-selector').addEventListener('change', (e) => {
+      audio.initCtx();
+      activeLevel = e.target.value;
+      newQuestion();
+    });
+
     document.getElementById('btn-read-question').addEventListener('click', () => {
       audio.initCtx();
       audio.speak(currentSpeechPrompt);
@@ -987,12 +1054,12 @@
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
       const particles = [];
-      const colors = ['#ffb703', '#34d399', '#38bdf8', '#fb7185'];
+      const palette = ['#ffb703', '#34d399', '#38bdf8', '#fb7185'];
       for (let i = 0; i < 70; i++) {
         particles.push({
           x: canvas.width / 2, y: canvas.height / 2,
           vx: (Math.random() - 0.5) * 12, vy: (Math.random() - 0.7) * 14,
-          color: colors[Math.color || Math.floor(Math.random() * colors.length)],
+          color: palette[Math.floor(Math.random() * palette.length)],
           size: Math.random() * 8 + 4
         });
       }
@@ -1001,7 +1068,7 @@
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         particles.forEach(p => {
           p.x += p.vx; p.y += p.vy; p.vy += 0.3;
-          ctx.fillStyle = p.color || '#ffb703';
+          ctx.fillStyle = p.color;
           ctx.fillRect(p.x, p.y, p.size, p.size);
         });
         f++;
