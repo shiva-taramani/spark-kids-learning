@@ -7,10 +7,11 @@ import { TenFrameWorkspace } from '../components/TenFrameWorkspace';
 import { PhonicsWorkspace } from '../components/PhonicsWorkspace';
 import { VictoryModal } from '../components/VictoryModal';
 import { audioEngine } from '../lib/audioEngine';
-import { PATIENTS } from '../lib/patientData';
+import { THEMES } from '../lib/themeData';
 
 export default function Home() {
   const [activeSubject, setActiveSubject] = useState<'math' | 'words'>('math');
+  const [activeThemeKey, setActiveThemeKey] = useState<string>('dino');
   const [activeLevel, setActiveLevel] = useState<string>('age6');
   const [patientIdx, setPatientIdx] = useState<number>(0);
   const [health, setHealth] = useState<number>(25);
@@ -27,7 +28,8 @@ export default function Home() {
   const [speechPrompt, setSpeechPrompt] = useState<string>('Tap 2 slots to add 2 blue eggs!');
   const [soundEnabled, setSoundEnabled] = useState<boolean>(true);
 
-  const currentPatient = PATIENTS[patientIdx];
+  const activeTheme = THEMES[activeThemeKey] || THEMES.dino;
+  const currentPatient = activeTheme.patients[patientIdx % activeTheme.patients.length];
 
   const generateQuestion = useCallback(() => {
     setPlacedOnes(0);
@@ -38,18 +40,18 @@ export default function Home() {
         const target = Math.floor(Math.random() * 9) + 1;
         setNum1(0);
         setNum2(target);
-        setSpeechPrompt(`Tap ${target} slots to count ${target} eggs!`);
+        setSpeechPrompt(`Tap ${target} slots to count ${target} ${activeTheme.tokenExtraLabel}!`);
       } else if (activeLevel === 'age6') {
         const addend = Math.floor(Math.random() * 8) + 1;
         setNum1(10);
         setNum2(addend);
-        setSpeechPrompt(`Tap ${addend} slots to add ${addend} blue eggs!`);
+        setSpeechPrompt(`Tap ${addend} slots to add ${addend} ${activeTheme.tokenExtraLabel}!`);
       } else {
         const base = Math.floor(Math.random() * 3) + 7;
         const addend = Math.floor(Math.random() * 6) + 3;
         setNum1(base);
         setNum2(addend);
-        setSpeechPrompt(`Add ${addend} eggs to complete ${base} plus ${addend}!`);
+        setSpeechPrompt(`Add ${addend} ${activeTheme.tokenExtraLabel} to complete ${base} plus ${addend}!`);
       }
     } else {
       const wordPools: Record<string, string[]> = {
@@ -62,7 +64,7 @@ export default function Home() {
       setTargetWord(selected);
       setSpeechPrompt(`Spell ${selected}`);
     }
-  }, [activeSubject, activeLevel]);
+  }, [activeSubject, activeLevel, activeTheme.tokenExtraLabel]);
 
   useEffect(() => {
     generateQuestion();
@@ -74,7 +76,7 @@ export default function Home() {
 
     if (activeSubject === 'math') {
       if (num1 === 0) {
-        audioEngine.speak(`You counted ${num2} eggs! Great job!`);
+        audioEngine.speak(`You counted ${num2}! Great job!`);
       } else {
         audioEngine.speak(`${num1} plus ${num2} equals ${num1 + num2}! Excellent!`);
       }
@@ -86,7 +88,7 @@ export default function Home() {
       const newHealth = Math.min(100, h + 34);
       if (newHealth >= 100) {
         setIsHappy(true);
-        audioEngine.speak(`Awesome! ${currentPatient.name} is fully healed!`);
+        audioEngine.speak(`Awesome! ${currentPatient.name} is fully complete!`);
         setIsVictoryOpen(true);
       } else {
         setTimeout(generateQuestion, 1200);
@@ -130,7 +132,7 @@ export default function Home() {
   const handleNextPatient = () => {
     setIsVictoryOpen(false);
     setIsHappy(false);
-    setPatientIdx((idx) => (idx + 1) % PATIENTS.length);
+    setPatientIdx((idx) => (idx + 1) % activeTheme.patients.length);
     setHealth(25);
     generateQuestion();
   };
@@ -140,6 +142,12 @@ export default function Home() {
       <HeaderNav
         activeSubject={activeSubject}
         setActiveSubject={setActiveSubject}
+        activeTheme={activeThemeKey}
+        setActiveTheme={(t) => {
+          setActiveThemeKey(t);
+          setPatientIdx(0);
+          setHealth(25);
+        }}
         activeLevel={activeLevel}
         setActiveLevel={setActiveLevel}
         soundEnabled={soundEnabled}
@@ -151,8 +159,13 @@ export default function Home() {
       />
 
       <div className="w-full grid grid-cols-1 md:grid-cols-[320px_1fr] gap-5 items-start">
-        {/* Dino Stage Panel */}
-        <DinoStage patient={currentPatient} health={health} isHappy={isHappy} />
+        {/* Patient / Stage Panel */}
+        <DinoStage
+          patient={currentPatient}
+          health={health}
+          isHappy={isHappy}
+          statusAction={activeTheme.statusAction}
+        />
 
         {/* Interactive Workspace Panel */}
         <section className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-[32px] p-6 shadow-2xl flex flex-col gap-4">
@@ -167,9 +180,9 @@ export default function Home() {
             <div className="text-3xl font-bold">
               {activeSubject === 'math' ? (
                 num1 === 0 ? (
-                  <>Add {num2} Eggs: <span className="text-amber-400">Count to {num2}</span></>
+                  <>Add {num2}: <span className="text-amber-400">Count to {num2}</span></>
                 ) : (
-                  <>Add {num2} Eggs: <span className="text-amber-400">{num1} + {num2} = ?</span></>
+                  <>Add {num2}: <span className="text-amber-400">{num1} + {num2} = ?</span></>
                 )
               ) : (
                 <>Spell: <span className="text-amber-400">{targetWord}</span></>
@@ -194,6 +207,7 @@ export default function Home() {
               num1={num1}
               num2={num2}
               placedOnes={placedOnes}
+              theme={activeTheme}
               onSlotClick={handleSlotClick}
               onBaseClick={(i) => audioEngine.playTap(i)}
             />

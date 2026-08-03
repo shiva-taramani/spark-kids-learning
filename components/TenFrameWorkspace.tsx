@@ -1,11 +1,13 @@
 'use client';
 
 import React from 'react';
+import { ThemeConfig } from '../lib/themeData';
 
 interface TenFrameWorkspaceProps {
   num1: number;
   num2: number;
   placedOnes: number;
+  theme: ThemeConfig;
   onSlotClick: (index: number) => void;
   onBaseClick: (index: number) => void;
 }
@@ -14,6 +16,7 @@ export const TenFrameWorkspace: React.FC<TenFrameWorkspaceProps> = ({
   num1,
   num2,
   placedOnes,
+  theme,
   onSlotClick,
   onBaseClick,
 }) => {
@@ -24,7 +27,7 @@ export const TenFrameWorkspace: React.FC<TenFrameWorkspaceProps> = ({
         <div className="bg-black/25 rounded-2xl p-3.5 border border-white/10">
           <div className="flex justify-between items-center mb-2">
             <span className="font-bold text-xs text-amber-400 uppercase">Ten-Frame 1 (Base {num1})</span>
-            <span className="text-amber-400 font-bold text-xs">{num1} Gold Eggs</span>
+            <span className="text-amber-400 font-bold text-xs">{num1} {theme.tokenBaseLabel}</span>
           </div>
           <div className="grid grid-cols-5 gap-2.5">
             {Array.from({ length: 10 }).map((_, i) => {
@@ -39,7 +42,7 @@ export const TenFrameWorkspace: React.FC<TenFrameWorkspaceProps> = ({
                 >
                   {isFilled && (
                     <div className="w-[84%] h-[84%] rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex justify-center items-center text-xl shadow-md animate-pop">
-                      🥚
+                      {theme.tokenBaseIcon}
                     </div>
                   )}
                 </div>
@@ -78,7 +81,7 @@ export const TenFrameWorkspace: React.FC<TenFrameWorkspaceProps> = ({
               >
                 {isFilled && (
                   <div className="w-[84%] h-[84%] rounded-full bg-gradient-to-br from-sky-400 to-blue-600 flex justify-center items-center text-xl shadow-md animate-pop">
-                    🪺
+                    {theme.tokenExtraIcon}
                   </div>
                 )}
               </div>
