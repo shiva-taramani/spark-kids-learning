@@ -1,0 +1,218 @@
+'use client';
+
+import React, { useState, useEffect, useCallback } from 'react';
+import { HeaderNav } from '../components/HeaderNav';
+import { DinoStage } from '../components/DinoStage';
+import { TenFrameWorkspace } from '../components/TenFrameWorkspace';
+import { PhonicsWorkspace } from '../components/PhonicsWorkspace';
+import { VictoryModal } from '../components/VictoryModal';
+import { audioEngine } from '../lib/audioEngine';
+import { PATIENTS } from '../lib/patientData';
+
+export default function Home() {
+  const [activeSubject, setActiveSubject] = useState<'math' | 'words'>('math');
+  const [activeLevel, setActiveLevel] = useState<string>('age6');
+  const [patientIdx, setPatientIdx] = useState<number>(0);
+  const [health, setHealth] = useState<number>(25);
+  const [stars, setStars] = useState<number>(0);
+  const [isHappy, setIsHappy] = useState<boolean>(false);
+  const [isVictoryOpen, setIsVictoryOpen] = useState<boolean>(false);
+
+  // Question state
+  const [num1, setNum1] = useState<number>(10);
+  const [num2, setNum2] = useState<number>(2);
+  const [placedOnes, setPlacedOnes] = useState<number>(0);
+  const [targetWord, setTargetWord] = useState<string>('DINO');
+  const [userWord, setUserWord] = useState<string[]>([]);
+  const [speechPrompt, setSpeechPrompt] = useState<string>('Tap 2 slots to add 2 blue eggs!');
+  const [soundEnabled, setSoundEnabled] = useState<boolean>(true);
+
+  const currentPatient = PATIENTS[patientIdx];
+
+  const generateQuestion = useCallback(() => {
+    setPlacedOnes(0);
+    setUserWord([]);
+
+    if (activeSubject === 'math') {
+      if (activeLevel === 'age4') {
+        const target = Math.floor(Math.random() * 9) + 1;
+        setNum1(0);
+        setNum2(target);
+        setSpeechPrompt(`Tap ${target} slots to count ${target} eggs!`);
+      } else if (activeLevel === 'age6') {
+        const addend = Math.floor(Math.random() * 8) + 1;
+        setNum1(10);
+        setNum2(addend);
+        setSpeechPrompt(`Tap ${addend} slots to add ${addend} blue eggs!`);
+      } else {
+        const base = Math.floor(Math.random() * 3) + 7;
+        const addend = Math.floor(Math.random() * 6) + 3;
+        setNum1(base);
+        setNum2(addend);
+        setSpeechPrompt(`Add ${addend} eggs to complete ${base} plus ${addend}!`);
+      }
+    } else {
+      const wordPools: Record<string, string[]> = {
+        age4: ['CAT', 'DOG', 'SUN', 'EGG', 'RED', 'BIG'],
+        age6: ['DINO', 'ROAR', 'BONE', 'EGG', 'PARK', 'REXY'],
+        age8: ['FOSSIL', 'JUNGLE', 'TRACKS', 'REPTILE'],
+      };
+      const list = wordPools[activeLevel] || wordPools.age6;
+      const selected = list[Math.floor(Math.random() * list.length)];
+      setTargetWord(selected);
+      setSpeechPrompt(`Spell ${selected}`);
+    }
+  }, [activeSubject, activeLevel]);
+
+  useEffect(() => {
+    generateQuestion();
+  }, [generateQuestion]);
+
+  const handleCorrect = useCallback(() => {
+    setStars((s) => s + 1);
+    audioEngine.playBubble();
+
+    if (activeSubject === 'math') {
+      if (num1 === 0) {
+        audioEngine.speak(`You counted ${num2} eggs! Great job!`);
+      } else {
+        audioEngine.speak(`${num1} plus ${num2} equals ${num1 + num2}! Excellent!`);
+      }
+    } else {
+      audioEngine.speak(`${targetWord}! Great job!`);
+    }
+
+    setHealth((h) => {
+      const newHealth = Math.min(100, h + 34);
+      if (newHealth >= 100) {
+        setIsHappy(true);
+        audioEngine.speak(`Awesome! ${currentPatient.name} is fully healed!`);
+        setIsVictoryOpen(true);
+      } else {
+        setTimeout(generateQuestion, 1200);
+      }
+      return newHealth;
+    });
+  }, [activeSubject, num1, num2, targetWord, currentPatient.name, generateQuestion]);
+
+  const handleSlotClick = (i: number) => {
+    audioEngine.initCtx();
+    let newPlaced = 0;
+    if (i < placedOnes) {
+      newPlaced = i;
+      audioEngine.playTap(newPlaced);
+    } else {
+      newPlaced = i + 1;
+      audioEngine.playTap(num1 + newPlaced);
+      audioEngine.speak(`${num1 + newPlaced}`);
+    }
+    setPlacedOnes(newPlaced);
+
+    if (newPlaced === num2) {
+      setTimeout(handleCorrect, 400);
+    }
+  };
+
+  const handleLetterClick = (letter: string, idx: number) => {
+    audioEngine.initCtx();
+    if (userWord.length < targetWord.length) {
+      const nextWord = [...userWord, letter];
+      setUserWord(nextWord);
+      audioEngine.playTap(idx);
+      audioEngine.speak(letter.toLowerCase());
+
+      if (nextWord.length === targetWord.length && nextWord.join('') === targetWord) {
+        setTimeout(handleCorrect, 400);
+      }
+    }
+  };
+
+  const handleNextPatient = () => {
+    setIsVictoryOpen(false);
+    setIsHappy(false);
+    setPatientIdx((idx) => (idx + 1) % PATIENTS.length);
+    setHealth(25);
+    generateQuestion();
+  };
+
+  return (
+    <main className="w-full max-w-[980px] flex flex-col items-center">
+      <HeaderNav
+        activeSubject={activeSubject}
+        setActiveSubject={setActiveSubject}
+        activeLevel={activeLevel}
+        setActiveLevel={setActiveLevel}
+        soundEnabled={soundEnabled}
+        toggleSound={() => {
+          audioEngine.enabled = !soundEnabled;
+          setSoundEnabled(!soundEnabled);
+        }}
+        stars={stars}
+      />
+
+      <div className="w-full grid grid-cols-1 md:grid-cols-[320px_1fr] gap-5 items-start">
+        {/* Dino Stage Panel */}
+        <DinoStage patient={currentPatient} health={health} isHappy={isHappy} />
+
+        {/* Interactive Workspace Panel */}
+        <section className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-[32px] p-6 shadow-2xl flex flex-col gap-4">
+          <div className="text-center p-3.5 bg-white/5 rounded-2xl border border-white/10 flex justify-center items-center gap-3">
+            <button
+              onClick={() => audioEngine.speak(speechPrompt)}
+              className="bg-amber-500/20 border border-amber-400 text-amber-400 text-lg w-10 h-10 rounded-full flex items-center justify-center hover:scale-105 transition-transform"
+            >
+              🔊
+            </button>
+
+            <div className="text-3xl font-bold">
+              {activeSubject === 'math' ? (
+                num1 === 0 ? (
+                  <>Add {num2} Eggs: <span className="text-amber-400">Count to {num2}</span></>
+                ) : (
+                  <>Add {num2} Eggs: <span className="text-amber-400">{num1} + {num2} = ?</span></>
+                )
+              ) : (
+                <>Spell: <span className="text-amber-400">{targetWord}</span></>
+              )}
+            </div>
+          </div>
+
+          {/* Place Value Banner */}
+          {activeSubject === 'math' && (
+            <div className="bg-black/35 border-2 border-amber-400 rounded-2xl px-5 py-3 flex justify-around items-center font-bold text-xl">
+              <div className="text-amber-400">{num1} ({num1 === 10 ? '1 Ten' : 'Base'})</div>
+              <div>+</div>
+              <div className="text-sky-400">{placedOnes} (Ones)</div>
+              <div>=</div>
+              <div className="text-emerald-400 text-2xl">{num1 + placedOnes}</div>
+            </div>
+          )}
+
+          {/* Dynamic Workspace */}
+          {activeSubject === 'math' ? (
+            <TenFrameWorkspace
+              num1={num1}
+              num2={num2}
+              placedOnes={placedOnes}
+              onSlotClick={handleSlotClick}
+              onBaseClick={(i) => audioEngine.playTap(i)}
+            />
+          ) : (
+            <PhonicsWorkspace
+              targetWord={targetWord}
+              userWord={userWord}
+              onLetterClick={handleLetterClick}
+            />
+          )}
+        </section>
+      </div>
+
+      <VictoryModal
+        isOpen={isVictoryOpen}
+        dinoIcon={currentPatient.icon}
+        patientName={currentPatient.name}
+        onNext={handleNextPatient}
+      />
+    </main>
+  );
+}
