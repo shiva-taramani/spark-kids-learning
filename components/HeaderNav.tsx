@@ -15,6 +15,8 @@ interface HeaderNavProps {
   toggleSound: () => void;
   stars: number;
   unlockedCount: number;
+  activeChildName: string;
+  onOpenChildModal: () => void;
   onOpenAlbum: () => void;
 }
 
@@ -29,6 +31,8 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({
   toggleSound,
   stars,
   unlockedCount,
+  activeChildName,
+  onOpenChildModal,
   onOpenAlbum,
 }) => {
   const [parentEmail, setParentEmail] = useState<string | null>(null);
@@ -61,6 +65,16 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({
       </div>
 
       <div className="flex items-center gap-2.5 flex-wrap">
+        {/* Active Child Profile Switcher Pill */}
+        <button
+          onClick={onOpenChildModal}
+          className="glass-pill text-sky-300 font-bold text-xs px-3.5 py-2 rounded-full cursor-pointer hover:scale-105 flex items-center gap-1.5 border-sky-400/30 shadow-md"
+        >
+          <span>👦</span>
+          <span>{activeChildName}</span>
+          <span className="text-sky-400 text-[10px]">▾</span>
+        </button>
+
         {/* iOS-Style Segmented Control */}
         <div className="bg-black/40 p-1.5 rounded-full flex gap-1 border border-white/10 shadow-inner">
           <button
@@ -137,7 +151,7 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({
           className="glass-pill text-sky-300 font-bold text-xs px-3.5 py-2 rounded-full cursor-pointer hover:scale-105 flex items-center gap-1 border-sky-400/30"
         >
           <span>🔑</span>
-          <span>{parentEmail ? 'Parent Account' : 'Parent Sign In'}</span>
+          <span>{parentEmail ? 'Parent' : 'Parent Sign In'}</span>
         </Link>
 
         {/* Star Badge */}
