@@ -1,6 +1,8 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import Link from 'next/link';
+import { createClient } from '../lib/supabase/client';
 
 interface HeaderNavProps {
   activeSubject: 'math' | 'words';
@@ -29,6 +31,23 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({
   unlockedCount,
   onOpenAlbum,
 }) => {
+  const [parentEmail, setParentEmail] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function checkUser() {
+      try {
+        const supabase = createClient();
+        const { data } = await supabase.auth.getUser();
+        if (data && data.user) {
+          setParentEmail(data.user.email || 'Logged In');
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    checkUser();
+  }, []);
+
   return (
     <header className="w-full max-w-[980px] flex justify-between items-center glass-panel px-6 py-3.5 rounded-[36px] mb-6 shadow-2xl flex-wrap gap-3">
       {/* Brand Title */}
@@ -111,6 +130,15 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({
         >
           {soundEnabled ? '🔊 Sound' : '🔇 Mute'}
         </button>
+
+        {/* Parent Google Auth Sign-In Pill */}
+        <Link
+          href="/login"
+          className="glass-pill text-sky-300 font-bold text-xs px-3.5 py-2 rounded-full cursor-pointer hover:scale-105 flex items-center gap-1 border-sky-400/30"
+        >
+          <span>🔑</span>
+          <span>{parentEmail ? 'Parent Account' : 'Parent Sign In'}</span>
+        </Link>
 
         {/* Star Badge */}
         <div className="bg-gradient-to-r from-amber-500/20 to-orange-500/20 border border-amber-400/40 text-amber-300 px-4 py-2 rounded-full font-bold text-xs flex items-center gap-1.5 shadow-lg">
