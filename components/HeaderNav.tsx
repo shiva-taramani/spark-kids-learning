@@ -55,14 +55,14 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({
   return (
     <header className="w-full max-w-[980px] flex justify-between items-center glass-panel px-6 py-3.5 rounded-[36px] mb-6 shadow-2xl flex-wrap gap-3">
       {/* Brand Title */}
-      <div className="flex items-center gap-3 font-bold text-2xl text-slate-50 tracking-tight">
+      <Link href="/" className="flex items-center gap-3 font-bold text-2xl text-slate-50 tracking-tight hover:opacity-90 transition-opacity">
         <div className="w-10 h-10 rounded-2xl bg-white/10 flex items-center justify-center text-2xl shadow-inner border border-white/10">
           {activeTheme === 'sports' ? '⚽' : activeTheme === 'legos' ? '🧱' : activeTheme === 'construction' ? '🚜' : '🦕'}
         </div>
         <span>
           {activeTheme === 'sports' ? 'Sports League' : activeTheme === 'legos' ? 'Lego Builders' : activeTheme === 'construction' ? 'Construction Crew' : 'Dino Rescue'}
         </span>
-      </div>
+      </Link>
 
       <div className="flex items-center gap-2.5 flex-wrap">
         {/* Active Child Profile Switcher Pill */}
@@ -147,7 +147,7 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({
 
         {/* Parent Google Auth Sign-In Pill */}
         <Link
-          href="/login"
+          href={parentEmail ? '/dashboard' : '/login'}
           className="glass-pill text-sky-300 font-bold text-xs px-3.5 py-2 rounded-full cursor-pointer hover:scale-105 flex items-center gap-1 border-sky-400/30"
         >
           <span>🔑</span>
