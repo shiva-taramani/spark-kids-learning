@@ -6,6 +6,7 @@ import { DinoStage } from '../../components/DinoStage';
 import { TenFrameWorkspace } from '../../components/TenFrameWorkspace';
 import { PhonicsWorkspace } from '../../components/PhonicsWorkspace';
 import { CircuitWorkspace } from '../../components/CircuitWorkspace';
+import { GenericQuizWorkspace } from '../../components/GenericQuizWorkspace';
 import { VictoryModal } from '../../components/VictoryModal';
 import { StickerAlbumModal } from '../../components/StickerAlbumModal';
 import { ChildProfileModal } from '../../components/ChildProfileModal';
@@ -25,7 +26,7 @@ export default function GamePage() {
   const [isAlbumOpen, setIsAlbumOpen] = useState<boolean>(false);
   const [isVictoryOpen, setIsVictoryOpen] = useState<boolean>(false);
 
-  const [activeSubject, setActiveSubject] = useState<'math' | 'words' | 'circuits'>('math');
+  const [activeSubject, setActiveSubject] = useState<string>('math');
   const [activeThemeKey, setActiveThemeKey] = useState<string>('dino');
   const [activeLevel, setActiveLevel] = useState<string>('age6');
   const [patientIdx, setPatientIdx] = useState<number>(0);
@@ -105,8 +106,10 @@ export default function GamePage() {
       const selected = list[Math.floor(Math.random() * list.length)];
       setTargetWord(selected);
       setSpeechPrompt(`Spell ${selected}`);
-    } else {
+    } else if (activeSubject === 'circuits') {
       setSpeechPrompt("Connect Red positive wire and Black negative wire through the switch to light the LED safely!");
+    } else {
+      setSpeechPrompt("Answer the question to explore space and science!");
     }
   }, [activeSubject, activeLevel, activeTheme.tokenExtraLabel]);
 
@@ -159,8 +162,10 @@ export default function GamePage() {
       }
     } else if (activeSubject === 'words') {
       audioEngine.speak(`${targetWord}! Great job!`);
-    } else {
+    } else if (activeSubject === 'circuits') {
       audioEngine.speak("Circuit complete! Powered safely!");
+    } else {
+      audioEngine.speak("Great job exploring!");
     }
 
     setHealth((h) => {
@@ -289,8 +294,10 @@ export default function GamePage() {
                 )
               ) : activeSubject === 'words' ? (
                 <>Spell: <span className="text-amber-300">{targetWord}</span></>
-              ) : (
+              ) : activeSubject === 'circuits' ? (
                 <>Electric Circuit: <span className="text-emerald-300">Power the Light Safely ⚡</span></>
+              ) : (
+                <>Explore: <span className="text-sky-300">{activeSubject.toUpperCase()}</span></>
               )}
             </div>
           </div>
@@ -322,8 +329,10 @@ export default function GamePage() {
               userWord={userWord}
               onLetterClick={handleLetterClick}
             />
-          ) : (
+          ) : activeSubject === 'circuits' ? (
             <CircuitWorkspace onSuccess={handleCorrect} />
+          ) : (
+            <GenericQuizWorkspace pathId={activeSubject} onSuccess={handleCorrect} />
           )}
         </section>
       </div>
