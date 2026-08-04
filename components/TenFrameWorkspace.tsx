@@ -21,15 +21,19 @@ export const TenFrameWorkspace: React.FC<TenFrameWorkspaceProps> = ({
   onBaseClick,
 }) => {
   return (
-    <div className="flex flex-col gap-3.5">
+    <div className="flex flex-col gap-4">
       {/* Frame 1: Base Frame */}
       {num1 > 0 && (
-        <div className="bg-black/25 rounded-2xl p-3.5 border border-white/10">
-          <div className="flex justify-between items-center mb-2">
-            <span className="font-bold text-xs text-amber-400 uppercase">Ten-Frame 1 (Base {num1})</span>
-            <span className="text-amber-400 font-bold text-xs">{num1} {theme.tokenBaseLabel}</span>
+        <div className="bg-black/30 rounded-[28px] p-4 border border-white/10 shadow-inner">
+          <div className="flex justify-between items-center mb-2.5">
+            <span className="font-bold text-xs text-amber-400 uppercase tracking-wider">
+              Ten-Frame 1 (Base {num1})
+            </span>
+            <span className="text-amber-300 font-bold text-xs bg-amber-500/10 px-3 py-1 rounded-full border border-amber-500/20">
+              {num1} {theme.tokenBaseLabel}
+            </span>
           </div>
-          <div className="grid grid-cols-5 gap-2.5">
+          <div className="grid grid-cols-5 gap-3">
             {Array.from({ length: 10 }).map((_, i) => {
               const isFilled = i < num1;
               return (
@@ -37,11 +41,11 @@ export const TenFrameWorkspace: React.FC<TenFrameWorkspaceProps> = ({
                   key={`frame1-${i}`}
                   onClick={() => onBaseClick(i)}
                   className={`aspect-square bg-white/5 border-2 ${
-                    isFilled ? 'border-white/40 border-solid' : 'border-white/20 border-dashed'
-                  } rounded-xl flex justify-center items-center cursor-pointer hover:bg-white/10 hover:scale-105 transition-all`}
+                    isFilled ? 'border-white/30 border-solid shadow-inner' : 'border-white/15 border-dashed'
+                  } rounded-2xl flex justify-center items-center cursor-pointer hover:bg-white/10 transition-all`}
                 >
                   {isFilled && (
-                    <div className="w-[84%] h-[84%] rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex justify-center items-center text-xl shadow-md animate-pop">
+                    <div className="w-[85%] h-[85%] token-3d token-gold flex justify-center items-center text-2xl shadow-xl animate-spring">
                       {theme.tokenBaseIcon}
                     </div>
                   )}
@@ -53,16 +57,16 @@ export const TenFrameWorkspace: React.FC<TenFrameWorkspaceProps> = ({
       )}
 
       {/* Frame 2: Active Manipulative Ones Frame */}
-      <div className="bg-black/25 rounded-2xl p-3.5 border border-white/10">
-        <div className="flex justify-between items-center mb-2">
-          <span className="font-bold text-xs text-amber-400 uppercase">
+      <div className="bg-black/30 rounded-[28px] p-4 border border-white/10 shadow-inner">
+        <div className="flex justify-between items-center mb-2.5">
+          <span className="font-bold text-xs text-amber-400 uppercase tracking-wider">
             {num1 > 0 ? 'Ten-Frame 2' : 'Ten-Frame'} (Tap to add {num2} Ones)
           </span>
-          <span className="text-sky-400 font-bold text-xs">
+          <span className="text-sky-300 font-bold text-xs bg-sky-500/10 px-3 py-1 rounded-full border border-sky-500/20">
             {placedOnes} / {num2} Placed
           </span>
         </div>
-        <div className="grid grid-cols-5 gap-2.5">
+        <div className="grid grid-cols-5 gap-3">
           {Array.from({ length: 10 }).map((_, i) => {
             const isFilled = i < placedOnes;
             const isTargetHint = i === placedOnes && placedOnes < num2;
@@ -73,14 +77,14 @@ export const TenFrameWorkspace: React.FC<TenFrameWorkspaceProps> = ({
                 onClick={() => onSlotClick(i)}
                 className={`aspect-square bg-white/5 border-2 ${
                   isFilled
-                    ? 'border-white/40 border-solid'
+                    ? 'border-white/30 border-solid shadow-inner'
                     : isTargetHint
-                    ? 'border-sky-400 shadow-[0_0_15px_rgba(56,189,248,0.5)] animate-pulse'
-                    : 'border-white/20 border-dashed'
-                } rounded-xl flex justify-center items-center cursor-pointer hover:bg-white/10 hover:scale-105 transition-all`}
+                    ? 'border-sky-400 animate-glow-sky'
+                    : 'border-white/15 border-dashed'
+                } rounded-2xl flex justify-center items-center cursor-pointer hover:bg-white/10 transition-all`}
               >
                 {isFilled && (
-                  <div className="w-[84%] h-[84%] rounded-full bg-gradient-to-br from-sky-400 to-blue-600 flex justify-center items-center text-xl shadow-md animate-pop">
+                  <div className="w-[85%] h-[85%] token-3d token-blue flex justify-center items-center text-2xl shadow-xl animate-spring">
                     {theme.tokenExtraIcon}
                   </div>
                 )}

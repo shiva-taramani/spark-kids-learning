@@ -88,7 +88,7 @@ export default function Home() {
       const newHealth = Math.min(100, h + 34);
       if (newHealth >= 100) {
         setIsHappy(true);
-        audioEngine.speak(`Awesome! ${currentPatient.name} is fully complete!`);
+        audioEngine.speak(`Awesome! ${currentPatient.name} is complete!`);
         setIsVictoryOpen(true);
       } else {
         setTimeout(generateQuestion, 1200);
@@ -158,8 +158,8 @@ export default function Home() {
         stars={stars}
       />
 
-      <div className="w-full grid grid-cols-1 md:grid-cols-[320px_1fr] gap-5 items-start">
-        {/* Patient / Stage Panel */}
+      <div className="w-full grid grid-cols-1 md:grid-cols-[320px_1fr] gap-6 items-start">
+        {/* Hero Character Stage */}
         <DinoStage
           patient={currentPatient}
           health={health}
@@ -168,36 +168,36 @@ export default function Home() {
         />
 
         {/* Interactive Workspace Panel */}
-        <section className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-[32px] p-6 shadow-2xl flex flex-col gap-4">
-          <div className="text-center p-3.5 bg-white/5 rounded-2xl border border-white/10 flex justify-center items-center gap-3">
+        <section className="glass-panel rounded-[36px] p-6 shadow-2xl flex flex-col gap-5">
+          <div className="text-center p-4 bg-white/5 rounded-[24px] border border-white/10 flex justify-center items-center gap-3.5 shadow-inner">
             <button
               onClick={() => audioEngine.speak(speechPrompt)}
-              className="bg-amber-500/20 border border-amber-400 text-amber-400 text-lg w-10 h-10 rounded-full flex items-center justify-center hover:scale-105 transition-transform"
+              className="bg-amber-500/20 border border-amber-400/40 text-amber-300 text-xl w-11 h-11 rounded-full flex items-center justify-center hover:scale-110 transition-transform shadow-md"
             >
               🔊
             </button>
 
-            <div className="text-3xl font-bold">
+            <div className="text-3xl font-extrabold tracking-tight">
               {activeSubject === 'math' ? (
                 num1 === 0 ? (
-                  <>Add {num2}: <span className="text-amber-400">Count to {num2}</span></>
+                  <>Add {num2}: <span className="text-amber-300">Count to {num2}</span></>
                 ) : (
-                  <>Add {num2}: <span className="text-amber-400">{num1} + {num2} = ?</span></>
+                  <>Add {num2}: <span className="text-amber-300">{num1} + {num2} = ?</span></>
                 )
               ) : (
-                <>Spell: <span className="text-amber-400">{targetWord}</span></>
+                <>Spell: <span className="text-amber-300">{targetWord}</span></>
               )}
             </div>
           </div>
 
           {/* Place Value Banner */}
           {activeSubject === 'math' && (
-            <div className="bg-black/35 border-2 border-amber-400 rounded-2xl px-5 py-3 flex justify-around items-center font-bold text-xl">
-              <div className="text-amber-400">{num1} ({num1 === 10 ? '1 Ten' : 'Base'})</div>
-              <div>+</div>
-              <div className="text-sky-400">{placedOnes} (Ones)</div>
-              <div>=</div>
-              <div className="text-emerald-400 text-2xl">{num1 + placedOnes}</div>
+            <div className="bg-black/30 border border-amber-400/40 rounded-[24px] px-6 py-3.5 flex justify-around items-center font-bold text-xl shadow-inner">
+              <div className="text-amber-300">{num1} ({num1 === 10 ? '1 Ten' : 'Base'})</div>
+              <div className="text-slate-400">+</div>
+              <div className="text-sky-300">{placedOnes} (Ones)</div>
+              <div className="text-slate-400">=</div>
+              <div className="text-emerald-300 text-2xl font-extrabold">{num1 + placedOnes}</div>
             </div>
           )}
 
