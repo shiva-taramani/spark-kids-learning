@@ -11,6 +11,16 @@ export interface LearningPath {
   description: string;
 }
 
+export interface LearningModule {
+  id: string;
+  pathId: string;
+  title: string;
+  difficultyLevel: number;
+  question: string;
+  options: string[];
+  correctIdx: number;
+}
+
 export const BUILTIN_LEARNING_PATHS: LearningPath[] = [
   {
     id: 'math',
@@ -44,6 +54,14 @@ export const BUILTIN_LEARNING_PATHS: LearningPath[] = [
     componentType: 'generic_quiz',
     description: 'Explore planets, orbits, and space physics.',
   },
+  {
+    id: 'robotics',
+    title: '🤖 Coding',
+    icon: '🤖',
+    targetAge: 'age8',
+    componentType: 'generic_quiz',
+    description: 'Sequential algorithms, loops, and conditional robot instructions.',
+  },
 ];
 
 export async function fetchAllLearningPaths(): Promise<LearningPath[]> {
@@ -59,8 +77,7 @@ export async function fetchAllLearningPaths(): Promise<LearningPath[]> {
         componentType: item.component_type || 'generic_quiz',
         description: item.description || '',
       }));
-      
-      // Merge unique paths
+
       const mergedMap = new Map<string, LearningPath>();
       BUILTIN_LEARNING_PATHS.forEach((p) => mergedMap.set(p.id, p));
       dbPaths.forEach((p) => mergedMap.set(p.id, p));
@@ -70,4 +87,25 @@ export async function fetchAllLearningPaths(): Promise<LearningPath[]> {
     console.error('Fetching DB paths skipped (using built-in registry)', e);
   }
   return BUILTIN_LEARNING_PATHS;
+}
+
+export async function fetchModulesForPath(pathId: string): Promise<LearningModule[]> {
+  try {
+    const supabase = createClient();
+    const { data } = await supabase.from('learning_modules').select('*').eq('path_id', pathId);
+    if (data && data.length > 0) {
+      return data.map((item) => ({
+        id: item.id,
+        pathId: item.path_id,
+        title: item.title,
+        difficultyLevel: item.difficulty_level || 1,
+        question: item.config?.question || item.title,
+        options: item.config?.options || [],
+        correctIdx: item.config?.correctIdx || 0,
+      }));
+    }
+  } catch (e) {
+    console.error('Fetching DB modules skipped', e);
+  }
+  return [];
 }
