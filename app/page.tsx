@@ -7,11 +7,23 @@ import { TenFrameWorkspace } from '../components/TenFrameWorkspace';
 import { PhonicsWorkspace } from '../components/PhonicsWorkspace';
 import { VictoryModal } from '../components/VictoryModal';
 import { StickerAlbumModal } from '../components/StickerAlbumModal';
+import { ChildProfileModal } from '../components/ChildProfileModal';
 import { audioEngine } from '../lib/audioEngine';
 import { THEMES } from '../lib/themeData';
-import { loadProgressStore, saveProgressStore } from '../lib/progressStore';
+import {
+  ChildProfile,
+  loadLocalProfiles,
+  saveLocalProfiles,
+  syncChildToSupabase,
+} from '../lib/childProfiles';
 
 export default function Home() {
+  const [profiles, setProfiles] = useState<ChildProfile[]>([]);
+  const [activeChildId, setActiveChildId] = useState<string>('');
+  const [isChildModalOpen, setIsChildModalOpen] = useState<boolean>(false);
+  const [isAlbumOpen, setIsAlbumOpen] = useState<boolean>(false);
+  const [isVictoryOpen, setIsVictoryOpen] = useState<boolean>(false);
+
   const [activeSubject, setActiveSubject] = useState<'math' | 'words'>('math');
   const [activeThemeKey, setActiveThemeKey] = useState<string>('dino');
   const [activeLevel, setActiveLevel] = useState<string>('age6');
@@ -21,8 +33,6 @@ export default function Home() {
   const [skillElo, setSkillElo] = useState<number>(100);
   const [unlockedStickers, setUnlockedStickers] = useState<string[]>(['rexy']);
   const [isHappy, setIsHappy] = useState<boolean>(false);
-  const [isVictoryOpen, setIsVictoryOpen] = useState<boolean>(false);
-  const [isAlbumOpen, setIsAlbumOpen] = useState<boolean>(false);
 
   // Question state
   const [num1, setNum1] = useState<number>(10);
@@ -33,16 +43,34 @@ export default function Home() {
   const [speechPrompt, setSpeechPrompt] = useState<string>('Tap 2 slots to add 2 blue eggs!');
   const [soundEnabled, setSoundEnabled] = useState<boolean>(true);
 
+  // Load profiles on mount
+  useEffect(() => {
+    const { profiles: loadedProfiles, activeId } = loadLocalProfiles();
+    setProfiles(loadedProfiles);
+    setActiveChildId(activeId);
+
+    const activeChild = loadedProfiles.find((p) => p.id === activeId) || loadedProfiles[0];
+    if (activeChild) {
+      setStars(activeChild.stars || 0);
+      setSkillElo(activeChild.skillElo || 100);
+      setActiveLevel(activeChild.ageGroup || 'age6');
+      setActiveThemeKey(activeChild.preferredTheme || 'dino');
+      setUnlockedStickers(activeChild.unlockedStickers || ['rexy']);
+    }
+  }, []);
+
+  const activeChild = profiles.find((p) => p.id === activeChildId) || profiles[0] || {
+    id: 'guest',
+    name: 'Player 1',
+    ageGroup: 'age6',
+    preferredTheme: 'dino',
+    stars: 0,
+    skillElo: 100,
+    unlockedStickers: ['rexy'],
+  };
+
   const activeTheme = THEMES[activeThemeKey] || THEMES.dino;
   const currentPatient = activeTheme.patients[patientIdx % activeTheme.patients.length];
-
-  // Load progress from store on mount
-  useEffect(() => {
-    const store = loadProgressStore();
-    setStars(store.stars || 0);
-    setSkillElo(store.skillElo || 100);
-    setUnlockedStickers(store.unlockedStickers || ['rexy']);
-  }, []);
 
   const generateQuestion = useCallback(() => {
     setPlacedOnes(0);
@@ -83,6 +111,36 @@ export default function Home() {
     generateQuestion();
   }, [generateQuestion]);
 
+  const handleSelectChild = (id: string) => {
+    setActiveChildId(id);
+    const target = profiles.find((p) => p.id === id);
+    if (target) {
+      setStars(target.stars || 0);
+      setSkillElo(target.skillElo || 100);
+      setActiveLevel(target.ageGroup || 'age6');
+      setActiveThemeKey(target.preferredTheme || 'dino');
+      setUnlockedStickers(target.unlockedStickers || ['rexy']);
+      saveLocalProfiles(profiles, id);
+    }
+  };
+
+  const handleAddChild = (name: string, ageGroup: string, preferredTheme: string) => {
+    const newChild: ChildProfile = {
+      id: `child-${Date.now()}`,
+      name,
+      ageGroup,
+      preferredTheme,
+      stars: 0,
+      skillElo: 100,
+      unlockedStickers: ['rexy'],
+    };
+    const updated = [...profiles, newChild];
+    setProfiles(updated);
+    handleSelectChild(newChild.id);
+    saveLocalProfiles(updated, newChild.id);
+    syncChildToSupabase(newChild);
+  };
+
   const handleCorrect = useCallback(() => {
     const nextStars = stars + 1;
     const nextElo = skillElo + 25;
@@ -104,32 +162,35 @@ export default function Home() {
       const newHealth = Math.min(100, h + 34);
       if (newHealth >= 100) {
         setIsHappy(true);
-        audioEngine.speak(`Awesome! ${currentPatient.name} is complete! Sticker unlocked!`);
+        audioEngine.speak(`Awesome! ${currentPatient.name} is complete!`);
 
-        // Unlock hero sticker
         const stickerId = currentPatient.id;
         const updatedStickers = Array.from(new Set([...unlockedStickers, stickerId]));
         setUnlockedStickers(updatedStickers);
 
-        // Save progress & sync
-        saveProgressStore({
-          stars: nextStars,
-          skillElo: nextElo,
-          unlockedStickers: updatedStickers,
-        });
+        // Update active profile in array & save
+        const updatedProfiles = profiles.map((p) =>
+          p.id === activeChildId
+            ? { ...p, stars: nextStars, skillElo: nextElo, unlockedStickers: updatedStickers }
+            : p
+        );
+        setProfiles(updatedProfiles);
+        saveLocalProfiles(updatedProfiles, activeChildId);
 
         setIsVictoryOpen(true);
       } else {
-        saveProgressStore({
-          stars: nextStars,
-          skillElo: nextElo,
-          unlockedStickers,
-        });
+        const updatedProfiles = profiles.map((p) =>
+          p.id === activeChildId
+            ? { ...p, stars: nextStars, skillElo: nextElo }
+            : p
+        );
+        setProfiles(updatedProfiles);
+        saveLocalProfiles(updatedProfiles, activeChildId);
         setTimeout(generateQuestion, 1200);
       }
       return newHealth;
     });
-  }, [activeSubject, num1, num2, targetWord, currentPatient.name, currentPatient.id, stars, skillElo, unlockedStickers, generateQuestion]);
+  }, [activeSubject, num1, num2, targetWord, currentPatient.name, currentPatient.id, stars, skillElo, unlockedStickers, profiles, activeChildId, generateQuestion]);
 
   const handleSlotClick = (i: number) => {
     audioEngine.initCtx();
@@ -191,6 +252,8 @@ export default function Home() {
         }}
         stars={stars}
         unlockedCount={unlockedStickers.length}
+        activeChildName={activeChild.name}
+        onOpenChildModal={() => setIsChildModalOpen(true)}
         onOpenAlbum={() => setIsAlbumOpen(true)}
       />
 
@@ -268,6 +331,15 @@ export default function Home() {
         isOpen={isAlbumOpen}
         unlockedStickers={unlockedStickers}
         onClose={() => setIsAlbumOpen(false)}
+      />
+
+      <ChildProfileModal
+        isOpen={isChildModalOpen}
+        profiles={profiles}
+        activeId={activeChildId}
+        onSelectChild={handleSelectChild}
+        onAddChild={handleAddChild}
+        onClose={() => setIsChildModalOpen(false)}
       />
     </main>
   );
