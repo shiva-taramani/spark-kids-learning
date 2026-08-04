@@ -1,8 +1,38 @@
-// Web Audio API & Speech Synthesis Helper
+// Web Audio API & Natural Speech Synthesis Engine
 export class AudioEngine {
   private ctx: AudioContext | null = null;
   public enabled: boolean = true;
   private scale: number[] = [261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88, 523.25, 587.33, 659.25, 698.46, 783.99];
+  private selectedVoice: SpeechSynthesisVoice | null = null;
+
+  constructor() {
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      this.loadVoices();
+      window.speechSynthesis.onvoiceschanged = () => this.loadVoices();
+    }
+  }
+
+  private loadVoices() {
+    if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
+    const voices = window.speechSynthesis.getVoices();
+    if (!voices || voices.length === 0) return;
+
+    // Prioritize warm, natural, neural English voices
+    const naturalVoice = voices.find(
+      (v) =>
+        v.lang.startsWith('en') &&
+        (v.name.includes('Google') ||
+          v.name.includes('Natural') ||
+          v.name.includes('Enhanced') ||
+          v.name.includes('Premium') ||
+          v.name.includes('Samantha') ||
+          v.name.includes('Karen') ||
+          v.name.includes('Victoria'))
+    );
+
+    const fallbackEnVoice = voices.find((v) => v.lang.startsWith('en'));
+    this.selectedVoice = naturalVoice || fallbackEnVoice || voices[0];
+  }
 
   public initCtx() {
     if (typeof window === 'undefined') return;
@@ -59,9 +89,18 @@ export class AudioEngine {
   public speak(text: string) {
     if (!this.enabled || typeof window === 'undefined' || !('speechSynthesis' in window)) return;
     window.speechSynthesis.cancel();
+
+    if (!this.selectedVoice) {
+      this.loadVoices();
+    }
+
     const u = new SpeechSynthesisUtterance(text);
-    u.pitch = 1.2;
-    u.rate = 0.95;
+    if (this.selectedVoice) {
+      u.voice = this.selectedVoice;
+    }
+    u.pitch = 1.05; // Friendly, warm pitch for kids
+    u.rate = 0.92;  // Slightly paced for child comprehension
+    u.volume = 1.0;
     window.speechSynthesis.speak(u);
   }
 }
