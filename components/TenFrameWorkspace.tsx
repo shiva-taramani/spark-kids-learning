@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { ThemeConfig } from '../lib/themeData';
+import { TokenAsset } from './TokenAsset';
 
 interface TenFrameWorkspaceProps {
   num1: number;
@@ -45,8 +46,8 @@ export const TenFrameWorkspace: React.FC<TenFrameWorkspaceProps> = ({
                   } rounded-2xl flex justify-center items-center cursor-pointer hover:bg-white/10 transition-all`}
                 >
                   {isFilled && (
-                    <div className="w-[85%] h-[85%] token-3d token-gold flex justify-center items-center text-2xl shadow-xl animate-spring">
-                      {theme.tokenBaseIcon}
+                    <div className="w-full h-full flex justify-center items-center animate-spring">
+                      <TokenAsset type="base" themeId={theme.id} />
                     </div>
                   )}
                 </div>
@@ -84,8 +85,8 @@ export const TenFrameWorkspace: React.FC<TenFrameWorkspaceProps> = ({
                 } rounded-2xl flex justify-center items-center cursor-pointer hover:bg-white/10 transition-all`}
               >
                 {isFilled && (
-                  <div className="w-[85%] h-[85%] token-3d token-blue flex justify-center items-center text-2xl shadow-xl animate-spring">
-                    {theme.tokenExtraIcon}
+                  <div className="w-full h-full flex justify-center items-center animate-spring">
+                    <TokenAsset type="extra" themeId={theme.id} />
                   </div>
                 )}
               </div>
