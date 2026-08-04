@@ -5,8 +5,8 @@ import Link from 'next/link';
 import { createClient } from '../lib/supabase/client';
 
 interface HeaderNavProps {
-  activeSubject: 'math' | 'words';
-  setActiveSubject: (subject: 'math' | 'words') => void;
+  activeSubject: 'math' | 'words' | 'circuits';
+  setActiveSubject: (subject: 'math' | 'words' | 'circuits') => void;
   activeTheme: string;
   setActiveTheme: (theme: string) => void;
   activeLevel: string;
@@ -75,10 +75,10 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({
           <span className="text-sky-400 text-[10px]">▾</span>
         </button>
 
-        {/* iOS-Style Segmented Control */}
+        {/* iOS-Style Segmented Subject Control */}
         <div className="bg-black/40 p-1.5 rounded-full flex gap-1 border border-white/10 shadow-inner">
           <button
-            className={`px-4 py-1.5 rounded-full font-bold text-xs transition-all duration-300 ${
+            className={`px-3.5 py-1.5 rounded-full font-bold text-xs transition-all duration-300 ${
               activeSubject === 'math'
                 ? 'bg-gradient-to-r from-amber-400 to-orange-500 text-slate-950 shadow-md scale-105'
                 : 'text-slate-400 hover:text-slate-200'
@@ -88,7 +88,7 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({
             🧮 Math
           </button>
           <button
-            className={`px-4 py-1.5 rounded-full font-bold text-xs transition-all duration-300 ${
+            className={`px-3.5 py-1.5 rounded-full font-bold text-xs transition-all duration-300 ${
               activeSubject === 'words'
                 ? 'bg-gradient-to-r from-sky-400 to-blue-500 text-slate-950 shadow-md scale-105'
                 : 'text-slate-400 hover:text-slate-200'
@@ -96,6 +96,16 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({
             onClick={() => setActiveSubject('words')}
           >
             🔤 Words
+          </button>
+          <button
+            className={`px-3.5 py-1.5 rounded-full font-bold text-xs transition-all duration-300 ${
+              activeSubject === 'circuits'
+                ? 'bg-gradient-to-r from-emerald-400 to-teal-500 text-slate-950 shadow-md scale-105'
+                : 'text-slate-400 hover:text-slate-200'
+            }`}
+            onClick={() => setActiveSubject('circuits')}
+          >
+            ⚡ Circuits
           </button>
         </div>
 
