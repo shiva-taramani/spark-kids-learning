@@ -12,6 +12,8 @@ interface HeaderNavProps {
   soundEnabled: boolean;
   toggleSound: () => void;
   stars: number;
+  unlockedCount: number;
+  onOpenAlbum: () => void;
 }
 
 export const HeaderNav: React.FC<HeaderNavProps> = ({
@@ -24,6 +26,8 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({
   soundEnabled,
   toggleSound,
   stars,
+  unlockedCount,
+  onOpenAlbum,
 }) => {
   return (
     <header className="w-full max-w-[980px] flex justify-between items-center glass-panel px-6 py-3.5 rounded-[36px] mb-6 shadow-2xl flex-wrap gap-3">
@@ -76,6 +80,15 @@ export const HeaderNav: React.FC<HeaderNavProps> = ({
           </select>
           <span className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-amber-400 text-xs">▾</span>
         </div>
+
+        {/* Hero Sticker Album Button */}
+        <button
+          onClick={onOpenAlbum}
+          className="glass-pill text-amber-300 font-bold text-xs px-3.5 py-2 rounded-full cursor-pointer hover:scale-105 flex items-center gap-1.5 border-amber-400/30"
+        >
+          <span>📖</span>
+          <span>Album ({unlockedCount}/12)</span>
+        </button>
 
         {/* Age Level Dropdown */}
         <div className="relative">
