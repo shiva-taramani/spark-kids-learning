@@ -5,6 +5,7 @@ import { HeaderNav } from '../../components/HeaderNav';
 import { DinoStage } from '../../components/DinoStage';
 import { TenFrameWorkspace } from '../../components/TenFrameWorkspace';
 import { PhonicsWorkspace } from '../../components/PhonicsWorkspace';
+import { CircuitWorkspace } from '../../components/CircuitWorkspace';
 import { VictoryModal } from '../../components/VictoryModal';
 import { StickerAlbumModal } from '../../components/StickerAlbumModal';
 import { ChildProfileModal } from '../../components/ChildProfileModal';
@@ -24,7 +25,7 @@ export default function GamePage() {
   const [isAlbumOpen, setIsAlbumOpen] = useState<boolean>(false);
   const [isVictoryOpen, setIsVictoryOpen] = useState<boolean>(false);
 
-  const [activeSubject, setActiveSubject] = useState<'math' | 'words'>('math');
+  const [activeSubject, setActiveSubject] = useState<'math' | 'words' | 'circuits'>('math');
   const [activeThemeKey, setActiveThemeKey] = useState<string>('dino');
   const [activeLevel, setActiveLevel] = useState<string>('age6');
   const [patientIdx, setPatientIdx] = useState<number>(0);
@@ -42,6 +43,9 @@ export default function GamePage() {
   const [userWord, setUserWord] = useState<string[]>([]);
   const [speechPrompt, setSpeechPrompt] = useState<string>('Tap 2 slots to add 2 blue eggs!');
   const [soundEnabled, setSoundEnabled] = useState<boolean>(true);
+
+  const activeTheme = THEMES[activeThemeKey] || THEMES.dino;
+  const currentPatient = activeTheme.patients[patientIdx % activeTheme.patients.length];
 
   // Load profiles on mount
   useEffect(() => {
@@ -69,9 +73,6 @@ export default function GamePage() {
     unlockedStickers: ['rexy'],
   };
 
-  const activeTheme = THEMES[activeThemeKey] || THEMES.dino;
-  const currentPatient = activeTheme.patients[patientIdx % activeTheme.patients.length];
-
   const generateQuestion = useCallback(() => {
     setPlacedOnes(0);
     setUserWord([]);
@@ -94,7 +95,7 @@ export default function GamePage() {
         setNum2(addend);
         setSpeechPrompt(`Add ${addend} ${activeTheme.tokenExtraLabel} to complete ${base} plus ${addend}!`);
       }
-    } else {
+    } else if (activeSubject === 'words') {
       const wordPools: Record<string, string[]> = {
         age4: ['CAT', 'DOG', 'SUN', 'EGG', 'RED', 'BIG'],
         age6: ['DINO', 'ROAR', 'BONE', 'EGG', 'PARK', 'REXY'],
@@ -104,6 +105,8 @@ export default function GamePage() {
       const selected = list[Math.floor(Math.random() * list.length)];
       setTargetWord(selected);
       setSpeechPrompt(`Spell ${selected}`);
+    } else {
+      setSpeechPrompt("Connect Red positive wire and Black negative wire through the switch to light the LED safely!");
     }
   }, [activeSubject, activeLevel, activeTheme.tokenExtraLabel]);
 
@@ -154,8 +157,10 @@ export default function GamePage() {
       } else {
         audioEngine.speak(`${num1} plus ${num2} equals ${num1 + num2}! Excellent!`);
       }
-    } else {
+    } else if (activeSubject === 'words') {
       audioEngine.speak(`${targetWord}! Great job!`);
+    } else {
+      audioEngine.speak("Circuit complete! Powered safely!");
     }
 
     setHealth((h) => {
@@ -282,8 +287,10 @@ export default function GamePage() {
                 ) : (
                   <>Add {num2}: <span className="text-amber-300">{num1} + {num2} = ?</span></>
                 )
-              ) : (
+              ) : activeSubject === 'words' ? (
                 <>Spell: <span className="text-amber-300">{targetWord}</span></>
+              ) : (
+                <>Electric Circuit: <span className="text-emerald-300">Power the Light Safely ⚡</span></>
               )}
             </div>
           </div>
@@ -309,12 +316,14 @@ export default function GamePage() {
               onSlotClick={handleSlotClick}
               onBaseClick={(i) => audioEngine.playTap(i)}
             />
-          ) : (
+          ) : activeSubject === 'words' ? (
             <PhonicsWorkspace
               targetWord={targetWord}
               userWord={userWord}
               onLetterClick={handleLetterClick}
             />
+          ) : (
+            <CircuitWorkspace onSuccess={handleCorrect} />
           )}
         </section>
       </div>
