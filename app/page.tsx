@@ -6,8 +6,10 @@ import { DinoStage } from '../components/DinoStage';
 import { TenFrameWorkspace } from '../components/TenFrameWorkspace';
 import { PhonicsWorkspace } from '../components/PhonicsWorkspace';
 import { VictoryModal } from '../components/VictoryModal';
+import { StickerAlbumModal } from '../components/StickerAlbumModal';
 import { audioEngine } from '../lib/audioEngine';
 import { THEMES } from '../lib/themeData';
+import { loadProgressStore, saveProgressStore } from '../lib/progressStore';
 
 export default function Home() {
   const [activeSubject, setActiveSubject] = useState<'math' | 'words'>('math');
@@ -16,8 +18,11 @@ export default function Home() {
   const [patientIdx, setPatientIdx] = useState<number>(0);
   const [health, setHealth] = useState<number>(25);
   const [stars, setStars] = useState<number>(0);
+  const [skillElo, setSkillElo] = useState<number>(100);
+  const [unlockedStickers, setUnlockedStickers] = useState<string[]>(['rexy']);
   const [isHappy, setIsHappy] = useState<boolean>(false);
   const [isVictoryOpen, setIsVictoryOpen] = useState<boolean>(false);
+  const [isAlbumOpen, setIsAlbumOpen] = useState<boolean>(false);
 
   // Question state
   const [num1, setNum1] = useState<number>(10);
@@ -30,6 +35,14 @@ export default function Home() {
 
   const activeTheme = THEMES[activeThemeKey] || THEMES.dino;
   const currentPatient = activeTheme.patients[patientIdx % activeTheme.patients.length];
+
+  // Load progress from store on mount
+  useEffect(() => {
+    const store = loadProgressStore();
+    setStars(store.stars || 0);
+    setSkillElo(store.skillElo || 100);
+    setUnlockedStickers(store.unlockedStickers || ['rexy']);
+  }, []);
 
   const generateQuestion = useCallback(() => {
     setPlacedOnes(0);
@@ -71,7 +84,10 @@ export default function Home() {
   }, [generateQuestion]);
 
   const handleCorrect = useCallback(() => {
-    setStars((s) => s + 1);
+    const nextStars = stars + 1;
+    const nextElo = skillElo + 25;
+    setStars(nextStars);
+    setSkillElo(nextElo);
     audioEngine.playBubble();
 
     if (activeSubject === 'math') {
@@ -88,14 +104,32 @@ export default function Home() {
       const newHealth = Math.min(100, h + 34);
       if (newHealth >= 100) {
         setIsHappy(true);
-        audioEngine.speak(`Awesome! ${currentPatient.name} is complete!`);
+        audioEngine.speak(`Awesome! ${currentPatient.name} is complete! Sticker unlocked!`);
+
+        // Unlock hero sticker
+        const stickerId = currentPatient.id;
+        const updatedStickers = Array.from(new Set([...unlockedStickers, stickerId]));
+        setUnlockedStickers(updatedStickers);
+
+        // Save progress & sync
+        saveProgressStore({
+          stars: nextStars,
+          skillElo: nextElo,
+          unlockedStickers: updatedStickers,
+        });
+
         setIsVictoryOpen(true);
       } else {
+        saveProgressStore({
+          stars: nextStars,
+          skillElo: nextElo,
+          unlockedStickers,
+        });
         setTimeout(generateQuestion, 1200);
       }
       return newHealth;
     });
-  }, [activeSubject, num1, num2, targetWord, currentPatient.name, generateQuestion]);
+  }, [activeSubject, num1, num2, targetWord, currentPatient.name, currentPatient.id, stars, skillElo, unlockedStickers, generateQuestion]);
 
   const handleSlotClick = (i: number) => {
     audioEngine.initCtx();
@@ -156,6 +190,8 @@ export default function Home() {
           setSoundEnabled(!soundEnabled);
         }}
         stars={stars}
+        unlockedCount={unlockedStickers.length}
+        onOpenAlbum={() => setIsAlbumOpen(true)}
       />
 
       <div className="w-full grid grid-cols-1 md:grid-cols-[320px_1fr] gap-6 items-start">
@@ -226,6 +262,12 @@ export default function Home() {
         dinoIcon={currentPatient.icon}
         patientName={currentPatient.name}
         onNext={handleNextPatient}
+      />
+
+      <StickerAlbumModal
+        isOpen={isAlbumOpen}
+        unlockedStickers={unlockedStickers}
+        onClose={() => setIsAlbumOpen(false)}
       />
     </main>
   );
