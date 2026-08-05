@@ -30,7 +30,7 @@ jobs:
         run: |
           if [ -n "$DATABASE_URL" ]; then
             echo "DATABASE_URL detected. Executing Prisma db push and seed..."
-            npx prisma db push --skip-generate
+            npx prisma db push --skip-generate --accept-data-loss
             npx prisma db seed
           else
             echo "DATABASE_URL secret not set. Skipping live DB push."
