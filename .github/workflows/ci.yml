@@ -21,5 +21,20 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
+      - name: Generate Prisma Client
+        run: npx prisma generate
+
+      - name: Push Database Schema & Seed (If DATABASE_URL set)
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          if [ -n "$DATABASE_URL" ]; then
+            echo "DATABASE_URL detected. Executing Prisma db push and seed..."
+            npx prisma db push --skip-generate
+            npx prisma db seed
+          else
+            echo "DATABASE_URL secret not set. Skipping live DB push."
+          fi
+
       - name: Build Next.js Application
         run: npm run build
