@@ -16,12 +16,11 @@ export async function GET(request: Request) {
       const supabase = createClient();
       const { data, error } = await supabase.auth.exchangeCodeForSession(code);
       if (!error && data && data.user) {
-        // Upsert parent profile record into profiles table
+        // Upsert parent profile record into profiles table matching Prisma fullName column
         await supabase.from('profiles').upsert({
           id: data.user.id,
           email: data.user.email || '',
-          parent_name: data.user.user_metadata?.full_name || data.user.user_metadata?.name || data.user.email || 'Parent',
-          full_name: data.user.user_metadata?.full_name || data.user.user_metadata?.name || data.user.email || 'Parent',
+          fullName: data.user.user_metadata?.full_name || data.user.user_metadata?.name || data.user.email || 'Parent',
           updated_at: new Date().toISOString(),
         });
         return NextResponse.redirect(`${publicOrigin}${next}`);
