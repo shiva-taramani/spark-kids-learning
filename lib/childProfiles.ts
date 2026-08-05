@@ -60,58 +60,35 @@ export function saveLocalProfiles(profiles: ChildProfile[], activeId: string) {
 export async function fetchUserChildProfiles(): Promise<{ profiles: ChildProfile[]; activeId: string }> {
   const localData = loadLocalProfiles();
   try {
-    const supabase = createClient();
-    const { data: userData } = await supabase.auth.getUser();
-    if (!userData || !userData.user) {
-      return localData;
-    }
+    const res = await fetch('/api/children');
+    if (res.ok) {
+      const data = await res.json();
+      if (data.children && data.children.length > 0) {
+        const fetchedProfiles: ChildProfile[] = data.children.map((c: any) => ({
+          id: c.id,
+          name: c.childName || 'Child',
+          ageGroup: c.targetAgeGroup || 'age6',
+          preferredTheme: c.preferredTheme || 'dino',
+          stars: c.stars || 0,
+          skillElo: c.skillElo || 100,
+          unlockedStickers: ['rexy'],
+        }));
 
-    // Ensure parent profile exists in profiles table
-    const { error: profileErr } = await supabase.from('profiles').upsert({
-      id: userData.user.id,
-      email: userData.user.email || '',
-      fullName: userData.user.user_metadata?.full_name || userData.user.email || 'Parent',
-      updated_at: new Date().toISOString(),
-    });
-    if (profileErr) {
-      console.error('Supabase parent profile upsert error:', profileErr.message);
-    }
+        const activeId = localData.profiles.some((p) => p.id === localData.activeId)
+          ? localData.activeId
+          : fetchedProfiles[0].id;
 
-    const { data: remoteChildren, error } = await supabase
-      .from('children')
-      .select('*')
-      .eq('parent_id', userData.user.id);
-
-    if (error) {
-      console.error('Error fetching children from Supabase:', error.message);
-      return localData;
-    }
-
-    if (remoteChildren && remoteChildren.length > 0) {
-      const fetchedProfiles: ChildProfile[] = remoteChildren.map((c) => ({
-        id: c.id,
-        name: c.child_name || 'Child',
-        ageGroup: c.target_age_group || 'age6',
-        preferredTheme: c.preferred_theme || 'dino',
-        stars: c.stars || 0,
-        skillElo: c.skill_elo || 100,
-        unlockedStickers: ['rexy'],
-      }));
-
-      const activeId = localData.profiles.some((p) => p.id === localData.activeId)
-        ? localData.activeId
-        : fetchedProfiles[0].id;
-
-      saveLocalProfiles(fetchedProfiles, activeId);
-      return { profiles: fetchedProfiles, activeId };
-    } else {
-      // If parent has no children in DB yet, sync any local children to DB
-      for (const child of localData.profiles) {
-        await syncChildToSupabase(child);
+        saveLocalProfiles(fetchedProfiles, activeId);
+        return { profiles: fetchedProfiles, activeId };
+      } else {
+        // If parent has local children but none in DB, sync local children to DB via API
+        for (const child of localData.profiles) {
+          await syncChildToSupabase(child);
+        }
       }
     }
   } catch (e) {
-    console.error('Failed to load child profiles from Supabase', e);
+    console.error('Failed to load child profiles from API', e);
   }
   return localData;
 }
@@ -121,9 +98,6 @@ export async function createChildProfile(
   ageGroup: string = 'age6',
   preferredTheme: string = 'dino'
 ): Promise<ChildProfile> {
-  const supabase = createClient();
-  const { data: userData } = await supabase.auth.getUser();
-
   const newChild: ChildProfile = {
     id: `child-${Date.now()}`,
     name,
@@ -134,32 +108,27 @@ export async function createChildProfile(
     unlockedStickers: ['rexy'],
   };
 
-  if (userData && userData.user) {
-    // Ensure parent profile exists
-    await supabase.from('profiles').upsert({
-      id: userData.user.id,
-      email: userData.user.email || '',
-      fullName: userData.user.user_metadata?.full_name || userData.user.email || 'Parent',
+  try {
+    const res = await fetch('/api/children', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        childName: name,
+        targetAgeGroup: ageGroup,
+        preferredTheme,
+      }),
     });
 
-    const { data, error } = await supabase
-      .from('children')
-      .insert({
-        parent_id: userData.user.id,
-        child_name: name,
-        target_age_group: ageGroup,
-        preferred_theme: preferredTheme,
-        stars: 0,
-        skill_elo: 100,
-      })
-      .select()
-      .single();
-
-    if (error) {
-      console.error('Supabase child insert error:', error.message, error.details);
-    } else if (data) {
-      newChild.id = data.id;
+    if (res.ok) {
+      const data = await res.json();
+      if (data.child && data.child.id) {
+        newChild.id = data.child.id;
+      }
+    } else {
+      console.error('API create child returned non-ok status:', res.status);
     }
+  } catch (e) {
+    console.error('API create child exception:', e);
   }
 
   const { profiles } = loadLocalProfiles();
@@ -169,39 +138,21 @@ export async function createChildProfile(
 }
 
 export async function syncChildToSupabase(child?: ChildProfile) {
-  if (!child) return;
+  if (!child || child.id.startsWith('guest-')) return;
   try {
-    const supabase = createClient();
-    const { data: userData } = await supabase.auth.getUser();
-    if (!userData || !userData.user) return;
-
-    await supabase.from('profiles').upsert({
-      id: userData.user.id,
-      email: userData.user.email || '',
-      fullName: userData.user.user_metadata?.full_name || userData.user.email || 'Parent',
+    await fetch('/api/children', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        id: child.id.startsWith('child-') ? undefined : child.id,
+        childName: child.name,
+        targetAgeGroup: child.ageGroup,
+        preferredTheme: child.preferredTheme,
+        stars: child.stars,
+        skillElo: child.skillElo,
+      }),
     });
-
-    const payload: any = {
-      parent_id: userData.user.id,
-      child_name: child.name,
-      target_age_group: child.ageGroup,
-      preferred_theme: child.preferredTheme,
-      stars: child.stars,
-      skill_elo: child.skillElo,
-      updated_at: new Date().toISOString(),
-    };
-
-    if (!child.id.startsWith('guest-') && !child.id.startsWith('child-')) {
-      payload.id = child.id;
-    }
-
-    const { data, error } = await supabase.from('children').upsert(payload).select().single();
-    if (error) {
-      console.error('Supabase child upsert error:', error.message);
-    } else if (data && data.id) {
-      child.id = data.id;
-    }
   } catch (e) {
-    console.error('Supabase child sync skipped', e);
+    console.error('API sync child exception', e);
   }
 }
