@@ -1,0 +1,59 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Profile {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  fullName  String?
+  children  Child[]
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("profiles")
+}
+
+model Child {
+  id             String   @id @default(uuid())
+  parentId       String   @map("parent_id")
+  parent         Profile  @relation(fields: [parentId], references: [id], onDelete: Cascade)
+  childName      String   @map("child_name")
+  targetAgeGroup String   @default("age6") @map("target_age_group")
+  preferredTheme String   @default("dino") @map("preferred_theme")
+  stars          Int      @default(0)
+  skillElo       Int      @default(100) @map("skill_elo")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  @@map("children")
+}
+
+model LearningPath {
+  id             String           @id
+  title          String
+  icon           String           @default("📚")
+  targetAgeGroup String           @default("all") @map("target_age_group")
+  componentType  String           @default("generic_quiz") @map("component_type")
+  description    String?
+  modules        LearningModule[]
+  createdAt      DateTime         @default(now()) @map("created_at")
+
+  @@map("learning_paths")
+}
+
+model LearningModule {
+  id              String       @id @default(uuid())
+  pathId          String       @map("path_id")
+  path            LearningPath @relation(fields: [pathId], references: [id], onDelete: Cascade)
+  title           String
+  difficultyLevel Int          @default(1) @map("difficulty_level")
+  config          Json
+  createdAt       DateTime     @default(now()) @map("created_at")
+
+  @@map("learning_modules")
+}
