@@ -14,8 +14,16 @@ export async function GET(request: Request) {
   if (code) {
     try {
       const supabase = createClient();
-      const { error } = await supabase.auth.exchangeCodeForSession(code);
-      if (!error) {
+      const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+      if (!error && data && data.user) {
+        // Upsert parent profile record into profiles table
+        await supabase.from('profiles').upsert({
+          id: data.user.id,
+          email: data.user.email || '',
+          parent_name: data.user.user_metadata?.full_name || data.user.user_metadata?.name || data.user.email || 'Parent',
+          full_name: data.user.user_metadata?.full_name || data.user.user_metadata?.name || data.user.email || 'Parent',
+          updated_at: new Date().toISOString(),
+        });
         return NextResponse.redirect(`${publicOrigin}${next}`);
       }
       console.error('OAuth code exchange error:', error);
