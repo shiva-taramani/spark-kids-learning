@@ -70,8 +70,7 @@ export async function fetchUserChildProfiles(): Promise<{ profiles: ChildProfile
     const { error: profileErr } = await supabase.from('profiles').upsert({
       id: userData.user.id,
       email: userData.user.email || '',
-      parent_name: userData.user.user_metadata?.full_name || userData.user.email || '',
-      full_name: userData.user.user_metadata?.full_name || userData.user.email || '',
+      fullName: userData.user.user_metadata?.full_name || userData.user.email || 'Parent',
       updated_at: new Date().toISOString(),
     });
     if (profileErr) {
@@ -140,8 +139,7 @@ export async function createChildProfile(
     await supabase.from('profiles').upsert({
       id: userData.user.id,
       email: userData.user.email || '',
-      parent_name: userData.user.user_metadata?.full_name || userData.user.email || '',
-      full_name: userData.user.user_metadata?.full_name || userData.user.email || '',
+      fullName: userData.user.user_metadata?.full_name || userData.user.email || 'Parent',
     });
 
     const { data, error } = await supabase
@@ -180,8 +178,7 @@ export async function syncChildToSupabase(child?: ChildProfile) {
     await supabase.from('profiles').upsert({
       id: userData.user.id,
       email: userData.user.email || '',
-      parent_name: userData.user.user_metadata?.full_name || userData.user.email || '',
-      full_name: userData.user.user_metadata?.full_name || userData.user.email || '',
+      fullName: userData.user.user_metadata?.full_name || userData.user.email || 'Parent',
     });
 
     const payload: any = {
