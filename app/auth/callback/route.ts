@@ -17,23 +17,32 @@ export async function GET(request: Request) {
       const supabase = createClient();
       const { data, error } = await supabase.auth.exchangeCodeForSession(code);
       if (!error && data && data.user) {
-        // Upsert parent profile record using Prisma ORM
-        const userEmail = data.user.email || '';
-        const userFullName = data.user.user_metadata?.full_name || data.user.user_metadata?.name || userEmail || 'Parent';
+        // Non-blocking profile upsert so DB latency never breaks authentication redirect
+        try {
+          const userEmail = data.user.email || '';
+          const userFullName =
+            data.user.user_metadata?.full_name ||
+            data.user.user_metadata?.name ||
+            userEmail ||
+            'Parent';
 
-        await prisma.profile.upsert({
-          where: { id: data.user.id },
-          update: {
-            email: userEmail,
-            fullName: userFullName,
-            updatedAt: new Date(),
-          },
-          create: {
-            id: data.user.id,
-            email: userEmail,
-            fullName: userFullName,
-          },
-        });
+          await prisma.profile.upsert({
+            where: { id: data.user.id },
+            update: {
+              email: userEmail,
+              fullName: userFullName,
+              updatedAt: new Date(),
+            },
+            create: {
+              id: data.user.id,
+              email: userEmail,
+              fullName: userFullName,
+            },
+          });
+        } catch (profileError) {
+          console.error('Non-blocking profile upsert note:', profileError);
+        }
+
         return NextResponse.redirect(`${publicOrigin}${next}`);
       }
       console.error('OAuth code exchange error:', error);
