@@ -1,6 +1,63 @@
--- Supabase Database Seed File: Spark Kids Learning Paths & Modules
+-- Complete Self-Contained Supabase Database Seed File: Spark Kids Learning
 
--- 1. Insert Core Learning Paths
+-- 1. Create Learning Paths Table
+CREATE TABLE IF NOT EXISTS public.learning_paths (
+  id TEXT PRIMARY KEY,
+  title TEXT NOT NULL,
+  icon TEXT DEFAULT '📚',
+  target_age_group TEXT DEFAULT 'all',
+  component_type TEXT DEFAULT 'generic_quiz',
+  description TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Enable RLS
+ALTER TABLE public.learning_paths ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Anyone can read learning paths"
+  ON public.learning_paths FOR SELECT
+  USING (true);
+
+-- 2. Create Learning Modules Table
+CREATE TABLE IF NOT EXISTS public.learning_modules (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  path_id TEXT REFERENCES public.learning_paths(id) ON DELETE CASCADE,
+  title TEXT NOT NULL,
+  difficulty_level INTEGER DEFAULT 1,
+  config JSONB NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Enable RLS for learning_modules
+ALTER TABLE public.learning_modules ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Anyone can read learning modules"
+  ON public.learning_modules FOR SELECT
+  USING (true);
+
+-- 3. Create Student Path Mastery Table
+CREATE TABLE IF NOT EXISTS public.student_path_mastery (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  child_id UUID REFERENCES public.children(id) ON DELETE CASCADE NOT NULL,
+  path_id TEXT REFERENCES public.learning_paths(id) ON DELETE CASCADE NOT NULL,
+  mastery_percentage FLOAT DEFAULT 0.0,
+  last_played_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Enable RLS for student_path_mastery
+ALTER TABLE public.student_path_mastery ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Parents can view mastery of own children"
+  ON public.student_path_mastery FOR SELECT
+  USING (
+    EXISTS (
+      SELECT 1 FROM public.children
+      WHERE public.children.id = public.student_path_mastery.child_id
+      AND public.children.parent_id = auth.uid()
+    )
+  );
+
+-- 4. Seed Core Learning Paths
 INSERT INTO public.learning_paths (id, title, icon, target_age_group, component_type, description)
 VALUES
   (
@@ -50,23 +107,7 @@ ON CONFLICT (id) DO UPDATE SET
   component_type = EXCLUDED.component_type,
   description = EXCLUDED.description;
 
--- 2. Insert Sample Learning Modules / Lessons
-CREATE TABLE IF NOT EXISTS public.learning_modules (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  path_id TEXT REFERENCES public.learning_paths(id) ON DELETE CASCADE,
-  title TEXT NOT NULL,
-  difficulty_level INTEGER DEFAULT 1,
-  config JSONB NOT NULL,
-  created_at TIMESTAMPTZ DEFAULT NOW()
-);
-
--- Enable RLS for learning_modules
-ALTER TABLE public.learning_modules ENABLE ROW LEVEL SECURITY;
-
-CREATE POLICY "Anyone can read learning modules"
-  ON public.learning_modules FOR SELECT
-  USING (true);
-
+-- 5. Seed Learning Modules / Lessons
 INSERT INTO public.learning_modules (path_id, title, difficulty_level, config)
 VALUES
   (
