@@ -123,7 +123,7 @@ export default function ParentDashboard() {
 
         <div className="flex items-center gap-3">
           <Link
-            href="/"
+            href="/game"
             className="bg-gradient-to-r from-emerald-400 to-emerald-600 text-white font-bold text-sm px-5 py-2.5 rounded-full shadow-lg hover:scale-105 transition-all flex items-center gap-2"
           >
             <span>🎮 Launch Game Mode</span>
