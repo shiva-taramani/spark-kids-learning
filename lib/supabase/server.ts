@@ -6,13 +6,13 @@ export function createClient() {
   const supabaseUrl =
     process.env.NEXT_PUBLIC_SUPABASE_URL ||
     process.env.SUPABASE_URL ||
-    'https://placeholder.supabase.co';
+    'https://vbsmitmjiopvbjntvnhl.supabase.co';
 
   const supabaseAnonKey =
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
     process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
     process.env.SUPABASE_ANON_KEY ||
-    'placeholder-key';
+    'sb_publishable_2r';
 
   return createServerClient(supabaseUrl, supabaseAnonKey, {
     cookies: {
