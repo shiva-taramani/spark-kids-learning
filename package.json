@@ -11,7 +11,7 @@
     "db:seed": "prisma db seed"
   },
   "prisma": {
-    "seed": "ts-node prisma/seed.ts"
+    "seed": "node prisma/seed.js"
   },
   "dependencies": {
     "@prisma/client": "5.17.0",
@@ -29,7 +29,6 @@
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "prisma": "5.17.0",
-    "ts-node": "^10.9.2",
     "typescript": "^5.5.3"
   }
 }
