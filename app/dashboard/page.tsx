@@ -4,13 +4,24 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { createClient } from '../../lib/supabase/client';
-import { ChildProfile, loadLocalProfiles, saveLocalProfiles } from '../../lib/childProfiles';
+import {
+  ChildProfile,
+  fetchUserChildProfiles,
+  saveLocalProfiles,
+  createChildProfile,
+} from '../../lib/childProfiles';
 
 export default function ParentDashboard() {
   const [parentEmail, setParentEmail] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [profiles, setProfiles] = useState<ChildProfile[]>([]);
   const [activeChildId, setActiveChildId] = useState<string>('');
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [newChildName, setNewChildName] = useState('');
+  const [newChildAge, setNewChildAge] = useState('age8');
+  const [newChildTheme, setNewChildTheme] = useState('dino');
+  const [isAdding, setIsAdding] = useState(false);
+
   const router = useRouter();
   const supabase = createClient();
 
@@ -22,7 +33,7 @@ export default function ParentDashboard() {
           setParentEmail(data.user.email || 'Parent');
         }
 
-        const { profiles: loadedProfiles, activeId } = loadLocalProfiles();
+        const { profiles: loadedProfiles, activeId } = await fetchUserChildProfiles();
         setProfiles(loadedProfiles);
         setActiveChildId(activeId);
       } catch (e) {
@@ -39,6 +50,11 @@ export default function ParentDashboard() {
     router.push('/');
   };
 
+  const handleSelectActiveChild = (childId: string) => {
+    setActiveChildId(childId);
+    saveLocalProfiles(profiles, childId);
+  };
+
   const handleUpdateAge = (childId: string, ageGroup: string) => {
     const updated = profiles.map((p) => (p.id === childId ? { ...p, ageGroup } : p));
     setProfiles(updated);
@@ -49,6 +65,28 @@ export default function ParentDashboard() {
     const updated = profiles.map((p) => (p.id === childId ? { ...p, preferredTheme } : p));
     setProfiles(updated);
     saveLocalProfiles(updated, activeChildId);
+  };
+
+  const handleCreateChild = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newChildName.trim()) return;
+
+    setIsAdding(true);
+    try {
+      const created = await createChildProfile(
+        newChildName.trim(),
+        newChildAge,
+        newChildTheme
+      );
+      setProfiles((prev) => [...prev.filter((p) => !p.id.startsWith('guest-')), created]);
+      setActiveChildId(created.id);
+      setNewChildName('');
+      setShowAddModal(false);
+    } catch (err) {
+      console.error('Failed to create child profile:', err);
+    } finally {
+      setIsAdding(false);
+    }
   };
 
   const activeChild = profiles.find((p) => p.id === activeChildId) || profiles[0] || {
@@ -106,9 +144,14 @@ export default function ParentDashboard() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Child Learning Analytics Card */}
         <section className="glass-panel p-6 rounded-[36px] flex flex-col gap-4 shadow-xl">
-          <div className="flex items-center gap-2 font-bold text-xl text-amber-300">
-            <span>⭐</span>
-            <span>Active Student Overview ({activeChild.name})</span>
+          <div className="flex items-center justify-between font-bold text-xl text-amber-300">
+            <div className="flex items-center gap-2">
+              <span>⭐</span>
+              <span>Active Student ({activeChild.name})</span>
+            </div>
+            <span className="text-xs bg-amber-400/20 text-amber-300 px-3 py-1 rounded-full border border-amber-400/30">
+              Active Profile
+            </span>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -133,57 +176,152 @@ export default function ParentDashboard() {
 
         {/* Child Profile Settings Card */}
         <section className="glass-panel p-6 rounded-[36px] flex flex-col gap-4 shadow-xl">
-          <div className="flex items-center gap-2 font-bold text-xl text-sky-300">
-            <span>👦</span>
-            <span>Child Settings</span>
+          <div className="flex justify-between items-center font-bold text-xl text-sky-300">
+            <div className="flex items-center gap-2">
+              <span>👦</span>
+              <span>Child Profiles</span>
+            </div>
+            <button
+              onClick={() => setShowAddModal(true)}
+              className="bg-sky-500/20 hover:bg-sky-500/30 text-sky-300 border border-sky-400/40 text-xs font-extrabold px-3 py-1.5 rounded-full transition-all flex items-center gap-1"
+            >
+              <span>➕ Add Child</span>
+            </button>
           </div>
 
           <div className="flex flex-col gap-4">
-            {profiles.map((child) => (
-              <div
-                key={child.id}
-                className="bg-white/5 border border-white/10 p-4 rounded-2xl flex flex-col gap-3"
-              >
-                <div className="flex justify-between items-center">
-                  <div className="font-bold text-slate-100 text-base">{child.name}</div>
-                  <span className="text-xs text-amber-300 bg-amber-400/20 px-3 py-1 rounded-full font-bold">
-                    {child.stars} ⭐
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-[11px] font-bold text-slate-400 mb-1 uppercase">Target Age Level</label>
-                    <select
-                      value={child.ageGroup}
-                      onChange={(e) => handleUpdateAge(child.id, e.target.value)}
-                      className="w-full bg-slate-900 border border-white/20 rounded-xl px-3 py-1.5 text-white font-bold text-xs"
-                    >
-                      <option value="age4">Age 4-5 (Junior)</option>
-                      <option value="age6">Age 6 (Medic)</option>
-                      <option value="age8">Age 7-8 (Chief Vet)</option>
-                    </select>
+            {profiles.map((child) => {
+              const isActive = child.id === activeChildId;
+              return (
+                <div
+                  key={child.id}
+                  className={`bg-white/5 border p-4 rounded-2xl flex flex-col gap-3 transition-all ${
+                    isActive ? 'border-sky-400 shadow-[0_0_15px_rgba(56,189,248,0.2)] bg-sky-400/5' : 'border-white/10'
+                  }`}
+                >
+                  <div className="flex justify-between items-center">
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => handleSelectActiveChild(child.id)}
+                        className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
+                          isActive ? 'border-sky-400 bg-sky-400' : 'border-slate-500'
+                        }`}
+                      >
+                        {isActive && <div className="w-1.5 h-1.5 bg-slate-950 rounded-full" />}
+                      </button>
+                      <div className="font-bold text-slate-100 text-base">{child.name}</div>
+                    </div>
+                    <span className="text-xs text-amber-300 bg-amber-400/20 px-3 py-1 rounded-full font-bold">
+                      {child.stars} ⭐
+                    </span>
                   </div>
 
-                  <div>
-                    <label className="block text-[11px] font-bold text-slate-400 mb-1 uppercase">Preferred Theme</label>
-                    <select
-                      value={child.preferredTheme}
-                      onChange={(e) => handleUpdateTheme(child.id, e.target.value)}
-                      className="w-full bg-slate-900 border border-white/20 rounded-xl px-3 py-1.5 text-white font-bold text-xs"
-                    >
-                      <option value="dino">🦕 Dino Rescue</option>
-                      <option value="sports">⚽ Sports League</option>
-                      <option value="legos">🧱 Lego Builders</option>
-                      <option value="construction">🚜 Excavators</option>
-                    </select>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-[11px] font-bold text-slate-400 mb-1 uppercase">Target Age Level</label>
+                      <select
+                        value={child.ageGroup}
+                        onChange={(e) => handleUpdateAge(child.id, e.target.value)}
+                        className="w-full bg-slate-900 border border-white/20 rounded-xl px-3 py-1.5 text-white font-bold text-xs"
+                      >
+                        <option value="age4">Age 4-5 (Junior)</option>
+                        <option value="age6">Age 6 (Medic)</option>
+                        <option value="age8">Age 7-8 (Chief Vet)</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-[11px] font-bold text-slate-400 mb-1 uppercase">Preferred Theme</label>
+                      <select
+                        value={child.preferredTheme}
+                        onChange={(e) => handleUpdateTheme(child.id, e.target.value)}
+                        className="w-full bg-slate-900 border border-white/20 rounded-xl px-3 py-1.5 text-white font-bold text-xs"
+                      >
+                        <option value="dino">🦕 Dino Rescue</option>
+                        <option value="sports">⚽ Sports League</option>
+                        <option value="legos">🧱 Lego Builders</option>
+                        <option value="construction">🚜 Excavators</option>
+                      </select>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </section>
       </div>
+
+      {/* Add Child Modal */}
+      {showAddModal && (
+        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <form
+            onSubmit={handleCreateChild}
+            className="glass-panel border-sky-400/40 p-6 rounded-[32px] w-full max-w-md flex flex-col gap-4 shadow-2xl animate-in fade-in"
+          >
+            <h3 className="text-xl font-bold text-slate-50 flex items-center gap-2">
+              <span>👦</span> Add Child Profile
+            </h3>
+
+            <div>
+              <label className="block text-xs font-bold text-slate-300 uppercase mb-1">Child Name</label>
+              <input
+                type="text"
+                required
+                placeholder="e.g. Leo"
+                value={newChildName}
+                onChange={(e) => setNewChildName(e.target.value)}
+                className="w-full bg-slate-900 border border-white/20 rounded-xl px-4 py-2.5 text-white font-bold text-sm focus:outline-none focus:border-sky-400"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs font-bold text-slate-300 uppercase mb-1">Age Group</label>
+                <select
+                  value={newChildAge}
+                  onChange={(e) => setNewChildAge(e.target.value)}
+                  className="w-full bg-slate-900 border border-white/20 rounded-xl px-3 py-2 text-white font-bold text-xs"
+                >
+                  <option value="age4">Age 4-5 (Junior)</option>
+                  <option value="age6">Age 6 (Medic)</option>
+                  <option value="age8">Age 7-8 (Chief Vet)</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-300 uppercase mb-1">Theme</label>
+                <select
+                  value={newChildTheme}
+                  onChange={(e) => setNewChildTheme(e.target.value)}
+                  className="w-full bg-slate-900 border border-white/20 rounded-xl px-3 py-2 text-white font-bold text-xs"
+                >
+                  <option value="dino">🦕 Dino</option>
+                  <option value="sports">⚽ Sports</option>
+                  <option value="legos">🧱 Lego</option>
+                  <option value="construction">🚜 Construction</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-3 mt-3">
+              <button
+                type="button"
+                onClick={() => setShowAddModal(false)}
+                className="px-4 py-2 rounded-xl text-slate-400 font-bold text-xs hover:bg-white/10"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={isAdding}
+                className="bg-gradient-to-r from-sky-400 to-blue-600 text-white font-bold text-xs px-5 py-2 rounded-xl shadow-lg hover:scale-105 transition-all"
+              >
+                {isAdding ? 'Creating...' : 'Save Profile ✨'}
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
     </div>
   );
 }
