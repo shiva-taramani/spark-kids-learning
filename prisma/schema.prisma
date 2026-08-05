@@ -57,3 +57,14 @@ model LearningModule {
 
   @@map("learning_modules")
 }
+
+model ServerLog {
+  id        String   @id @default(uuid())
+  level     String
+  tag       String
+  message   String
+  metadata  Json?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("server_logs")
+}
