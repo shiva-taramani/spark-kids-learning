@@ -67,12 +67,16 @@ export async function fetchUserChildProfiles(): Promise<{ profiles: ChildProfile
     }
 
     // Ensure parent profile exists in profiles table
-    await supabase.from('profiles').upsert({
+    const { error: profileErr } = await supabase.from('profiles').upsert({
       id: userData.user.id,
       email: userData.user.email || '',
-      full_name: userData.user.user_metadata?.full_name || '',
+      parent_name: userData.user.user_metadata?.full_name || userData.user.email || '',
+      full_name: userData.user.user_metadata?.full_name || userData.user.email || '',
       updated_at: new Date().toISOString(),
     });
+    if (profileErr) {
+      console.error('Supabase parent profile upsert error:', profileErr.message);
+    }
 
     const { data: remoteChildren, error } = await supabase
       .from('children')
@@ -80,7 +84,7 @@ export async function fetchUserChildProfiles(): Promise<{ profiles: ChildProfile
       .eq('parent_id', userData.user.id);
 
     if (error) {
-      console.error('Error fetching children from Supabase:', error);
+      console.error('Error fetching children from Supabase:', error.message);
       return localData;
     }
 
@@ -132,6 +136,14 @@ export async function createChildProfile(
   };
 
   if (userData && userData.user) {
+    // Ensure parent profile exists
+    await supabase.from('profiles').upsert({
+      id: userData.user.id,
+      email: userData.user.email || '',
+      parent_name: userData.user.user_metadata?.full_name || userData.user.email || '',
+      full_name: userData.user.user_metadata?.full_name || userData.user.email || '',
+    });
+
     const { data, error } = await supabase
       .from('children')
       .insert({
@@ -145,12 +157,14 @@ export async function createChildProfile(
       .select()
       .single();
 
-    if (!error && data) {
+    if (error) {
+      console.error('Supabase child insert error:', error.message, error.details);
+    } else if (data) {
       newChild.id = data.id;
     }
   }
 
-  const { profiles, activeId } = loadLocalProfiles();
+  const { profiles } = loadLocalProfiles();
   const updatedProfiles = [...profiles.filter((p) => !p.id.startsWith('guest-')), newChild];
   saveLocalProfiles(updatedProfiles, newChild.id);
   return newChild;
@@ -162,6 +176,13 @@ export async function syncChildToSupabase(child?: ChildProfile) {
     const supabase = createClient();
     const { data: userData } = await supabase.auth.getUser();
     if (!userData || !userData.user) return;
+
+    await supabase.from('profiles').upsert({
+      id: userData.user.id,
+      email: userData.user.email || '',
+      parent_name: userData.user.user_metadata?.full_name || userData.user.email || '',
+      full_name: userData.user.user_metadata?.full_name || userData.user.email || '',
+    });
 
     const payload: any = {
       parent_id: userData.user.id,
@@ -177,8 +198,10 @@ export async function syncChildToSupabase(child?: ChildProfile) {
       payload.id = child.id;
     }
 
-    const { data } = await supabase.from('children').upsert(payload).select().single();
-    if (data && data.id) {
+    const { data, error } = await supabase.from('children').upsert(payload).select().single();
+    if (error) {
+      console.error('Supabase child upsert error:', error.message);
+    } else if (data && data.id) {
       child.id = data.id;
     }
   } catch (e) {
